@@ -13,3 +13,17 @@ chrome.runtime.onInstalled.addListener(function() {
       }]);
     });
 });
+
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    console.log(sender.tab ?
+                "from a content script:" + sender.tab.url :
+                "from the extension");
+    if (request.recorder == "start"){
+      sendResponse({status: "starting"});
+    }
+    else if (request.recorder == "stop") {
+      sendResponse({status: "stopping"});
+    }
+  });
