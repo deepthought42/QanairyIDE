@@ -1,10 +1,8 @@
 let startRecording = document.getElementById('startRecording');
 
-
-
 startRecording.onclick = function(element) {
   console.log("sending message ");
-  chrome.runtime.sendMessage({recorder: "start"}, function(response) {
+  chrome.runtime.sendMessage({msg: "start"}, function(response) {
     console.log(response.status);
   });
 
@@ -17,28 +15,28 @@ startRecording.onclick = function(element) {
         })
       }
   );
-
-
-/*
-  let color = element.target.value;
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.tabs.executeScript(
-        tabs[0].id,
-        {code: 'document.body.style.backgroundColor = "' + color + '";'});
-  });
-  */
 };
 
 let stopRecording = document.getElementById('stopRecording');
 
 stopRecording.onclick = function(element){
   console.log("stopping event listener");
-  document.removeEventListener("click", action_listener);
 
   //fire event to stop listening for url change events and action events
-  chrome.runtime.sendMessage({recorder: "stop"}, function(response) {
+  chrome.runtime.sendMessage({msg: "stop"}, function(response) {
     console.log(response.status);
-    alert(response.status);
   });
 
 }
+
+//receive path element
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.msg === "appendPathElement") {
+            //  To do something
+
+            console.log(request.data);
+            $('#test_path_viewer').append("<div>"+request.data+"</div>");
+        }
+    }
+);

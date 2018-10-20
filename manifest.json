@@ -2,7 +2,7 @@
     "name": "Qanairy IDE",
     "version": "0.0.1",
     "description": "Allows recording custom tests for the Qanairy.com platform",
-    "permissions": ["declarativeContent", "storage", "webNavigation", "tabs", "activeTab"],
+    "permissions": ["declarativeContent", "storage", "webNavigation", "tabs", "activeTab", "https://*.qanairy.com/*"],
     "background": {
       "scripts": ["background.js"],
       "persistent": false
