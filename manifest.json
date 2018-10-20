@@ -5,9 +5,9 @@
     "permissions": ["declarativeContent", "storage", "webNavigation", "tabs", "activeTab", "https://*.qanairy.com/*"],
     "background": {
       "scripts": ["background.js"],
-      "persistent": false
+      "persistent": true
     },
-    "page_action": {
+    "browser_action": {
       "default_popup": "popup.html",
       "default_icon": {
         "16": "images/qanairy_logo.png",

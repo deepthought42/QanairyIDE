@@ -1,19 +1,7 @@
 let path = [];
-
+let status = "stopped";
 chrome.runtime.onInstalled.addListener(function() {
-  chrome.storage.sync.set({color: '#3aa757'}, function() {
-    console.log("Qanairy installed successfully");
-  });
 
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-      chrome.declarativeContent.onPageChanged.addRules([{
-        conditions: [new chrome.declarativeContent.PageStateMatcher({
-          pageUrl: {},
-        })
-        ],
-            actions: [new chrome.declarativeContent.ShowPageAction()]
-      }]);
-    });
 });
 
 
@@ -28,6 +16,7 @@ chrome.runtime.onMessage.addListener(
     console.log("event passed :: "+request.msg);
     if (request.msg == "start"){
       path = [];
+      status = "recording";
       console.log("Start event fired");
       chrome.webNavigation.onCompleted.addListener(
         function(details){
@@ -38,6 +27,7 @@ chrome.runtime.onMessage.addListener(
       sendResponse({status: "starting"});
     }
     else if (request.msg == "stop") {
+      status = "stopped";
       console.log("status");
       chrome.webNavigation.onCompleted.removeListener(function(object){
         console.log("removing listener");
@@ -45,7 +35,7 @@ chrome.runtime.onMessage.addListener(
       path = [];
       sendResponse({status: "stopping"});
     }
-    else if(request.msg == "addToPath"){
+    else if(request.msg == "addToPath" && status != "stopped"){
       console.log("adding to path  :::   "+request.data);
       console.log(" PATH  ::   "+path);
       console.log("PATH SIZE  ::   "+path.length)
@@ -54,7 +44,8 @@ chrome.runtime.onMessage.addListener(
         chrome.runtime.sendMessage({
             msg: "appendPathElement",
             data: {
-                {type: "page", url: sender.tab.url}
+                type: "page",
+                url: sender.tab.url
             }
         });
       }
@@ -62,18 +53,17 @@ chrome.runtime.onMessage.addListener(
       path.push(request.data.element);
       chrome.runtime.sendMessage({
           msg: "appendPathElement",
-          data: {
-            request.data.element
-          }
+          data: request.data.element
+
       });
       path.push(request.data.action);
       chrome.runtime.sendMessage({
           msg: "appendPathElement",
-          data: {
-              (request.data.action
-          }
+          data: request.data.action
       });
-
+    }
+    else if(request.msg == 'export'){
+      console.log("Background received export event request");
       //****************************************
       //test path export code
       //****************************************
