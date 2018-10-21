@@ -1,8 +1,17 @@
 let startRecording = document.getElementById('startRecording');
 let stopRecording = document.getElementById('stopRecording');
 let exportTest = document.getElementById('exportTest');
+let pageElementForm = document.getElementById('pageElementForm');
+let createPathElementButton = document.getElementById('createPathElementButton');
+
 startRecording.style.display = "block";
 stopRecording.style.display = "none";
+pageElementForm.style.display = "none";
+
+createPathElementButton.onclick = function(element){
+  console.log("shiwing page element form");
+  pageElementForm.style.display = "block";
+}
 
 //start recording user interaction
 startRecording.onclick = function(element) {
@@ -36,7 +45,6 @@ stopRecording.onclick = function(element){
 
 }
 
-
 exportTest.onclick = function(element){
   console.log("exporting test");
 
@@ -44,7 +52,6 @@ exportTest.onclick = function(element){
   chrome.runtime.sendMessage({msg: "export"}, function(response) {
     console.log("PATH :: " +JSON.stringify(response.status));
   });
-
 }
 
 //receive path element
