@@ -3,10 +3,18 @@ let stopRecording = document.getElementById('stopRecording');
 let exportTest = document.getElementById('exportTest');
 let pageElementForm = document.getElementById('pageElementForm');
 let createPathElementButton = document.getElementById('createPathElementButton');
+let savePageElement = document.getElementById('savePageElement');
 
 startRecording.style.display = "block";
 stopRecording.style.display = "none";
 pageElementForm.style.display = "none";
+
+savePageElement.onclick = function(element){
+  let pageElement = {xpath: document.getElementById('pageElementXpath').value}
+  chrome.runtime.sendMessage({msg: "appendPathElement", data: pageElement}, function(response) {
+
+  }
+}
 
 createPathElementButton.onclick = function(element){
   console.log("shiwing page element form");
