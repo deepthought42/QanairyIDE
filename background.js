@@ -4,6 +4,17 @@ chrome.runtime.onInstalled.addListener(function() {
 
 });
 
+chrome.browserAction.onClicked.addListener(function(tab) {
+  chrome.windows.create({
+    url: chrome.runtime.getURL("popup.html"),
+    width: 300,
+    height: 550,
+    type: "popup"
+  }, function(win) {
+    // win represents the Window object from windows API
+    // Do something after opening
+  });
+});
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
