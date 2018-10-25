@@ -145,6 +145,7 @@ let uniqifyXpath = function(){
 //receive path element
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
+      console.log("recieved event :: "+request.msg);
         if (request.msg === "appendPathElement") {
             //  To do something
 
@@ -154,6 +155,7 @@ chrome.runtime.onMessage.addListener(
               path_element = "url : "+ request.data.url+"</div>";
             }
             else if(request.data.type == 'pageElement'){
+              console.log("EVENT TARGET :: "+request.data.target);
               path_element = "element coordinates : ("+ request.data.client_x+" : " +request.data.client_y+")";
             }
             else if(request.data.type == 'action'){

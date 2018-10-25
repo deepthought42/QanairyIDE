@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  </head>
+  <body class="container-fluid">
+    <div class="row spacer" >
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <button id="createTest" class="btn-sm col-xs-4" type="button">
+          <i class="fa fa-plus"></i> New Test
+        </button>
+        <button id="startRecording" class="btn-sm col-xs-4" type="button">
+          Start <i class="fa fa-circle"></i>
+        </button>
+        <button id="stopRecording" class="btn-sm col-xs-4" type="button">
+          Stop <i class="fa fa-square" aria-hidden="true"></i>
+        </button>
+        <button id="runTest" class="btn-sm col-xs-4" type="button">
+          Run <i class="fa fa-play" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <div  id="test_path_viewer" class="col-xs-12 path-container">
+<div class='path-element'>
+  url : www.example.com
+</div>
+<div class='col-xs-12 path-element'>
+  xpath : //body
+</div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <button id="createPageButton" class="btn-sm col-xs-6">
+          <i class="fa fa-plus"></i> Page
+        </button>
+        <button id="createPathElementButton" class="btn-sm col-xs-6">
+          <i class="fa fa-plus"></i> Element
+        </button>
+      </div>
+    </div>
+    <div id="manualPathElementDefinitionForms" class="row">
+      <div id="pageElementForm" class="col-xs-12">
+        <input id="pageElementXpath" type="text" placeholder="xpath" />
+        <select id="actionName">
+          <option value="click" selected>Click</option>
+          <option value="rightClick">Right Click</option>
+          <option value="sendKeys">Send Keys</option>
+        </select>
+        <input id="actionValue" type="text" placeholder="value" />
+        <button id="savePageElement"> Save </button>
+      </div>
+      <div id="pageForm" class="col-xs-12">
+        <div class="col-xs-12">
+          <input id="pageUrl" type="text" placeholder="www.example.com" />
+        </div>
+        <button id="savePage" class="col-xs-12"> Save </button>
+      </div>
+    </div>
+    <div class="row spacer">
+    </div>
+    <div class="col-xs-12">
+      <button id="exportTest" type="button" class="btn btn-primary col-xs-12">
+        Export test
+      </button>
+    </div>
+  </body>
+  <script src="scripts/jquery.js"></script>
+  <script src="scripts/bootstrap.min.js"></script>
+  <script src="popup.js"></script>
+</html>

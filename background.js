@@ -6,7 +6,7 @@ chrome.runtime.onInstalled.addListener(function() {
 
 chrome.browserAction.onClicked.addListener(function(tab) {
   chrome.windows.create({
-    url: chrome.runtime.getURL("popup.html"),
+    url: chrome.runtime.getURL("recorder.html"),
     width: 300,
     height: 550,
     type: "popup"
@@ -48,6 +48,7 @@ chrome.runtime.onMessage.addListener(
     }
     else if(request.msg == "addToPath" && status != "stopped"){
       console.log("adding to path  :::   "+request.data);
+      console.log("adding to path ::: "+request.data.target);
       console.log(" PATH  ::   "+path);
       console.log("PATH SIZE  ::   "+path.length)
       if(path.length == 0 || path[path.length-1].type != "page"){
