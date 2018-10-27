@@ -2,10 +2,10 @@
 
 console.log("loading content script");
 
-var node = document.createElement("iframe");
-node.id="qanairy_ide_frame";
-node.style.cssText = 'position:absolute;width:250px;height:400px;z-index:100';
-node.src = "http://localhost:3000";
+var iframe = document.createElement("iframe");
+iframe.id="qanairy_ide_frame";
+iframe.style.cssText = 'position:absolute;width:250px;height:400px;z-index:100';
+iframe.src = "http://localhost:3000";
 
 var header = document.createElement("div");
 header.style.cssText = 'width:100%;height:20px';
@@ -14,7 +14,7 @@ header.id="qanairy_ide_header";
 var body = document.createElement("div");
 body.style.cssText = 'width:100%;height:20px';
 body.id="qanairy_ide_body";
-body.appendChild(node);
+body.appendChild(iframe);
 
 var parent = document.createElement("div");
 parent.style.cssText = 'position:absolute;width:250px;height:400px;z-index:100';
@@ -29,26 +29,46 @@ chrome.runtime.onMessage.addListener(
     console.log("request :: "+request);
     console.log("sender :: "+sender);
     console.log("sendResponse  ::  "+sendResponse);
-    document.addEventListener("click", function(event){
-      console.log(" action listener event   ::   "+event);
-      console.log(" event client  x   ::   "+event.clientX);
-      console.log(" event client y   ::   "+event.clientY);
-      console.log(" event related target   ::   "+event.relatedTarget);
-
-      console.log(" event related target   ::   "+Object.keys(event.relatedTarget));
-      console.log(" event region   ::   "+event.region);
-      console.log(" which   ::   "+event.which);
-
-
-      console.log(" action listenter event keys   ::   "+Object.keys(event));
-      console.log(" action listenter event   ::   "+event.isTrusted);
-
-      chrome.runtime.sendMessage({msg: "addToPath", data: { element: {type: "pageElement", target: event.relatedTarget, client_x: event.clientX, client_y: event.clientY}, action: {type: "action", name: "click", value: ""}}}, function(response) {
-        console.log("response ::  " +JSON.stringify(response));
-      });
-    });
   }
 )
+
+
+document.addEventListener("click", function(event){
+  console.log(" action listener event   ::   "+event);
+  console.log(" event client  x   ::   "+event.clientX);
+  console.log(" event client y   ::   "+event.clientY);
+  console.log(" event related target   ::   "+event.relatedTarget);
+
+  console.log(" event region   ::   "+event.region);
+  console.log(" which   ::   "+event.which);
+
+
+  console.log(" action listenter event keys   ::   "+Object.keys(event));
+  console.log(" action listenter event   ::   "+event.isTrusted);
+
+  var xpath = "";
+  //get all elements on page
+  document.querySelectorAll('body *').forEach(function(node){
+    var rect = node.getBoundingClientRect();
+    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
+      console.log(rect.top, rect.right, rect.bottom, rect.left);
+      console.log("NODE :: " + node.tagName);
+      xpath = generateXpath(node);
+      console.log("FINAL XPATH :: "+xpath);
+    }
+  })
+  //build list of elements where the x,y coords and height,width encompass the event x,y coords
+
+
+  iframe.contentWindow.postMessage({element: {xpath: xpath}, action: {name: "click", value:""}}, "http://localhost:3000");
+  console.log("sent message to iframe");
+
+
+  /*chrome.runtime.sendMessage({msg: "addToPath", data: { element: {type: "pageElement", target: event.relatedTarget, client_x: event.clientX, client_y: event.clientY}, action: {type: "action", name: "click", value: ""}}}, function(response) {
+    console.log("response ::  " +JSON.stringify(response));
+  });
+  */
+});
 
 // Make the DIV element draggable:
 dragElement(document.getElementById("qanairy_ide"));
@@ -93,3 +113,130 @@ function dragElement(elmnt) {
     document.onmousemove = null;
   }
 }
+
+let generateXpath = function(elem){
+  var xpath = "//"+elem.tagName;
+  var attributes = ["class", "id", "type", "name"];
+  var attributes_check = [];
+
+  for(var idx=0; idx< attributes.length; idx++){
+    if(elem.getAttribute(attributes[idx]) != undefined && elem.getAttribute(attributes[idx]) != null){
+      attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
+    }
+  }
+
+  if(attributes_check.length > 0){
+    xpath += "[";
+    for(var idx=0; idx < attributes_check.length; idx++){
+      xpath += attributes_check[idx];
+      if(idx < attributes_check.length-1){
+        xpath += " and ";
+      }
+    }
+    xpath += "]";
+  }
+
+  var elements = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+
+  if(elements.length > 1){
+    var count = 1;
+    for(var idx=0; idx < elements.length; idx++){
+      if(elements[idx].getTagName().equals(elem.getTagName())
+          && elements[idx].getText().equals(elem.getText())){
+            xpath += ("("+xpath+")[" + count + "]");
+      }
+      count++;
+    }
+  }
+
+  console.log("xpath  :::   "+xpath);
+
+  return xpath;
+}
+
+/**
+	 * generates a unique xpath for this element.
+	 *
+	 * @return an xpath that identifies this element uniquely
+	 */
+   /*
+let generateXpath = function(WebElement element, String xpath, Map<String, Integer> xpathHash, WebDriver driver, Set<Attribute> attributes){
+		ArrayList<String> attributeChecks = new ArrayList<String>();
+
+		xpath += "//"+element.getTagName();
+		for(Attribute attr : attributes){
+			if(Arrays.asList(valid_xpath_attributes).contains(attr.getName())){
+
+				String attribute_values = ArrayUtility.joinArray(attr.getVals().toArray(new String[attr.getVals().size()]));
+				if(attribute_values.contains("\"")){
+					attributeChecks.add("contains(@" + attr.getName() + ",\"" +generateConcatForXPath(attribute_values.trim())+ "\")");
+				}
+				else{
+					attributeChecks.add("contains(@" + attr.getName() + ",\"" + escapeQuotes(attribute_values.trim()) + "\")");
+				}
+			}
+		}
+		if(attributeChecks.size()>0){
+			xpath += "[";
+			for(int i = 0; i < attributeChecks.size(); i++){
+				xpath += attributeChecks.get(i).toString();
+				if(i < attributeChecks.size()-1){
+					xpath += " and ";
+				}
+			}
+			xpath += "]";
+		}
+
+	    WebElement parent = element;
+	    int count = 0;
+	    while(!parent.getTagName().equals("html") && !parent.getTagName().equals("body") && parent != null && count < 4){
+	    	try{
+	    		parent = getParentElement(parent);
+	    		if(driver.findElements(By.xpath("//"+parent.getTagName() + xpath)).size() == 1){
+	    			return "//"+parent.getTagName() + xpath;
+	    		}
+	    		else{
+		    		xpath = "/" + parent.getTagName() + xpath;
+	    		}
+	    	}catch(InvalidSelectorException e){
+	    		parent = null;
+	    		log.error("Invalid selector exception occurred while generating xpath through parent nodes");
+	    		break;
+	    	}
+	    	count++;
+	    }
+	    xpath = "/"+xpath;
+		return uniqifyXpath(element, xpathHash, xpath, driver);
+	}
+*/
+  /**
+	 * creates a unique xpath based on a given hash of xpaths
+	 *
+	 * @param driver
+	 * @param xpathHash
+	 *
+	 * @return
+	 */
+   /*
+let uniqifyXpath = function(WebElement elem, Map<String, Integer> xpathHash, String xpath, WebDriver driver){
+		try {
+			List<WebElement> elements = driver.findElements(By.xpath(xpath));
+
+			if(elements.size()>1){
+				int count = 1;
+				for(WebElement element : elements){
+					if(element.getTagName().equals(elem.getTagName())
+							&& element.getText().equals(elem.getText())){
+						return "("+xpath+")[" + count + "]";
+					}
+					count++;
+				}
+			}
+
+		}catch(InvalidSelectorException e){
+			log.error(e.getMessage());
+		}
+
+		return xpath;
+	}
+*/
