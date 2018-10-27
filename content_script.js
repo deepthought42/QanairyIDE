@@ -35,34 +35,20 @@ chrome.runtime.onMessage.addListener(
 
 document.addEventListener("click", function(event){
   console.log(" action listener event   ::   "+event);
-  console.log(" event client  x   ::   "+event.clientX);
-  console.log(" event client y   ::   "+event.clientY);
-  console.log(" event related target   ::   "+event.relatedTarget);
-
-  console.log(" event region   ::   "+event.region);
-  console.log(" which   ::   "+event.which);
-
-
-  console.log(" action listenter event keys   ::   "+Object.keys(event));
-  console.log(" action listenter event   ::   "+event.isTrusted);
 
   var xpath = "";
   //get all elements on page
   document.querySelectorAll('body *').forEach(function(node){
     var rect = node.getBoundingClientRect();
     if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
-      console.log(rect.top, rect.right, rect.bottom, rect.left);
-      console.log("NODE :: " + node.tagName);
+      //console.log(rect.top, rect.right, rect.bottom, rect.left);
       xpath = generateXpath(node);
-      console.log("FINAL XPATH :: "+xpath);
     }
   })
   //build list of elements where the x,y coords and height,width encompass the event x,y coords
 
 
   iframe.contentWindow.postMessage({element: {xpath: xpath}, action: {name: "click", value:""}}, "http://localhost:3000");
-  console.log("sent message to iframe");
-
 
   /*chrome.runtime.sendMessage({msg: "addToPath", data: { element: {type: "pageElement", target: event.relatedTarget, client_x: event.clientX, client_y: event.clientY}, action: {type: "action", name: "click", value: ""}}}, function(response) {
     console.log("response ::  " +JSON.stringify(response));
@@ -115,13 +101,16 @@ function dragElement(elmnt) {
 }
 
 let generateXpath = function(elem){
-  var xpath = "//"+elem.tagName;
-  var attributes = ["class", "id", "type", "name"];
+  var xpath = "//"+elem.tagName.toLowerCase();
+  var attributes = ["id", "name", "class"];
   var attributes_check = [];
 
   for(var idx=0; idx< attributes.length; idx++){
     if(elem.getAttribute(attributes[idx]) != undefined && elem.getAttribute(attributes[idx]) != null){
       attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
+      if(attributes[idx]=="id"){
+        break;
+      }
     }
   }
 
