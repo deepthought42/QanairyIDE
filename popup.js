@@ -1,6 +1,13 @@
 let startRecording = document.getElementById('startRecording');
 let stopRecording = document.getElementById('stopRecording');
 let exportTest = document.getElementById('exportTest');
+let showPageEditPanelButton = document.getElementById('createPageButton');
+let showPageElementEditPanelButton = document.getElementById('createPathElementButton');
+let pageEditPanel = document.getElementById('pageForm');
+let pageElementEditPanel = document.getElementById('pageElementForm');
+
+pageEditPanel.style.display = "none";
+pageElementEditPanel.style.display = "block";
 startRecording.style.display = "block";
 stopRecording.style.display = "none";
 
@@ -38,6 +45,24 @@ exportTest.onclick = function(element){
     console.log("PATH :: " +JSON.stringify(response.status));
   });
 
+}
+
+showPageEditPanelButton.onclick = function(page){
+  console.log("show page edit panel");
+  pageEditPanel.style.display = "block";
+  pageElementEditPanel.style.display = "none";
+}
+
+showPageElementEditPanelButton.onclick = function(element){
+  console.log("show page element edit panel");
+  pageEditPanel.style.display = "none";
+  pageElementEditPanel.style.display = "block";
+}
+
+
+let editPathElement = function(element_idx){
+  console.log("editing path element  ::  " + element);
+  PubSub.publish('edit-path-element', element);
 }
 
 //receive path element

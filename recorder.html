@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="styles/main.css">
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   </head>
-  <body class="container-fluid">
+  <body id="qanairy-ide" class="container-fluid">
     <div class="row spacer" >
     </div>
     <div class="row">
@@ -25,12 +25,18 @@
     </div>
 
     <div  id="test_path_viewer" class="col-xs-12 path-container">
-<div class='path-element'>
-  url : www.example.com
-</div>
-<div class='col-xs-12 path-element'>
-  xpath : //body
-</div>
+      <div  class='row path-element'>
+        <div class='col-xs-2 path-element-type'>
+          click
+        </div>
+        <div class='col-xs-8 path-element-value'>
+          none
+        </div>
+        <div class='col-xs-2 icons' >
+          <i class='fa fa-pencil icon' onClick={this.editPathElement.bind(this, item)}></i>
+          <i class='fa fa-times icon delete-icon' onClick={this.removePathElement.bind(this, item)}></i>
+        </div>
+      </div>
     </div>
 
     <div class="row">
@@ -44,15 +50,33 @@
       </div>
     </div>
     <div id="manualPathElementDefinitionForms" class="row">
+
       <div id="pageElementForm" class="col-xs-12">
-        <input id="pageElementXpath" type="text" placeholder="xpath" />
-        <select id="actionName">
-          <option value="click" selected>Click</option>
-          <option value="rightClick">Right Click</option>
-          <option value="sendKeys">Send Keys</option>
-        </select>
-        <input id="actionValue" type="text" placeholder="value" />
-        <button id="savePageElement"> Save </button>
+        <div class="col-xs-12">
+          <div>
+            Xpath
+          </div>
+          <div>
+            <input id="pageElementXpath" type="text" value={this.state.element_xpath} placeholder="xpath" />
+          </div>
+        </div>
+        <div class="col-xs-12">
+          <div>
+            Action
+          </div>
+          <select id="actionName">
+            <option value="click">Click</option>
+            <option value="rightClick">Right Click</option>
+            <option value="sendKeys">Send Keys</option>
+          </select>
+          <div>
+            Value
+          </div>
+          <div>
+            <input id="actionValue" type="text" value={this.state.action_value} placeholder="value" />
+          </div>
+        </div>
+        <button id="savePageElement" class="col-xs-12"> Save </button>
       </div>
       <div id="pageForm" class="col-xs-12">
         <div class="col-xs-12">

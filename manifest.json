@@ -21,6 +21,9 @@
           "js": ["content_script.js"]
         }
     ],
+    "web_accessible_resources": [
+      "recorder.html"
+    ],
     "icons": {
       "16": "images/qanairy_logo.png",
       "32": "images/qanairy_logo.png",

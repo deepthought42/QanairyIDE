@@ -5,7 +5,8 @@ console.log("loading content script");
 var iframe = document.createElement("iframe");
 iframe.id="qanairy_ide_frame";
 iframe.style.cssText = 'position:absolute;width:250px;height:400px;z-index:100';
-iframe.src = "http://localhost:3000";
+iframe.src = chrome.extension.getURL('/recorder.html');
+
 
 var header = document.createElement("div");
 header.style.cssText = 'width:100%;height:20px';
@@ -48,12 +49,12 @@ document.addEventListener("click", function(event){
   //build list of elements where the x,y coords and height,width encompass the event x,y coords
 
 
-  iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
+  //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
 
-  /*chrome.runtime.sendMessage({msg: "addToPath", data: { element: {type: "pageElement", target: event.relatedTarget, client_x: event.clientX, client_y: event.clientY}, action: {type: "action", name: "click", value: ""}}}, function(response) {
+  chrome.runtime.sendMessage({msg: "addToPath", data: { element: {type: "pageElement", target: event.relatedTarget, client_x: event.clientX, client_y: event.clientY}, action: {type: "action", name: "click", value: ""}}}, function(response) {
     console.log("response ::  " +JSON.stringify(response));
   });
-  */
+  
 });
 
 // Make the DIV element draggable:
