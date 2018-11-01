@@ -25,29 +25,7 @@
     </div>
 
     <div  id="test_path_viewer" class="path-container">
-      <div  class='row path-element' data-index="1">
-        <div class="element col-xs-10">
-          <div class="element col-xs-12">
-            <div class='col-xs-2 path-element-type'>
-              xpath
-            </div>
-            <div class='col-xs-8 path-element-value'>
-            </div>
-          </div>
-          <div class="action col-xs-12">
-            <div class='col-xs-3 path-element-type'>
-              click
-            </div>
-            <div class='col-xs-9 path-element-value'>
-              none
-            </div>
-          </div>
-        </div>
-        <div class='col-xs-2 icons' >
-          <i class='fa fa-pencil icon' onClick={this.editPathElement.bind(this, item)}></i>
-          <i class='fa fa-times icon delete-icon' onClick={this.removePathElement.bind(this, item)}></i>
-        </div>
-      </div>
+      <!-- path element list populates here -->
     </div>
 
     <div class="row">
@@ -106,5 +84,5 @@
   </body>
   <script src="scripts/jquery.js"></script>
   <script src="scripts/bootstrap.min.js"></script>
-  <script src="popup.js"></script>
+  <script src="scripts/recorder.js"></script>
 </html>

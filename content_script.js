@@ -51,10 +51,10 @@ document.addEventListener("click", function(event){
 
   //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
 
-  chrome.runtime.sendMessage({msg: "addToPath", data: { element: {type: "pageElement", target: event.relatedTarget, client_x: event.clientX, client_y: event.clientY}, action: {type: "action", name: "click", value: ""}}}, function(response) {
+  chrome.runtime.sendMessage({msg: "addToPath", data: { element: {type: "pageElement", target: event.relatedTarget, xpath: xpath}, action: {type: "action", name: "click", value: ""}}}, function(response) {
     console.log("response ::  " +JSON.stringify(response));
   });
-  
+
 });
 
 // Make the DIV element draggable:
@@ -139,7 +139,7 @@ let generateXpath = function(elem){
     }
   }
 
-  console.log("xpath  :::   "+xpath);
+//  console.log("xpath  :::   "+xpath);
 
   return xpath;
 }

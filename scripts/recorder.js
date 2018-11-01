@@ -73,6 +73,35 @@ let editPathElement = function(element_idx){
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.msg === "addToPath") {
+          var path = JSON.parse(localStorage.getItem("path"));
+          console.log("path is null ? "+(path===null));
+
+          console.log("path is undefined ? "+(path===undefined));
+          if(path === undefined || path === null){
+            path = new Array();
+            localStorage.setItem("path", JSON.stringify(path));
+            console.log("pre path :: "+path);
+            console.log("pre path size :: "+path.length);
+
+          }
+
+          if(path.length === 0){
+            //push page into path
+          }
+
+          //check if last element is equal to this element
+          console.log("path[path.length-1].element.xpath  :   "+path[path.length-1].element.xpath );
+          console.log("request.data.element.xpath  ::   "+request.data.element.xpath);
+          if(path[path.length-1].element.xpath == request.data.element.xpath){
+            console.log("elements match");
+            return;
+          }
+
+          path.push(request.data);
+          localStorage.setItem("path", JSON.stringify(path));
+
+          console.log("path size :: "+path.length);
+          console.log("PATH :: "+JSON.stringify(path));
          var element=  `
          <div  class='row path-element' data-index="` + $('.path-element').length + `">
            <div class="col-xs-10">
