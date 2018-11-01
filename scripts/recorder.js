@@ -5,11 +5,11 @@ let showPageEditPanelButton = document.getElementById('createPageButton');
 let showPageElementEditPanelButton = document.getElementById('createPathElementButton');
 let pageEditPanel = document.getElementById('pageForm');
 let pageElementEditPanel = document.getElementById('pageElementForm');
-let pathElementRow = $('.path-element').on("click", function(){
-  //send element to path element form
-  var index = $(this).data("index");
-  console.log("Clicked path element "+index);
-});
+let pathElementRowEventBindings = $('#test_path_viewer').on("click", "div", function(){
+    //send element to path element form
+    var index = $(this).data("index");
+    console.log("Clicked path element "+index);
+  });
 
 pageEditPanel.style.display = "none";
 pageElementEditPanel.style.display = "block";
