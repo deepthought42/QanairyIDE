@@ -5,6 +5,11 @@ let showPageEditPanelButton = document.getElementById('createPageButton');
 let showPageElementEditPanelButton = document.getElementById('createPathElementButton');
 let pageEditPanel = document.getElementById('pageForm');
 let pageElementEditPanel = document.getElementById('pageElementForm');
+let pathElementRow = $('.path-element').on("click", function(){
+  //send element to path element form
+  var index = $(this).data("index");
+  console.log("Clicked path element "+index);
+});
 
 pageEditPanel.style.display = "none";
 pageElementEditPanel.style.display = "block";
@@ -44,7 +49,6 @@ exportTest.onclick = function(element){
   chrome.runtime.sendMessage({msg: "export"}, function(response) {
     console.log("PATH :: " +JSON.stringify(response.status));
   });
-
 }
 
 showPageEditPanelButton.onclick = function(page){
@@ -68,7 +72,31 @@ let editPathElement = function(element_idx){
 //receive path element
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if (request.msg === "appendPathElement") {
+        if (request.msg === "addToPath") {
+         var element=  `
+         <div  class='row path-element' data-index="` + $('.path-element').length + `">
+           <div class="col-xs-10">
+             <div class="element col-xs-12">
+               <div class='col-xs-3 path-element-type'>
+                 xpath
+               </div>
+               <div class='col-xs-9 path-element-value'>
+               </div>
+             </div>
+             <div class="action col-xs-12">
+               <div class='col-xs-3 path-element-type'>
+                 click
+               </div>
+               <div class='col-xs-9 path-element-value'>
+                 none
+               </div>
+             </div>
+           </div>
+           <div class='col-xs-2 icons' >
+             <i class='fa fa-pencil icon' onClick={this.editPathElement.bind(this, item)}></i>
+             <i class='fa fa-times icon delete-icon' onClick={this.removePathElement.bind(this, item)}></i>
+           </div>
+         </div>`;
             //  To do something
 
             console.log("REQUEST DATA FOR ADDING TO PATH :: " + request.data);
@@ -82,7 +110,7 @@ chrome.runtime.onMessage.addListener(
             else if(request.data.type == 'action'){
               path_element = "<div class='element-action node-group vertical__center__int'>action : "+request.data.name+"</div>";
             }
-            $('#test_path_viewer').append(path_element);
+            $('#test_path_viewer').append(element);
         }
     }
 );
