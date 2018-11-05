@@ -6,13 +6,18 @@ let pageEditPanel = document.getElementById('pageForm');
 let pageElementEditPanel = document.getElementById('pageElementForm');
 
 
+$('#createNewTest').on('click', function(){
+  localStorage.setItem('path', JSON.stringify([]));
+  $('#test_path_viewer').html("");
+});
+
+//handle clicking on button for adding custom page element<->action pairs to path
 $('#createPageElementButton').on("click", function(){
   $('#pageElementXpath').val("");
   $('actionName').val("");
   $('#actionValue').val("");
   $('#pageElementIndexInPath').val("");
 
-  console.log("show page element edit panel");
   pageEditPanel.style.display = "none";
   pageElementEditPanel.style.display = "block";
   $('#pageElementIndexInPath').val("");
@@ -45,7 +50,6 @@ $('#savePageElement').on("click", function(){
   }
   localStorage.setItem('path', JSON.stringify(path));
   console.log("path after  ::  "+path.length);
-
 });
 
 let pathElementRowEventBindings = $('#test_path_viewer').on("click", ".path-element", function(){
