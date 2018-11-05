@@ -1,7 +1,5 @@
 let startRecording = document.getElementById('startRecording');
 let stopRecording = document.getElementById('stopRecording');
-let exportTest = document.getElementById('exportTest');
-let showPageEditPanelButton = document.getElementById('createPageButton');
 let pageEditPanel = document.getElementById('pageForm');
 let pageElementEditPanel = document.getElementById('pageElementForm');
 
@@ -27,7 +25,7 @@ $('#createPageElementButton').on("click", function(){
  * creating a new page element action set and appending the set to the end of
  * the path stored in localhost
 */
-$('#savePageElement').on("click", function(){
+$('#savePageElementButton').on("click", function(){
   var element_action = {
     element: {
       xpath: $('#pageElementXpath').val()
@@ -47,12 +45,51 @@ $('#savePageElement').on("click", function(){
   }
   else {
     path.push(element_action);
+    $('#test_path_viewer').append( generatePageElementPathListItem(element_action, path.length-1 ));
   }
   localStorage.setItem('path', JSON.stringify(path));
   console.log("path after  ::  "+path.length);
+
+  //reset page element <-> action form fields
+   $('#pageElementXpath').val(null);
+   $('actionName').val(null);
+   $('#actionValue').val(null);
+   $('#pageElementIndexInPath').val(null);
 });
 
-let pathElementRowEventBindings = $('#test_path_viewer').on("click", ".path-element", function(){
+/*saves a page by either updateing it if the index is set, otherwise
+ * creating a new page and appending it to the end of
+ * the path stored in localhost
+*/
+$('#savePageButton').on("click", function(){
+  var page = {
+    url: $('#pageUrl').val()
+  }
+
+  var path = JSON.parse(localStorage.path);
+  console.log("Path before :: "+path.length);
+  var index = $('#pageIndexInPath').val();
+  if(index && index.length > 0){
+    path[ index ] = page;
+    console.log("updated element at :: "+index);
+  }
+  else {
+    path.push(page);
+    $('#test_path_viewer').append( generatePagePathListItem(page, path.length-1 ));
+  }
+  localStorage.setItem('path', JSON.stringify(path));
+
+  //reset page form fields
+  $('#pageIndexInPath').val(null);
+  $('#pageUrl').val(null);
+  console.log("path after  ::  "+path.length);
+});
+
+/*
+ * Handles clicks on path elements and routes to the proper form and functionality based on
+ * which path element is clicked on.
+ */
+$('#test_path_viewer').on("click", ".path-element", function(){
     //send element to path element form
     var index = $(this).data("index");
     console.log("Clicked path element "+index);
@@ -69,7 +106,16 @@ let pathElementRowEventBindings = $('#test_path_viewer').on("click", ".path-elem
       $('actionName').val(element.action.name);
       $('#actionValue').val(element.action.value);
       $('#pageElementIndexInPath').val(index);
+      pageEditPanel.style.display = "none";
+      pageElementEditPanel.style.display = "block";
     }
+    else if(element.url){
+      //send to path element form
+      $('#pageUrl').val(element.url);
+      pageEditPanel.style.display = "block";
+      pageElementEditPanel.style.display = "none";
+    }
+
   });
 
 pageEditPanel.style.display = "none";
@@ -102,28 +148,52 @@ stopRecording.onclick = function(element){
 
 }
 
+/*
+ *  Exports a test to the Qanairy platform. Before allowing export, it requires
+ *  the user to input a name for the created test
+ *
+ */
+$('#exportTest').on('click', function(element){
+    var path = JSON.parse(localStorage.getItem('path'));
+    console.log("Initiating export");
+    alert("Please name your test");
+    //****************************************
+    //test path export code
+    //****************************************
+    var xhr = new XMLHttpRequest();
+    //xhr.open("POST", "https://api.qanairy.com/testIDE", true);
+    xhr.open("POST", "http://localhost:9080/testIDE", true);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.onload = function() {
+      console.log("xhr  : : "+xhr);
+      console.log("onloaded stuff  "+JSON.parse(xhr));
 
-exportTest.onclick = function(element){
-  console.log("exporting test");
+      console.log("onloaded stuff  "+JSON.parse(xhr.responseText));
+      if (xhr.readyState == 4) {
+        // JSON.parse does not evaluate the attacker's scripts.
+        var resp = JSON.parse(xhr.responseText);
+        document.getElementById("resp").innerText = xhr.responseText;
+      }
+    }
+    xhr.send(JSON.stringify({name: "test testing", path: path}));
+});
 
-  //fire event to stop listening for url change events and action events
-  chrome.runtime.sendMessage({msg: "export"}, function(response) {
-    console.log("PATH :: " +JSON.stringify(response.status));
-  });
-}
-
-showPageEditPanelButton.onclick = function(page){
+/*
+ * Shows page creation form when button is clicked
+ */
+$('#createPageButton').on('click', function(page){
   console.log("show page edit panel");
   pageEditPanel.style.display = "block";
   pageElementEditPanel.style.display = "none";
-}
+  $('#pageIndexInPath').val("");
+});
 
 let editPathElement = function(element_idx){
   console.log("editing path element  ::  " + element);
   PubSub.publish('edit-path-element', element);
 }
 
-let generatePagePathListItem = function(url, index){
+let generatePagePathListItem = function(page, index){
   var element=  `
   <div  class='row path-element' data-index="` + index + `">
     <div class="element col-xs-10">
@@ -131,7 +201,7 @@ let generatePagePathListItem = function(url, index){
         URL
       </div>
       <div class='col-xs-9 path-element-value'>`
-        + url +`
+        + page.url +`
       </div>
     </div>
     <div class='col-xs-2 icons' >

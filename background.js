@@ -74,29 +74,4 @@ chrome.runtime.onMessage.addListener(
           data: request.data.action
       });
     }
-    else if(request.msg == 'export'){
-      console.log("Background received export event request");
-      //****************************************
-      //test path export code
-      //****************************************
-      var xhr = new XMLHttpRequest();
-      //xhr.open("POST", "https://api.qanairy.com/testIDE", true);
-      xhr.open("POST", "http://localhost:9080/testIDE", true);
-      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      xhr.onload = function() {
-        console.log("xhr  : : "+xhr);
-        console.log("onloaded stuff  "+JSON.parse(xhr));
-
-        console.log("onloaded stuff  "+JSON.parse(xhr.responseText));
-        if (xhr.readyState == 4) {
-          // JSON.parse does not evaluate the attacker's scripts.
-          var resp = JSON.parse(xhr.responseText);
-          document.getElementById("resp").innerText = xhr.responseText;
-        }
-      }
-      xhr.send(JSON.stringify({name: "test testing", path: path}));
-//      console.log("path   :::   "+JSON.stringify(path));
-      sendResponse({status: path});
-
-    }
   });
