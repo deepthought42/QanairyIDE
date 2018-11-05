@@ -218,21 +218,17 @@ let generatePageElementPathListItem = function(path_element, index){
   var element=  `
     <div  class='row path-element' data-index="` + index + `">
       <div class="col-xs-10">
-        <div class="element col-xs-12">
-          <div class='col-xs-3 path-element-type'>
-            xpath
-          </div>
-          <div class='col-xs-9 path-element-value'>`
-            + path_element.element.xpath +`
-          </div>
+        <div class='col-xs-2 path-element-type'>
+          xpath
         </div>
-        <div class="action col-xs-12">
-          <div class='col-xs-3 path-element-type'>
-            `+ path_element.action.name + `
-          </div>
-          <div class='col-xs-9 path-element-value' >`
-            + path_element.action.value + `
-          </div>
+        <div class='col-xs-10 path-element-value'>`
+          + path_element.element.xpath +`
+        </div>
+        <div class='col-xs-2 path-element-type'>
+          `+ path_element.action.name + `
+        </div>
+        <div class='col-xs-10 path-element-value' >`
+          + path_element.action.value + `
         </div>
       </div>
       <div class='col-xs-2 icons' >
