@@ -119,25 +119,15 @@ let editPathElement = function(element_idx){
   PubSub.publish('edit-path-element', element);
 }
 
-let generatePageElementPathListItem = function(path_element, index){
+let generatePagePathListItem = function(url, index){
   var element=  `
   <div  class='row path-element' data-index="` + index + `">
-    <div class="col-xs-10">
-      <div class="element col-xs-12">
-        <div class='col-xs-3 path-element-type'>
-          xpath
-        </div>
-        <div class='col-xs-9 path-element-value'>`
-          + path_element.element.xpath +`
-        </div>
+    <div class="element col-xs-10">
+      <div class='col-xs-3 path-element-type'>
+        URL
       </div>
-      <div class="action col-xs-12">
-        <div class='col-xs-3 path-element-type'>
-          `+ path_element.action.name + `
-        </div>
-        <div class='col-xs-9 path-element-value' >`
-          + path_element.action.value + `
-        </div>
+      <div class='col-xs-9 path-element-value'>`
+        + url +`
       </div>
     </div>
     <div class='col-xs-2 icons' >
@@ -145,6 +135,37 @@ let generatePageElementPathListItem = function(path_element, index){
       <i class='fa fa-times icon delete-icon' onClick={this.removePathElement.bind(this, item)}></i>
     </div>
   </div>`;
+     //  To do something
+
+   return element;
+}
+
+let generatePageElementPathListItem = function(path_element, index){
+  var element=  `
+    <div  class='row path-element' data-index="` + index + `">
+      <div class="col-xs-10">
+        <div class="element col-xs-12">
+          <div class='col-xs-3 path-element-type'>
+            xpath
+          </div>
+          <div class='col-xs-9 path-element-value'>`
+            + path_element.element.xpath +`
+          </div>
+        </div>
+        <div class="action col-xs-12">
+          <div class='col-xs-3 path-element-type'>
+            `+ path_element.action.name + `
+          </div>
+          <div class='col-xs-9 path-element-value' >`
+            + path_element.action.value + `
+          </div>
+        </div>
+      </div>
+      <div class='col-xs-2 icons' >
+        <i class='fa fa-pencil icon' onClick={this.editPathElement.bind(this, item)}></i>
+        <i class='fa fa-times icon delete-icon' onClick={this.removePathElement.bind(this, item)}></i>
+      </div>
+    </div>`;
      //  To do something
 
      return element;
@@ -167,34 +188,33 @@ chrome.runtime.onMessage.addListener(
           if(path === undefined || path === null){
             path = new Array();
             localStorage.setItem("path", JSON.stringify(path));
-            console.log("pre path :: "+path);
-            console.log("pre path size :: "+path.length);
           }
 
           console.log("Path length "+path.length);
           if(path.length === 0){
             //push page into path
-            path.push({url : "testurl.com"});
+            path.push({url : request.data.url});
+            $('#test_path_viewer').append( generatePagePathListItem(request.data.url, path.length-1 ));
           }
 
           console.log("Path length after adding page :: "+path.length);
           //check if last element is equal to this element
-          if(path[path.length-1].element && path[path.length-1].element.xpath == request.data.element.xpath){
+          if(path[path.length-1].element && path[path.length-1].element.xpath == request.data.pathElement.element.xpath){
             console.log("elements match");
             console.log("path[path.length-1].element.xpath  :   "+path[path.length-1].element.xpath );
-            console.log("request.data.element.xpath  ::   "+request.data.element.xpath);
+            console.log("request.data.element.xpath  ::   "+request.data.pathElement.element.xpath);
 
             return;
           }
 
-          path.push(request.data);
+          path.push(request.data.pathElement);
           localStorage.setItem("path", JSON.stringify(path));
 
           console.log("path size :: "+path.length);
           console.log("PATH :: "+JSON.stringify(path));
-          console.log("REQUEST DATA FOR ADDING TO PATH :: " + request.data);
+          console.log("REQUEST DATA FOR ADDING TO PATH :: " + request.data.pathElement);
 
-          $('#test_path_viewer').append( generatePageElementPathListItem(request.data, path.length-1 ));
+          $('#test_path_viewer').append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
         }
       }
 );

@@ -51,7 +51,7 @@ document.addEventListener("click", function(event){
 
   //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
 
-  chrome.runtime.sendMessage({msg: "addToPath", data: { element: {type: "pageElement", target: event.relatedTarget, xpath: xpath}, action: {type: "action", name: "click", value: ""}}}, function(response) {
+  chrome.runtime.sendMessage({msg: "addToPath", data: {url: window.location.toString(), pathElement: { element: {type: "pageElement", target: event.relatedTarget, xpath: xpath}, action: {type: "action", name: "click", value: ""}}}}, function(response) {
     console.log("response ::  " +JSON.stringify(response));
   });
 
