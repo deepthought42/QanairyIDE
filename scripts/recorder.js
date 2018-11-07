@@ -171,7 +171,7 @@ $jquery('#exportTest').on('click', function(element){
       console.log("onloaded stuff  "+JSON.parse(xhr));
 
       console.log("onloaded stuff  "+JSON.parse(xhr.responseText));
-      if (xhr.readyState == 4) {
+      if (xhr.readyState === 4) {
         // JSON.parse does not evaluate the attacker's scripts.
         var resp = JSON.parse(xhr.responseText);
         //document.getElementById("resp").innerText = xhr.responseText;
@@ -300,7 +300,7 @@ chrome.runtime.onMessage.addListener(
 
           console.log("Path length after adding page :: "+path.length);
           //check if last element is equal to this element
-          if(path[path.length-1].element && path[path.length-1].element.xpath == request.data.pathElement.element.xpath){
+          if(path[path.length-1].element && path[path.length-1].element.xpath === request.data.pathElement.element.xpath){
             console.log("elements match");
             console.log("path[path.length-1].element.xpath  :   "+path[path.length-1].element.xpath );
             console.log("request.data.element.xpath  ::   "+request.data.pathElement.element.xpath);

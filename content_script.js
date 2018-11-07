@@ -34,6 +34,22 @@ chrome.runtime.onMessage.addListener(
 )
 
 
+//generates x unique xpath for a given element
+let generateXpath = function(elem){
+  var xpath = "//"+elem.tagName.toLowerCase();
+  var attributes = ["id", "name", "class"];
+  var attributes_check = [];
+
+  for(var idx=0; idx< attributes.length; idx++){
+    if(elem.getAttribute(attributes[idx]) !== undefined && elem.getAttribute(attributes[idx]) !== null){
+      attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
+      if(attributes[idx]=="id"){
+        break;
+      }
+    }
+}
+
+
 document.addEventListener("click", function(event){
   console.log(" action listener event   ::   "+event);
 
@@ -54,21 +70,12 @@ document.addEventListener("click", function(event){
   chrome.runtime.sendMessage({msg: "addToPath", data: {url: window.location.toString(), pathElement: { element: {type: "pageElement", target: event.relatedTarget, xpath: xpath}, action: {type: "action", name: "click", value: ""}}}}, function(response) {
     console.log("response ::  " +JSON.stringify(response));
   });
-
 });
 
 // Make the DIV element draggable:
-dragElement(document.getElementById("qanairy_ide"));
-
 function dragElement(elmnt) {
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  if (document.getElementById(elmnt.id + "_header")) {
-    // if present, the header is where you move the DIV from:
-    document.getElementById(elmnt.id + "_header").onmousedown = dragMouseDown;
-  } else {
-    // otherwise, move the DIV from anywhere inside the DIV:
-    elmnt.onmousedown = dragMouseDown;
-  }
+
 
   function dragMouseDown(e) {
     e = e || window.event;
@@ -99,21 +106,19 @@ function dragElement(elmnt) {
     document.onmouseup = null;
     document.onmousemove = null;
   }
+
+  if (document.getElementById(elmnt.id + "_header")) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(elmnt.id + "_header").onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV:
+    elmnt.onmousedown = dragMouseDown;
+  }
 }
 
-let generateXpath = function(elem){
-  var xpath = "//"+elem.tagName.toLowerCase();
-  var attributes = ["id", "name", "class"];
-  var attributes_check = [];
 
-  for(var idx=0; idx< attributes.length; idx++){
-    if(elem.getAttribute(attributes[idx]) != undefined && elem.getAttribute(attributes[idx]) != null){
-      attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
-      if(attributes[idx]=="id"){
-        break;
-      }
-    }
-  }
+// Make the DIV element draggable:
+dragElement(document.getElementById("qanairy_ide"));
 
   if(attributes_check.length > 0){
     xpath += "[";
@@ -179,7 +184,7 @@ let generateXpath = function(WebElement element, String xpath, Map<String, Integ
 
 	    WebElement parent = element;
 	    int count = 0;
-	    while(!parent.getTagName().equals("html") && !parent.getTagName().equals("body") && parent != null && count < 4){
+	    while(!parent.getTagName().equals("html") && !parent.getTagName().equals("body") && parent !== null && count < 4){
 	    	try{
 	    		parent = getParentElement(parent);
 	    		if(driver.findElements(By.xpath("//"+parent.getTagName() + xpath)).size() == 1){
