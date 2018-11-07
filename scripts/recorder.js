@@ -1,117 +1,121 @@
+let $jquery = jQuery.noConflict();
+
 let startRecording = document.getElementById('startRecording');
 let stopRecording = document.getElementById('stopRecording');
 let pageEditPanel = document.getElementById('pageForm');
 let pageElementEditPanel = document.getElementById('pageElementForm');
 
+$jquery(document).ready(function(){
+  var path = JSON.parse(localStorage.getItem('path'));
+  console.log("document loaded "+path.length);
+  redrawPath(path);
+});
 
-$('#createNewTest').on('click', function(){
+$jquery('#createNewTest').on('click', function(){
   localStorage.setItem('path', JSON.stringify([]));
-  $('#test_path_viewer').html("");
+  $jquery('#test_path_viewer').html("");
+});
+
+$jquery('.deleteIcon').on('click', function(e){
+  conosle.log("delete icons and stuff");
+  console.log("delete icon clicked");
+  var path = JSON.parse(localStorage.getItem(path));
+  deletePathElement(path);
 });
 
 //handle clicking on button for adding custom page element<->action pairs to path
-$('#createPageElementButton').on("click", function(){
-  $('#pageElementXpath').val("");
-  $('actionName').val("");
-  $('#actionValue').val("");
-  $('#pageElementIndexInPath').val("");
+$jquery('#createPageElementButton').on("click", function(){
+  $jquery('#pageElementXpath').val("");
+  $jquery('actionName').val("");
+  $jquery('#actionValue').val("");
+  $jquery('#pageElementIndexInPath').val("");
 
   pageEditPanel.style.display = "none";
   pageElementEditPanel.style.display = "block";
-  $('#pageElementIndexInPath').val("");
+  $jquery('#pageElementIndexInPath').val("");
 });
 
 /*saves a page element by either updateing it if the index is set, otherwise
  * creating a new page element action set and appending the set to the end of
  * the path stored in localhost
 */
-$('#savePageElementButton').on("click", function(){
+$jquery('#savePageElementButton').on("click", function(){
   var element_action = {
     element: {
-      xpath: $('#pageElementXpath').val()
+      xpath: $jquery('#pageElementXpath').val()
     },
     action :{
-      name : $('actionName').val(),
-      value: $('#actionValue').val()
+      name : $jquery('actionName').val(),
+      value: $jquery('#actionValue').val()
     }
   }
 
   var path = JSON.parse(localStorage.path);
-  console.log("Path before :: "+path.length);
-  var index = $('#pageElementIndexInPath').val();
+  var index = $jquery('#pageElementIndexInPath').val();
   if(index && index.length > 0){
     path[ index ] = element_action;
-    console.log("updated element at :: "+index);
+    redrawPathElement(element_action, index);
   }
   else {
     path.push(element_action);
-    $('#test_path_viewer').append( generatePageElementPathListItem(element_action, path.length-1 ));
+    $jquery('#test_path_viewer').append( generatePageElementPathListItem(element_action, path.length-1 ));
   }
   localStorage.setItem('path', JSON.stringify(path));
-  console.log("path after  ::  "+path.length);
 
   //reset page element <-> action form fields
-   $('#pageElementXpath').val(null);
-   $('actionName').val(null);
-   $('#actionValue').val(null);
-   $('#pageElementIndexInPath').val(null);
+   $jquery('#pageElementXpath').val(null);
+   $jquery('actionName').val(null);
+   $jquery('#actionValue').val(null);
+   $jquery('#pageElementIndexInPath').val(null);
 });
 
 /*saves a page by either updateing it if the index is set, otherwise
  * creating a new page and appending it to the end of
  * the path stored in localhost
 */
-$('#savePageButton').on("click", function(){
+$jquery('#savePageButton').on("click", function(){
   var page = {
-    url: $('#pageUrl').val()
+    url: $jquery('#pageUrl').val()
   }
 
   var path = JSON.parse(localStorage.path);
-  console.log("Path before :: "+path.length);
-  var index = $('#pageIndexInPath').val();
+  var index = $jquery('#pageIndexInPath').val();
   if(index && index.length > 0){
     path[ index ] = page;
-    console.log("updated element at :: "+index);
+    redrawPathElement(page, index);
   }
   else {
     path.push(page);
-    $('#test_path_viewer').append( generatePagePathListItem(page, path.length-1 ));
+    $jquery('#test_path_viewer').append( generatePagePathListItem(page, path.length-1 ));
   }
   localStorage.setItem('path', JSON.stringify(path));
 
   //reset page form fields
-  $('#pageIndexInPath').val(null);
-  $('#pageUrl').val(null);
-  console.log("path after  ::  "+path.length);
+  $jquery('#pageIndexInPath').val(null);
+  $jquery('#pageUrl').val(null);
 });
 
 /*
  * Handles clicks on path elements and routes to the proper form and functionality based on
  * which path element is clicked on.
  */
-$('#test_path_viewer').on("click", ".path-element", function(){
+$jquery('#test_path_viewer').on("click", ".path-element", function(){
     //send element to path element form
-    var index = $(this).data("index");
-    console.log("Clicked path element "+index);
-
+    var index = $jquery(this).data("index");
     var element = JSON.parse(localStorage.getItem("path"))[index];
-    console.log("Path element :: "+element);
-    console.log("PATH INDEX :: "+index);
-
-    console.log("Path element :: "+ JSON.stringify(element));
 
     if(element.element){
       //send to path element form
-      $('#pageElementXpath').val(element.element.xpath);
-      $('actionName').val(element.action.name);
-      $('#actionValue').val(element.action.value);
-      $('#pageElementIndexInPath').val(index);
+      $jquery('#pageElementXpath').val(element.element.xpath);
+      $jquery('actionName').val(element.action.name);
+      $jquery('#actionValue').val(element.action.value);
+      $jquery('#pageElementIndexInPath').val(index);
       pageEditPanel.style.display = "none";
       pageElementEditPanel.style.display = "block";
     }
     else if(element.url){
       //send to path element form
-      $('#pageUrl').val(element.url);
+      $jquery('#pageUrl').val(element.url);
       pageEditPanel.style.display = "block";
       pageElementEditPanel.style.display = "none";
     }
@@ -139,7 +143,6 @@ startRecording.onclick = function(element) {
 stopRecording.onclick = function(element){
   stopRecording.style.display = "none";
   startRecording.style.display = "block";
-  console.log("stopping event listener");
 
   //fire event to stop listening for url change events and action events
   chrome.runtime.sendMessage({msg: "stop"}, function(response) {
@@ -153,7 +156,7 @@ stopRecording.onclick = function(element){
  *  the user to input a name for the created test
  *
  */
-$('#exportTest').on('click', function(element){
+$jquery('#exportTest').on('click', function(element){
     var path = JSON.parse(localStorage.getItem('path'));
     console.log("Initiating export");
     alert("Please name your test");
@@ -172,7 +175,7 @@ $('#exportTest').on('click', function(element){
       if (xhr.readyState == 4) {
         // JSON.parse does not evaluate the attacker's scripts.
         var resp = JSON.parse(xhr.responseText);
-        document.getElementById("resp").innerText = xhr.responseText;
+        //document.getElementById("resp").innerText = xhr.responseText;
       }
     }
     xhr.send(JSON.stringify({name: "test testing", path: path}));
@@ -181,11 +184,11 @@ $('#exportTest').on('click', function(element){
 /*
  * Shows page creation form when button is clicked
  */
-$('#createPageButton').on('click', function(page){
+$jquery('#createPageButton').on('click', function(page){
   console.log("show page edit panel");
   pageEditPanel.style.display = "block";
   pageElementEditPanel.style.display = "none";
-  $('#pageIndexInPath').val("");
+  $jquery('#pageIndexInPath').val("");
 });
 
 let editPathElement = function(element_idx){
@@ -196,7 +199,7 @@ let editPathElement = function(element_idx){
 let generatePagePathListItem = function(page, index){
   var element=  `
   <div  class='row path-element' data-index="` + index + `">
-    <div class="element col-xs-10">
+    <div class="col-xs-10">
       <div class='col-xs-3 path-element-type'>
         URL
       </div>
@@ -205,8 +208,8 @@ let generatePagePathListItem = function(page, index){
       </div>
     </div>
     <div class='col-xs-2 icons' >
-      <i class='fa fa-pencil icon' onClick={this.editPathElement.bind(this, item)}></i>
-      <i class='fa fa-times icon delete-icon' onClick={this.removePathElement.bind(this, item)}></i>
+      <i class='fa fa-pencil icon'></i>
+      <i class='fa fa-times icon delete-icon' ></i>
     </div>
   </div>`;
      //  To do something
@@ -216,7 +219,7 @@ let generatePagePathListItem = function(page, index){
 
 let generatePageElementPathListItem = function(path_element, index){
   var element=  `
-    <div  class='row path-element' data-index="` + index + `">
+    <div class='row path-element' data-index="` + index + `">
       <div class="col-xs-10">
         <div class='col-xs-2 path-element-type'>
           xpath
@@ -232,8 +235,8 @@ let generatePageElementPathListItem = function(path_element, index){
         </div>
       </div>
       <div class='col-xs-2 icons' >
-        <i class='fa fa-pencil icon' onClick={this.editPathElement.bind(this, item)}></i>
-        <i class='fa fa-times icon delete-icon' onClick={this.removePathElement.bind(this, item)}></i>
+        <i class='fa fa-pencil icon edit-icon'></i>
+        <i class='fa fa-times icon delete-icon'></i>
       </div>
     </div>`;
      //  To do something
@@ -241,10 +244,39 @@ let generatePageElementPathListItem = function(path_element, index){
      return element;
 }
 
+/*
+ * redraw a specific element
+ */
 let redrawPathElement = function(element, index){
   var list_item_html = generatePageElementPathListItem(element, indexz);
-  $('#test_path_viewer').children().get(index).html(element);
+  $jquery('#test_path_viewer').children().get(index).html(list_item_html);
+}
 
+/*
+ * Redraws the entire list of path elements
+ */
+let redrawPath = function(path){
+  var list_html = "";
+  for(var idx=0; idx<path.length; idx++){
+    var element = path[idx];
+    if(element.url){
+      list_html += generatePagePathListItem(element, idx);
+    }
+    else if(element.element){
+      list_html += generatePageElementPathListItem(element, idx);
+    }
+  }
+  $jquery('#test_path_viewer').html(list_html);
+}
+
+/*
+ * Deletes an element at the given index form the given path array,
+ *    then redraws the path
+ */
+let deletePathElement = function(path, index){
+  path.splice(index, 1);
+  localStorage.setItem('path', JSON.stringify(path));
+  redrawPath(path);
 }
 
 //receive path element
@@ -264,7 +296,7 @@ chrome.runtime.onMessage.addListener(
           if(path.length === 0){
             //push page into path
             path.push({url : request.data.url});
-            $('#test_path_viewer').append( generatePagePathListItem(request.data.url, path.length-1 ));
+            $jquery('#test_path_viewer').append( generatePagePathListItem(request.data.url, path.length-1 ));
           }
 
           console.log("Path length after adding page :: "+path.length);
@@ -284,7 +316,7 @@ chrome.runtime.onMessage.addListener(
           console.log("PATH :: "+JSON.stringify(path));
           console.log("REQUEST DATA FOR ADDING TO PATH :: " + request.data.pathElement);
 
-          $('#test_path_viewer').append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
+          $jquery('#test_path_viewer').append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
         }
       }
 );
