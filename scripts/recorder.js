@@ -129,23 +129,22 @@ stopRecording.style.display = "none";
 
 //start recording user interaction
 startRecording.onclick = function(element) {
-  chrome.tabs.query(
-      { currentWindow: true, active: true },
-      function (tabArray) {
-        chrome.tabs.sendMessage(tabArray[0].id, {status: "recording"}, function(response){
-          console.log("sent message to tab id :: "+tabArray[0].id);
-        })
-      }
-  );
+  stopRecording.style.display = "block";
+  startRecording.style.display = "none";
+
+  chrome.runtime.sendMessage({msg: "start_recording", data: {}, function(response) {
+    console.log("response ::  " +JSON.stringify(response));
+  });
 };
 
 //Stop recording user interactions
 stopRecording.onclick = function(element){
+
   stopRecording.style.display = "none";
   startRecording.style.display = "block";
 
   //fire event to stop listening for url change events and action events
-  chrome.runtime.sendMessage({msg: "stop"}, function(response) {
+  chrome.runtime.sendMessage({msg: "stop_recording"}, function(response) {
     console.log(response.status);
   });
 
