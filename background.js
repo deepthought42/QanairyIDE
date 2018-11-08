@@ -25,10 +25,9 @@ chrome.runtime.onMessage.addListener(
 
     console.log("event passed :: "+request);
     console.log("event passed :: "+request.msg);
-    if (request.msg == "start"){
-      path = [];
+
+    if (request.msg == "start_recording"){
       status = "recording";
-      console.log("Start event fired");
       chrome.webNavigation.onCompleted.addListener(
         function(details){
           path.push({type: "page", url: details.url});
@@ -37,13 +36,9 @@ chrome.runtime.onMessage.addListener(
       );
       sendResponse({status: "starting"});
     }
-    else if (request.msg == "stop") {
+    else if (request.msg == "stop_recording") {
       status = "stopped";
       console.log("status");
-      chrome.webNavigation.onCompleted.removeListener(function(object){
-        console.log("removing listener");
-      });
-      path = [];
       sendResponse({status: "stopping"});
     }
     else if(request.msg == "addToPath" && status != "stopped"){

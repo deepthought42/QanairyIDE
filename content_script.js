@@ -25,11 +25,51 @@ parent.appendChild(body);
 document.body.appendChild(parent);
 
 console.log("appended div to body")
+
+let recorder_event_listener = function(event){
+  console.log(" action listener event   ::   "+event);
+
+  var xpath = "";
+  //get all elements on page
+  document.querySelectorAll('body *').forEach(function(node){
+    var rect = node.getBoundingClientRect();
+    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
+      //console.log(rect.top, rect.right, rect.bottom, rect.left);
+      xpath = generateXpath(node);
+    }
+  })
+  //build list of elements where the x,y coords and height,width encompass the event x,y coords
+
+
+  //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
+
+  chrome.runtime.sendMessage({msg: "addToPath", data: {url: window.location.toString(), pathElement: { element: {type: "pageElement", target: event.relatedTarget, xpath: xpath}, action: {type: "action", name: "click", value: ""}}}}, function(response) {
+    console.log("response ::  " +JSON.stringify(response));
+  });
+}
+
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     console.log("request :: "+request);
     console.log("sender :: "+sender);
     console.log("sendResponse  ::  "+sendResponse);
+    if (request.msg == "start_recording"){
+      path = [];
+      status = "recording";
+      console.log("Start event fired");
+
+      document.addEventListener("click", recorder_event_listener);
+
+      sendResponse({status: "starting"});
+    }
+    else if (request.msg == "stop_recording") {
+      status = "stopped";
+      console.log("status");
+      document.removeEventListener("click", recorder_event_listener);
+      sendResponse({status: "stopping"});
+    }
+
   }
 )
 
@@ -50,27 +90,7 @@ let generateXpath = function(elem){
 }
 
 
-document.addEventListener("click", function(event){
-  console.log(" action listener event   ::   "+event);
 
-  var xpath = "";
-  //get all elements on page
-  document.querySelectorAll('body *').forEach(function(node){
-    var rect = node.getBoundingClientRect();
-    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
-      //console.log(rect.top, rect.right, rect.bottom, rect.left);
-      xpath = generateXpath(node);
-    }
-  })
-  //build list of elements where the x,y coords and height,width encompass the event x,y coords
-
-
-  //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
-
-  chrome.runtime.sendMessage({msg: "addToPath", data: {url: window.location.toString(), pathElement: { element: {type: "pageElement", target: event.relatedTarget, xpath: xpath}, action: {type: "action", name: "click", value: ""}}}}, function(response) {
-    console.log("response ::  " +JSON.stringify(response));
-  });
-});
 
 // Make the DIV element draggable:
 function dragElement(elmnt) {
@@ -94,7 +114,7 @@ function dragElement(elmnt) {
     elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
     elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
   }
-  
+
   function dragMouseDown(e) {
     e = e || window.event;
     e.preventDefault();

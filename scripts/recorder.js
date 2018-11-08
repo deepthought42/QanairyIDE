@@ -7,8 +7,9 @@ let pageElementEditPanel = document.getElementById('pageElementForm');
 
 $jquery(document).ready(function(){
   var path = JSON.parse(localStorage.getItem('path'));
-  console.log("document loaded "+path.length);
-  redrawPath(path);
+  if(path){
+    redrawPath(path);
+  }
 });
 
 $jquery('#createNewTest').on('click', function(){
@@ -132,22 +133,25 @@ startRecording.onclick = function(element) {
   stopRecording.style.display = "block";
   startRecording.style.display = "none";
 
-  chrome.runtime.sendMessage({msg: "start_recording", data: {}, function(response) {
-    console.log("response ::  " +JSON.stringify(response));
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording", data: {}}, function(response) {
+      console.log("start recording response ::  " +JSON.stringify(response));
+    });
   });
 };
 
 //Stop recording user interactions
 stopRecording.onclick = function(element){
-
+  console.log("Stopping recording");
   stopRecording.style.display = "none";
   startRecording.style.display = "block";
 
   //fire event to stop listening for url change events and action events
-  chrome.runtime.sendMessage({msg: "stop_recording"}, function(response) {
-    console.log(response.status);
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording"}, function(response) {
+      console.log("Stop recording received response");
+    });
   });
-
 }
 
 /*
