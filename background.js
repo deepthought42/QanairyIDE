@@ -38,10 +38,31 @@ chrome.runtime.onMessage.addListener(
       );
       sendResponse({status: "starting"});
     }
-    else if (request.msg == "stop_recording") {
-      status = "stopped";
-      console.log("status");
-      sendResponse({status: "stopping"});
+    else if (request.msg == "run_test") {
+      var path = request.data;
+      console.log("Requst data :: "+request.data);
+      console.log("run test");
+      for(var idx=0; idx< path.length; idx++){
+          if(path[idx].url){
+            console.log("Page element experienced. Loading page with url : "+path[idx].url);
+            var url = path[idx].url
+            //redirect to url
+            chrome.tabs.query({currentWindow: true, active: true}, function(tab){
+              chrome.tabs.update(tab.id, {url: url});
+            });
+          }
+          else if(path[idx].element){
+            console.log("Page element experienced. Performing + " + path[idx].action.name + "   on element with xpath : "+path[idx].element.xpath);
+            //document.evaluate(path[idx].element.xpath, Document, );
+
+            //verify that element exists on page
+            //perform action on element
+          }
+          else {
+            console.log("Unknown path element experienced at index "+idx);
+          }
+      }
+      sendResponse({status: "ran test"});
     }
     else if(request.msg == "addToPath" && status != "stopped"){
       console.log("adding to path  :::   "+request.data);
