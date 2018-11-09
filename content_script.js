@@ -48,6 +48,30 @@ let recorder_event_listener = function(event){
   });
 }
 
+/*
+ * Runs a test from beginning to end
+ */
+let runTest = function(path){
+  for(var idx=0; idx<path.length; idx++){
+      if(path[idx].url){
+        console.log("Page element experienced. Loading page with url : "+path[idx].url);
+        //redirect to url
+        chrome.tabs.getCurrent(function(tabs){
+          chrome.tabs.update(tab.id, {url: path[idx].url});
+        })
+      }
+      else if(path[idx].element){
+        console.log("Page element experienced. Performing + " + path[idx].action.name + "   on element with xpath : "+path[idx].element.xpath);
+        //document.evaluate(path[idx].element.xpath, Document, );
+
+        //verify that element exists on page
+        //perform action on element
+      }
+      else {
+        console.log("Unknown path element experienced at index "+idx);
+      }
+  }
+}
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -68,6 +92,10 @@ chrome.runtime.onMessage.addListener(
       console.log("status");
       document.removeEventListener("click", recorder_event_listener);
       sendResponse({status: "stopping"});
+    }
+    else if(request.msg = "run_test"){
+      status = "running_test";
+      runTest(request.data);
     }
 
   }

@@ -30,7 +30,9 @@ chrome.runtime.onMessage.addListener(
       status = "recording";
       chrome.webNavigation.onCompleted.addListener(
         function(details){
+          var path = JSON.parse(localStorage.getItem("path"));
           path.push({type: "page", url: details.url});
+          localStorage.setItem("path", path);
           console.log("Browser redirected to URL :: "+details.url)
         }
       );
