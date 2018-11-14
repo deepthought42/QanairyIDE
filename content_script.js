@@ -51,9 +51,26 @@ let recorder_event_listener = function(event){
 /*
  * Runs a test from beginning to end
  */
-let runTest = function(path){
+let runTest = function(){
+  console.log("expecting page to be loaded now that I've waited for 5 seconds");
+  //process elements
+  for(var idx=1; idx< path.length; idx++){
+      if(path[idx].url){
+        //if element is a page then send message to background to navigate page
+        console.log("Another page was experienced");
+      }
+      else if(path[idx].element){
+        console.log("Page element experienced. Performing + " + path[idx].action.name + "   on element with xpath : "+path[idx].element.xpath);
+        //document.evaluate(path[idx].element.xpath, Document, );
 
-}
+        //verify that element exists on page
+        //perform action on element
+      }
+      else {
+        console.log("Unknown path element experienced at index "+idx);
+      }
+  }
+};
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -76,13 +93,23 @@ chrome.runtime.onMessage.addListener(
       sendResponse({status: "stopping"});
     }
     else if(request.msg = "run_test"){
-      chrome.runtime.sendMessage({msg: "run_test", data: request.data}, function(response) {
-        console.log("response ::  " +JSON.stringify(response));
-      });
-    }
+      var path = request.data;
+      console.log("Requst data :: "+request.data);
+      console.log("run test");
 
-  }
-)
+      //get first element from path. First element is expected to be a page, if it isn't then throw an error
+      if(path[0].url){
+        chrome.runtime.sendMessage({msg: "nav_to_page", data: path[0]}, function(response) {
+          console.log("response ::  " +JSON.stringify(response));
+          window.setTimeout( runTest, 1000);
+          //runTest();
+        });
+      }
+      else{
+        console.log("Path's are expected to start with a page");
+      }
+   }
+});
 
 
 //generates x unique xpath for a given element
