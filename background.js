@@ -38,16 +38,33 @@ chrome.runtime.onMessage.addListener(
       );
       sendResponse({status: "starting"});
     }
-    else if (request.msg == "nav_to_page") {
+    else if (request.msg == "start_test_run") {
+      var path = request.data;
+      console.log("Requst data :: "+request.data);
+      console.log("run test");
 
-      console.log("Page element experienced. Loading page with url : "+request.data.url);
-      var url = request.data.url
-      //redirect to url
-      chrome.tabs.query({currentWindow: true, active: true}, function(tab){
-        chrome.tabs.update(tab.id, {url: url});
-      });
+      //get first element from path. First element is expected to be a page, if it isn't then throw an error
+      if(path[0].url){
+        console.log("Page element experienced. Loading page with url : "+request.data.url);
+        var url = path[0].url
+        //redirect to url
+        chrome.tabs.query({currentWindow: true, active: true}, function(tab){
+          chrome.tabs.update(tab.id, {url: url});
+        });
+      }
+      else{
+        console.log("Path's are expected to start with a page");
+      }
 
-      sendResponse({status: "ran test"});
+      window.setTimeout( function(){
+        console.log("Waited for 10 seconds");
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+          chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: path}, function(response) {
+            console.log("Test run request received response  ::  "+JSON.stringify(response));
+          });
+        });
+      }, 5000);
+
     }
     else if(request.msg == "addToPath" && status != "stopped"){
       console.log("adding to path  :::   "+request.data);

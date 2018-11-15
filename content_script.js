@@ -48,10 +48,17 @@ let recorder_event_listener = function(event){
   });
 }
 
+
+String.prototype.indexOfRegex = function(regex){
+  var match = this.match(regex);
+  return match ? this.indexOf(match[0]) : -1;
+}
+
+
 /*
  * Runs a test from beginning to end
  */
-let runTest = function(){
+let runTest = function(path){
   console.log("expecting page to be loaded now that I've waited for 5 seconds");
   //process elements
   for(var idx=1; idx< path.length; idx++){
@@ -63,8 +70,20 @@ let runTest = function(){
         console.log("Page element experienced. Performing + " + path[idx].action.name + "   on element with xpath : "+path[idx].element.xpath);
         //document.evaluate(path[idx].element.xpath, Document, );
 
+        console.log("xpath :: "+path[idx].element.xpath);
+        var xpathResult = document.evaluate(path[idx].element.xpath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
         //verify that element exists on page
-        //perform action on element
+        if(xpathResult){
+          console.log("xpath result exists  :   "+xpathResult);
+          //perform action on element
+          xpathResult.click();
+          console.log("performed click");
+          xpathResult.value = "testing yo!";
+          console.log("set value on input   :  "+xpathResult.value);
+        }
+        else{
+
+        }
       }
       else {
         console.log("Unknown path element experienced at index "+idx);
@@ -93,21 +112,7 @@ chrome.runtime.onMessage.addListener(
       sendResponse({status: "stopping"});
     }
     else if(request.msg = "run_test"){
-      var path = request.data;
-      console.log("Requst data :: "+request.data);
-      console.log("run test");
-
-      //get first element from path. First element is expected to be a page, if it isn't then throw an error
-      if(path[0].url){
-        chrome.runtime.sendMessage({msg: "nav_to_page", data: path[0]}, function(response) {
-          console.log("response ::  " +JSON.stringify(response));
-          window.setTimeout( runTest, 1000);
-          //runTest();
-        });
-      }
-      else{
-        console.log("Path's are expected to start with a page");
-      }
+     runTest(request.data);
    }
 });
 

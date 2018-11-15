@@ -158,10 +158,14 @@ $jquery("#runTestButton").on("click", function(element){
   var path = JSON.parse(localStorage.getItem("path"));
   //send path to content script to be ran
 
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+/*  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: path}, function(response) {
       console.log("Test run request received response  ::  "+JSON.stringify(response));
     });
+  });
+  */
+  chrome.runtime.sendMessage({msg: "start_test_run", data: path}, function(response) {
+    console.log("Test run request received response  ::  "+JSON.stringify(response));
   });
 });
 
