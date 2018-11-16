@@ -1,114 +1,19 @@
 <form id="login_form">
   <fieldset>
-    <legend>Sign up</legend>
+    <legend>Login</legend>
     <p>
       <input type="email" id="login_email" placeholder="Email" required/>
     </p>
     <p>
       <input type="password" id="login_password" placeholder="Password" required/>
     </p>
-    <p>
-      Pro
-      <input type="hidden" id="subscription" required/>
-    </p>
   </fieldset>
-  <button id="login">Sign up</button>
+  <button id="login">Login</button>
 </form>
 
 
-<script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+<script src="scripts/jquery.js"></script>
+
 <script src="https://cdn.auth0.com/js/auth0/9.8.1/auth0.min.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
 
-<script>
-
-  var stripe = Stripe('pk_test_9QwakrlLpcLEYO5Ui0JoYHvC');
-
-  var elements = stripe.elements();
-
-  var style = {
-    base: {
-      color: '#32325d',
-      lineHeight: '18px',
-      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-      fontSmoothing: 'antialiased',
-      fontSize: '16px',
-      '::placeholder': {
-        color: '#aab7c4'
-      }
-    },
-    invalid: {
-      color: 'fa755a',
-      iconColor: '#fa755a'
-    }
-  };
-
-  var card = elements.create('card', {style: style});
-  card.mount('#card-element');
-
-  //handle form submission
-  function stripeTokenHandler(stripe_token, access_token, plan){
-
-    //submit token with ajax
-    $.ajax({
-      url: "https://staging-api.qanairy.com/subscribe",
-      type: 'POST',
-      datatype : "application/json",
-      contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-      headers: {
-        "Authorization": "Bearer " +access_token
-      },
-      data: {plan : plan, source_token: stripe_token},
-      success: function(data){
-        console.log("Successfully processed subscription");
-        window.location.href = "https://app.qanairy.com?access_token"+access_token;
-      },
-      onFailure: function(err) {
-        console.log("Error occurred while processing subscription request "+err);
-      }
-    });
-  };
-
-
-
-  var auth0 = new auth0.WebAuth({
-    domain: "staging-qanairy.auth0.com",
-    clientID:  "mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6",//"wT7Phjs9BpwEfnZeFLvK1hwHWP2kU7LV",
-    responseType: "token id_token",
-    audience: "https://staging-api.qanairy.com",
-    scope: "openid profile email read:domains delete:domains update:domains create:domains create:accounts read:accounts delete:accounts update:accounts read:tests update:tests read:groups update:groups create:groups delete:groups run:tests start:discovery read:actions"
-  });
-
-
-  $("#login").on('click',  function(){
-    console.log("login clicked");
-
-    var settings = {
-      "async": true,
-      "crossDomain": true,
-      "url": "https://staging-qanairy.auth0.com/dbconnections/login",
-      "method": "POST",
-      "headers": {
-        "content-type": "application/x-www-form-urlencoded"
-      },
-      "data": {
-        "client_id": "mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6",
-        "email": $('#login_email').val(),
-        "password": $('#login_password').val(),
-        "connection": "Username-Password-Authentication"
-      }
-    };
-
-    console.log("login clicked");
-
-    auth0.loginAndAuthorize(settings.data, function(err, res){
-      console.log("response :: "+err + "   :    " + Object.keys(res));
-      if(!err){
-
-      }
-    });
-  });
-</script>
+<script src="scripts/popup.js"></script>
