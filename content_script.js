@@ -7,10 +7,11 @@ iframe.id="qanairy_ide_frame";
 iframe.style.cssText = 'position:absolute;width:250px;height:400px;z-index:100';
 iframe.src = chrome.extension.getURL('/recorder.html');
 
-
+var header_inner_html = "<button id='close_qanairy_ide' style='position:relative;left:230px;height:100%'> x </button>"
 var header = document.createElement("div");
-header.style.cssText = 'width:250px;height:20px;z-index:100;background-color:white';
+header.style.cssText = 'width:250px;height:20px;z-index:100;background-color:purple';
 header.id="qanairy_ide_header";
+header.innerHTML = header_inner_html;
 
 var body = document.createElement("div");
 body.style.cssText = 'width:100%;height:20px';
@@ -24,7 +25,13 @@ parent.appendChild(header);
 parent.appendChild(body);
 document.body.appendChild(parent);
 
-console.log("appended div to body")
+
+let close_ide_button = document.getElementById("close_qanairy_ide");
+close_ide_button.onclick = function(){
+  console.log("clicked on close button");
+  //hide parent element
+  parent.style.display = "none";
+}
 
 let recorder_event_listener = function(event){
   console.log(" action listener event   ::   "+event);
