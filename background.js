@@ -1,19 +1,14 @@
 let path = [];
 let status = "stopped";
 chrome.runtime.onInstalled.addListener(function() {
-
-});
-
-chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.windows.create({
-    url: chrome.runtime.getURL("recorder.html"),
-    width: 300,
-    height: 550,
-    type: "popup"
-  }, function(win) {
-    // win represents the Window object from windows API
-    // Do something after opening
-  });
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, function(){
+    chrome.declarativeContent.onPageChanged.addRules([{
+      conditions: [ new chrome.declarativeContent.PageStateMatcher({
+        pageUrl: {urlMatches:"*.com"}
+      })],
+      actions: [ new chrome.declarativeContent.ShowPageAction()]
+    }])
+  })
 });
 
 chrome.runtime.onMessage.addListener(

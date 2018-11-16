@@ -4,6 +4,8 @@ let startRecording = document.getElementById("startRecording");
 let stopRecording = document.getElementById("stopRecording");
 let pageEditPanel = document.getElementById("pageForm");
 let pageElementEditPanel = document.getElementById("pageElementForm");
+let selector_status = "disabled";
+let recording_status = "stopped";
 
 $jquery(document).ready(function(){
   var path = JSON.parse(localStorage.getItem("path"));
@@ -135,21 +137,20 @@ startRecording.onclick = function(element) {
 
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording", data: {}}, function(response) {
-      console.log("start recording response ::  " +JSON.stringify(response));
+      recording_status = "started";
     });
   });
 };
 
 //Stop recording user interactions
 stopRecording.onclick = function(element){
-  console.log("Stopping recording");
   stopRecording.style.display = "none";
   startRecording.style.display = "block";
 
   //fire event to stop listening for url change events and action events
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording"}, function(response) {
-      console.log("Stop recording received response");
+      recording_status = "stopped";
     });
   });
 };
@@ -295,44 +296,74 @@ let deletePathElement = function(path, index){
   redrawPath(path);
 }
 
+$jquery("#element_selector").on('click', function(){
+  console.log("clicked element selector");
+  //if recording is currently running pause it
+  selector_status = "active";
+
+  if(recording_status === "stopped"){
+    //fire event to stop listening for url change events and action events
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+      chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
+      });
+    });
+  }
+  //activate listener for click events similar to recording, but return element and xpath here
+
+  //if recording was running at start of session then resume recording
+})
+
 //receive path element
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.msg === "addToPath") {
-          var path = JSON.parse(localStorage.getItem("path"));
-          console.log("path is null ? "+(path===null));
+          //if selector button set selector status to active then retrieve xpath and set it to element xpath field value
+          if(selector_status === "active"){
+            selector_status = "disabled";
+            console.log("Request value :: "+request);
+              console.log("Request value 2 :: "+JSON.stringify(request));
+            //fire event to stop listening for url change events and action events
+            if(recording_status === "stopped"){
+              chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+                chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording"}, function(response) {
+                });
+              });
+            }
+            $jquery("#pageElementXpath").val(request.data.pathElement.element.xpath);
+            //set item xpath in element xpath field
+          }
+          else {
+            var path = JSON.parse(localStorage.getItem("path"));
+            console.log("path is null ? "+(path===null));
 
-          console.log("path is undefined ? "+(path===undefined));
-          if(path === undefined || path === null){
-            path = new Array();
+            console.log("path is undefined ? "+(path===undefined));
+            if(path === undefined || path === null){
+              path = new Array();
+              localStorage.setItem("path", JSON.stringify(path));
+            }
+
+            console.log("Path length "+path.length);
+            if(path.length === 0){
+              //push page into path
+              path.push({url : request.data.url});
+              $jquery("#test_path_viewer").append( generatePagePathListItem(request.data.url, path.length-1 ));
+            }
+
+            console.log("Path length after adding page :: "+path.length);
+            //check if last element is equal to this element
+            if(path[path.length-1].element && path[path.length-1].element.xpath === request.data.pathElement.element.xpath){
+              return;
+            }
+
+            path.push(request.data.pathElement);
             localStorage.setItem("path", JSON.stringify(path));
+
+            console.log("path size :: "+path.length);
+            console.log("PATH :: "+JSON.stringify(path));
+            console.log("REQUEST DATA FOR ADDING TO PATH :: " + request.data.pathElement);
+
+            $jquery("#test_path_viewer").append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
           }
-
-          console.log("Path length "+path.length);
-          if(path.length === 0){
-            //push page into path
-            path.push({url : request.data.url});
-            $jquery("#test_path_viewer").append( generatePagePathListItem(request.data.url, path.length-1 ));
-          }
-
-          console.log("Path length after adding page :: "+path.length);
-          //check if last element is equal to this element
-          if(path[path.length-1].element && path[path.length-1].element.xpath === request.data.pathElement.element.xpath){
-            console.log("elements match");
-            console.log("path[path.length-1].element.xpath  :   "+path[path.length-1].element.xpath );
-            console.log("request.data.element.xpath  ::   "+request.data.pathElement.element.xpath);
-
-            return;
-          }
-
-          path.push(request.data.pathElement);
-          localStorage.setItem("path", JSON.stringify(path));
-
-          console.log("path size :: "+path.length);
-          console.log("PATH :: "+JSON.stringify(path));
-          console.log("REQUEST DATA FOR ADDING TO PATH :: " + request.data.pathElement);
-
-          $jquery("#test_path_viewer").append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
         }
       }
 );
