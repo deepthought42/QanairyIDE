@@ -33,9 +33,7 @@ close_ide_button.onclick = function(){
   parent.style.display = "none";
 }
 
-let recorder_event_listener = function(event){
-  console.log(" action listener event   ::   "+event);
-
+let recorder_click_listener = function(event){
   var xpath = "";
   //get all elements on page
   document.querySelectorAll('body *').forEach(function(node){
@@ -72,6 +70,41 @@ let recorder_event_listener = function(event){
    );
 }
 
+let recorder_keyup_listener = function(event){
+  var key = String.fromCharCode(event.keyCode);
+  console.log("KEY PRESSED :: "+key);
+
+  var xpath = "";
+  //get all elements on page
+  document.querySelectorAll('body *').forEach(function(node){
+    var rect = node.getBoundingClientRect();
+    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
+      //console.log(rect.top, rect.right, rect.bottom, rect.left);
+      xpath = generateXpath(node);
+    }
+  });
+
+  chrome.runtime.sendMessage({msg: "addToPath",
+                              data: {url: window.location.toString(),
+                                     pathElement: {
+                                       element: {
+                                         type: "pageElement",
+                                         target: event.relatedTarget,
+                                         xpath: xpath
+                                       },
+                                       action: {
+                                         type: "action",
+                                         name: "sendKeys",
+                                         value: key
+                                       }
+                                     }
+                                   }
+                                 },
+     function(response) {
+       console.log("response ::  " +JSON.stringify(response));
+     }
+   );
+}
 
 String.prototype.indexOfRegex = function(regex){
   var match = this.match(regex);
@@ -123,16 +156,18 @@ chrome.runtime.onMessage.addListener(
     if (request.msg == "start_recording"){
       path = [];
       status = "recording";
-      console.log("Start event fired");
 
-      document.addEventListener("click", recorder_event_listener);
+      document.addEventListener("click", recorder_click_listener);
+      document.addEventListener('keyup', recorder_keyup_listener);
 
       sendResponse({status: "starting"});
     }
     else if (request.msg == "stop_recording") {
       status = "stopped";
-      console.log("status");
-      document.removeEventListener("click", recorder_event_listener);
+
+      document.removeEventListener("click", recorder_click_listener);
+      document.removeEventListener("keyup", recorder_keyup_listener);
+
       sendResponse({status: "stopping"});
     }
     else if(request.msg = "run_test"){
@@ -184,7 +219,11 @@ let generateXpath = function(elem){
   }
 }
 
-
+/**
+ *
+ * Make plugin frame draggable by using the header to drag frame around
+ *
+ */
 
 
 // Make the DIV element draggable:

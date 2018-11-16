@@ -351,7 +351,14 @@ chrome.runtime.onMessage.addListener(
 
             console.log("Path length after adding page :: "+path.length);
             //check if last element is equal to this element
-            if(path[path.length-1].element && path[path.length-1].element.xpath === request.data.pathElement.element.xpath){
+            if(path[path.length-1].element && path[path.length-1].element.xpath === request.data.pathElement.element.xpath && path[path.length-1].action.name === request.data.pathElement.action.name){
+              console.log("evaluating if send keys action ");
+              //check if last element actin pair was a typing action
+              if(path[path.length-1].action.name === "sendKeys" && request.data.pathElement.action.name === "sendKeys"){
+                console.log("sendKeys experienced, Adding action value to existing action");
+                path[path.length-1].action.value += request.data.pathElement.action.value;
+                console.log("new action value :: "+path[path.length-1].action.value);
+              }
               return;
             }
 
