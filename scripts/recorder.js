@@ -346,7 +346,7 @@ chrome.runtime.onMessage.addListener(
             if(path.length === 0){
               //push page into path
               path.push({url : request.data.url});
-              $jquery("#test_path_viewer").append( generatePagePathListItem(request.data.url, path.length-1 ));
+              $jquery("#test_path_viewer").append( generatePagePathListItem(request.data, path.length-1 ));
             }
 
             console.log("Path length after adding page :: "+path.length);
@@ -367,7 +367,7 @@ chrome.runtime.onMessage.addListener(
 
             console.log("path size :: "+path.length);
             console.log("PATH :: "+JSON.stringify(path));
-            console.log("REQUEST DATA FOR ADDING TO PATH :: " + request.data.pathElement);
+            console.log("REQUEST DATA FOR ADDING TO PATH :: " + JSON.stringify(request.data));
 
             $jquery("#test_path_viewer").append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
           }

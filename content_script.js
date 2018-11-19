@@ -41,6 +41,7 @@ let recorder_click_listener = function(event){
     if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
       //console.log(rect.top, rect.right, rect.bottom, rect.left);
       xpath = generateXpath(node);
+      console.log("GENERATED xpath :: "+xpath);
     }
   })
   //build list of elements where the x,y coords and height,width encompass the event x,y coords
@@ -178,17 +179,22 @@ chrome.runtime.onMessage.addListener(
 
 //generates x unique xpath for a given element
 let generateXpath = function(elem){
+  console.log("ELEM ;; "+elem);
   var xpath = "//"+elem.tagName.toLowerCase();
   var attributes = ["id", "name", "class"];
   var attributes_check = [];
 
+  console.log("xpath :: "+xpath);
+
   for(var idx=0; idx< attributes.length; idx++){
+    console.log("xpath with attributes :: "+xpath);
+
     if(elem.getAttribute(attributes[idx]) !== undefined && elem.getAttribute(attributes[idx]) !== null){
+      console.log("attributes :: "+elem.getAttribute(attributes[idx]));
+
       attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
-      if(attributes[idx]=="id"){
-        break;
-      }
     }
+
     if(attributes_check.length > 0){
       xpath += "[";
       for(var idx=0; idx < attributes_check.length; idx++){
@@ -199,8 +205,9 @@ let generateXpath = function(elem){
       }
       xpath += "]";
     }
+    console.log("xpath 1 :: "+xpath);
 
-    var elements = document.evaluate(xpath, document, null, XPathResult.ANY_TYPE, null);
+    var elements = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
 
     if(elements.length > 1){
       var count = 1;
@@ -212,6 +219,7 @@ let generateXpath = function(elem){
         count++;
       }
     }
+    console.log("xpath 2 :: "+xpath);
 
   //  console.log("xpath  :::   "+xpath);
 
