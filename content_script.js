@@ -4,12 +4,12 @@ console.log("loading content script");
 
 var iframe = document.createElement("iframe");
 iframe.id="qanairy_ide_frame";
-iframe.style.cssText = 'position:absolute;width:250px;height:400px;z-index:100';
+iframe.style.cssText = 'position:absolute;width:300px;height:450px;z-index:100';
 iframe.src = chrome.extension.getURL('/recorder.html');
 
 var header_inner_html = "<button id='close_qanairy_ide' style='position:relative;left:230px;height:100%'> x </button>"
 var header = document.createElement("div");
-header.style.cssText = 'width:250px;height:20px;z-index:100;background-color:purple';
+header.style.cssText = 'width:300px;height:20px;z-index:100;background-color:#553fc0';
 header.id="qanairy_ide_header";
 header.innerHTML = header_inner_html;
 
@@ -19,7 +19,7 @@ body.id="qanairy_ide_body";
 body.appendChild(iframe);
 
 var parent = document.createElement("div");
-parent.style.cssText = 'position:absolute;width:250px;height:400px;z-index:100';
+parent.style.cssText = 'position:absolute;width:300px;height:450px;z-index:100';
 parent.id="qanairy_ide";
 parent.appendChild(header);
 parent.appendChild(body);
