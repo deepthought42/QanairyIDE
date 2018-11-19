@@ -334,15 +334,12 @@ chrome.runtime.onMessage.addListener(
           }
           else {
             var path = JSON.parse(localStorage.getItem("path"));
-            console.log("path is null ? "+(path===null));
 
-            console.log("path is undefined ? "+(path===undefined));
             if(path === undefined || path === null){
               path = new Array();
               localStorage.setItem("path", JSON.stringify(path));
             }
 
-            console.log("Path length "+path.length);
             if(path.length === 0){
               //push page into path
               path.push({url : request.data.url});
@@ -358,6 +355,8 @@ chrome.runtime.onMessage.addListener(
                 console.log("sendKeys experienced, Adding action value to existing action");
                 path[path.length-1].action.value += request.data.pathElement.action.value;
                 console.log("new action value :: "+path[path.length-1].action.value);
+                localStorage.setItem('path', JSON.stringify(path));
+                redrawPath(path);
               }
               return;
             }
