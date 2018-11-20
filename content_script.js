@@ -25,6 +25,7 @@ parent.appendChild(header);
 parent.appendChild(body);
 document.body.appendChild(parent);
 
+let uppercase = false;
 
 let close_ide_button = document.getElementById("close_qanairy_ide");
 close_ide_button.onclick = function(){
@@ -72,8 +73,26 @@ let recorder_click_listener = function(event){
 }
 
 let recorder_keyup_listener = function(event){
+
+  //check if shift key
+  if(event.keyCode === 16){
+    uppercase = !uppercase;
+    return;
+  }
+  //check for caps lock key
+  else if(event.keyCode === 20){
+    return;
+  }
+
   var key = String.fromCharCode(event.keyCode);
-  console.log("KEY PRESSED :: "+key);
+  if(!uppercase){
+    key = key.toLowerCase();
+  }
+  else{
+    key = key.toUpperCase();
+  }
+
+  console.log("KEY released :: "+key);
 
   var xpath = "";
   //get all elements on page
@@ -106,6 +125,18 @@ let recorder_keyup_listener = function(event){
      }
    );
 }
+
+let recorder_keydown_listener = function(event){
+  //check if shift key
+  if(event.keyCode === 16){
+    uppercase = !uppercase;
+  }
+  //check for caps lock key
+  else if(event.keyCode === 20){
+    uppercase = !uppercase;
+  }
+}
+
 
 String.prototype.indexOfRegex = function(regex){
   var match = this.match(regex);
@@ -160,6 +191,7 @@ chrome.runtime.onMessage.addListener(
 
       document.addEventListener("click", recorder_click_listener);
       document.addEventListener('keyup', recorder_keyup_listener);
+      document.addEventListener('keydown', recorder_keydown_listener);
 
       sendResponse({status: "starting"});
     }
@@ -167,7 +199,8 @@ chrome.runtime.onMessage.addListener(
       status = "stopped";
 
       document.removeEventListener("click", recorder_click_listener);
-      document.removeEventListener("keyup", recorder_keyup_listener);
+      document.removeEventListener("keyup", recorder_keydown_listener);
+      document.removeEventListener("keydown", recorder_keydown_listener);
 
       sendResponse({status: "stopping"});
     }
