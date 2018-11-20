@@ -26,6 +26,8 @@ parent.appendChild(body);
 document.body.appendChild(parent);
 
 let uppercase = false;
+let last_xpath = "";
+let last_node = null;
 
 let close_ide_button = document.getElementById("close_qanairy_ide");
 close_ide_button.onclick = function(){
@@ -42,7 +44,8 @@ let recorder_click_listener = function(event){
     if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
       //console.log(rect.top, rect.right, rect.bottom, rect.left);
       xpath = generateXpath(node);
-      console.log("GENERATED xpath :: "+xpath);
+      last_xpath = xpath;
+      last_node = node;
     }
   })
   //build list of elements where the x,y coords and height,width encompass the event x,y coords
@@ -74,79 +77,19 @@ let recorder_click_listener = function(event){
 
 let recorder_keyup_listener = function(event){
 
-  //check if shift key
-  if(event.keyCode === 16){
-    uppercase = !uppercase;
-    return;
-  }
-  //check for caps lock key
-  else if(event.keyCode === 20){
-    return;
-  }
-
-  var key = String.fromCharCode(event.keyCode);
-  if(!uppercase){
-    key = key.toLowerCase();
-  }
-  else{
-    console.log("key code :: "+event.keyCode);
-
-    if(event.keyCode === 49){
-        key = String.fromCharCode(33);
-    }
-    else if(event.keyCode === 50){
-      key = String.fromCharCode(64);
-    }
-    else if(event.keyCode === 51){
-      key = String.fromCharCode(35);
-    }
-    else if(event.keyCode === 52){
-      key = String.fromCharCode(36);
-    }
-    else if(event.keyCode === 53){
-      key = String.fromCharCode(37);
-    }
-    else if(event.keyCode === 54){
-      key = String.fromCharCode(94);
-    }
-    else if(event.keyCode === 55){
-      key = String.fromCharCode(38);
-    }
-    else if(event.keyCode === 56){
-        key = String.fromCharCode(40);
-    }
-    else if(event.keyCode === 49){
-        key = String.fromCharCode(41);
-    }
-    else{
-      key = key.toUpperCase();
-    }
-  }
-
-  console.log("KEY released :: "+key);
-
-  var xpath = "";
-  //get all elements on page
-  document.querySelectorAll('body *').forEach(function(node){
-    var rect = node.getBoundingClientRect();
-    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
-      //console.log(rect.top, rect.right, rect.bottom, rect.left);
-      xpath = generateXpath(node);
-    }
-  });
-
+  console.log("last node value :: "+last_node.value);
   chrome.runtime.sendMessage({msg: "addToPath",
                               data: {url: window.location.toString(),
                                      pathElement: {
                                        element: {
                                          type: "pageElement",
                                          target: event.relatedTarget,
-                                         xpath: xpath
+                                         xpath: last_xpath
                                        },
                                        action: {
                                          type: "action",
                                          name: "sendKeys",
-                                         value: key
+                                         value: last_node.value
                                        }
                                      }
                                    }
