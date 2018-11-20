@@ -89,7 +89,38 @@ let recorder_keyup_listener = function(event){
     key = key.toLowerCase();
   }
   else{
-    key = key.toUpperCase();
+    console.log("key code :: "+event.keyCode);
+
+    if(event.keyCode === 49){
+        key = String.fromCharCode(33);
+    }
+    else if(event.keyCode === 50){
+      key = String.fromCharCode(64);
+    }
+    else if(event.keyCode === 51){
+      key = String.fromCharCode(35);
+    }
+    else if(event.keyCode === 52){
+      key = String.fromCharCode(36);
+    }
+    else if(event.keyCode === 53){
+      key = String.fromCharCode(37);
+    }
+    else if(event.keyCode === 54){
+      key = String.fromCharCode(94);
+    }
+    else if(event.keyCode === 55){
+      key = String.fromCharCode(38);
+    }
+    else if(event.keyCode === 56){
+        key = String.fromCharCode(40);
+    }
+    else if(event.keyCode === 49){
+        key = String.fromCharCode(41);
+    }
+    else{
+      key = key.toUpperCase();
+    }
   }
 
   console.log("KEY released :: "+key);
