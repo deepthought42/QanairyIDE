@@ -216,13 +216,11 @@ let editPathElement = function(element_idx){
 let generatePagePathListItem = function(page, index){
   var element=  `
   <div  class="row path-element" data-index="` + index + `">
-    <div class="col-xs-10">
-      <div class="col-xs-3 path-element-type">
-        URL
-      </div>
-      <div class="col-xs-9 path-element-value">`
-        + page.url +`
-      </div>
+    <div class="col-xs-2 path-element-type">
+      URL
+    </div>
+    <div class="col-xs-8 path-element-value">`
+      + page.url +`
     </div>
     <div class="col-xs-2 icons" >
       <i class="fa fa-pencil icon"></i>
@@ -244,10 +242,10 @@ let generatePageElementPathListItem = function(path_element, index){
         <div class="col-xs-10 path-element-value">`
           + path_element.element.xpath +`
         </div>
-        <div class="col-xs-2 path-element-type">
+        <div class="col-xs-3 path-element-value">
           `+ path_element.action.name + `
         </div>
-        <div class="col-xs-10 path-element-value" >`
+        <div class="col-xs-9 path-element-value" >`
           + path_element.action.value + `
         </div>
       </div>
