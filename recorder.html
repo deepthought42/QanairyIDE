@@ -46,25 +46,31 @@
           <div>
             Xpath
           </div>
-          <div>
-            <input id="pageElementXpath" type="text" placeholder="xpath" />
-            <button id="element_selector"><i class="fa fa-circle" /></button>
+          <div class="col-xs-12">
+            <input id="pageElementXpath" type="text" placeholder="xpath" class="col-xs-10"/>
+            <button id="element_selector" class="col-xs-1">
+              <i class="fa fa-circle" ></i>
+            </button>
           </div>
         </div>
         <div class="col-xs-12">
-          <div>
-            Action
+          <div class="col-xs-4">
+            <div>
+              Action
+            </div>
+            <select id="actionName">
+              <option value="click">Click</option>
+              <option value="rightClick">Right Click</option>
+              <option value="sendKeys">Send Keys</option>
+            </select>
           </div>
-          <select id="actionName">
-            <option value="click">Click</option>
-            <option value="rightClick">Right Click</option>
-            <option value="sendKeys">Send Keys</option>
-          </select>
-          <div>
-            Value
-          </div>
-          <div>
-            <input id="actionValue" type="text" placeholder="action value" />
+          <div class="col-xs-8">
+            <div>
+              Value
+            </div>
+            <div>
+              <input id="actionValue" type="text" placeholder="action value" />
+            </div>
           </div>
         </div>
         <button id="savePageElementButton" class="col-xs-12"> Save </button>

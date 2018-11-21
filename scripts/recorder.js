@@ -19,11 +19,12 @@ $jquery("#createNewTest").on("click", function(){
   $jquery("#test_path_viewer").html("");
 });
 
-$jquery(".deleteIcon").on("click", function(e){
+$jquery(".delete-icon").on("click", function(e){
   conosle.log("delete icons and stuff");
   console.log("delete icon clicked");
   var path = JSON.parse(localStorage.getItem(path));
   deletePathElement(path);
+
 });
 
 //handle clicking on button for adding custom page element<->action pairs to path
@@ -102,9 +103,9 @@ $jquery("#savePageButton").on("click", function(){
  * Handles clicks on path elements and routes to the proper form and functionality based on
  * which path element is clicked on.
  */
-$jquery("#test_path_viewer").on("click", ".path-element", function(){
+$jquery("#test_path_viewer").on("click", ".path-element-data", function(){
     //send element to path element form
-    var index = $jquery(this).data("index");
+    var index = $jquery(this).parent().data("index");
     var element = JSON.parse(localStorage.getItem("path"))[index];
 
     if(element.element){
@@ -216,15 +217,17 @@ let editPathElement = function(element_idx){
 let generatePagePathListItem = function(page, index){
   var element=  `
   <div  class="row path-element" data-index="` + index + `">
-    <div class="col-xs-2 path-element-type">
-      URL
-    </div>
-    <div class="col-xs-8 path-element-value">`
-      + page.url +`
+    <div class="path-element-data">
+      <div class="col-xs-2 path-element-type">
+        URL
+      </div>
+      <div class="col-xs-8 path-element-value">`
+        + page.url +`
+      </div>
     </div>
     <div class="col-xs-2 icons" >
-      <i class="fa fa-pencil icon"></i>
-      <i class="fa fa-times icon delete-icon" ></i>
+      <i class="fa fa-pencil icon fa-lg"></i>
+      <i class="fa fa-times icon delete-icon fa-lg" ></i>
     </div>
   </div>`;
      //  To do something
@@ -235,7 +238,7 @@ let generatePagePathListItem = function(page, index){
 let generatePageElementPathListItem = function(path_element, index){
   var element=  `
     <div class="row path-element" data-index="` + index + `">
-      <div class="col-xs-10">
+      <div class="col-xs-10  path-element-data">
         <div class="col-xs-2 path-element-type">
           xpath
         </div>
@@ -250,8 +253,8 @@ let generatePageElementPathListItem = function(path_element, index){
         </div>
       </div>
       <div class="col-xs-2 icons" >
-        <i class="fa fa-pencil icon edit-icon"></i>
-        <i class="fa fa-times icon delete-icon"></i>
+        <i class="fa fa-pencil fa-lg icon edit-icon"></i>
+        <i class="fa fa-times fa-lg icon delete-icon"></i>
       </div>
     </div>`;
      //  To do something
