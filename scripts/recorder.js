@@ -1,5 +1,7 @@
 let $jquery = jQuery.noConflict();
 
+$jquery("#actionValueContainer").hide();
+
 let startRecording = document.getElementById("startRecording");
 let stopRecording = document.getElementById("stopRecording");
 let pageEditPanel = document.getElementById("pageForm");
@@ -169,6 +171,16 @@ $jquery("#runTestButton").on("click", function(element){
   chrome.runtime.sendMessage({msg: "start_test_run", data: path}, function(response) {
     console.log("Test run request received response  ::  "+JSON.stringify(response));
   });
+});
+
+$jquery("#actionName").change(function(){
+  console.log("ACTION NAME :: " + $jquery("#actionName option:selected").val());
+  if( $jquery("#actionName option:selected").val() === "sendKeys"){
+    $jquery("#actionValueContainer").show();
+  }
+  else {
+    $jquery("#actionValueContainer").hide();
+  }
 });
 
 /*
