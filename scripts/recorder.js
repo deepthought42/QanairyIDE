@@ -21,12 +21,12 @@ $jquery("#createNewTest").on("click", function(){
   $jquery("#test_path_viewer").html("");
 });
 
-$jquery(".delete-icon").on("click", function(e){
-  conosle.log("delete icons and stuff");
-  console.log("delete icon clicked");
-  var path = JSON.parse(localStorage.getItem(path));
-  deletePathElement(path);
-
+$jquery("#test_path_viewer").on("click", ".delete-icon", function(e){
+  var path = JSON.parse(localStorage.getItem("path"));
+  var confirmed = confirm("Are you sure you want to delete this step?");
+  if(confirmed){
+    deletePathElement(path);
+  }
 });
 
 //handle clicking on button for adding custom page element<->action pairs to path
@@ -126,7 +126,33 @@ $jquery("#test_path_viewer").on("click", ".path-element-data", function(){
       pageElementEditPanel.style.display = "none";
     }
 
-  });
+});
+
+//clicking on the edit icon(pencil) loads the path element info into the appropriate
+// edit panel
+$jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
+    //send element to path element form
+    var index = $jquery(this).parent().parent().data("index");
+    var element = JSON.parse(localStorage.getItem("path"))[index];
+
+    if(element.element){
+      //send to path element form
+      $jquery("#pageElementXpath").val(element.element.xpath);
+      $jquery("actionName").val(element.action.name);
+      $jquery("#actionValue").val(element.action.value);
+      $jquery("#pageElementIndexInPath").val(index);
+      pageEditPanel.style.display = "none";
+      pageElementEditPanel.style.display = "block";
+    }
+    else if(element.url){
+      //send to path element form
+      $jquery("#pageUrl").val(element.url);
+      pageEditPanel.style.display = "block";
+      pageElementEditPanel.style.display = "none";
+    }
+
+});
+
 
 pageEditPanel.style.display = "none";
 pageElementEditPanel.style.display = "block";
