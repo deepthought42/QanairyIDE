@@ -7,7 +7,7 @@ iframe.id="qanairy_ide_frame";
 iframe.style.cssText = 'position:absolute;width:300px;height:450px;z-index:100';
 iframe.src = chrome.extension.getURL('/recorder.html');
 
-var header_inner_html = "<button id='close_qanairy_ide' style='position:relative;left:230px;height:100%'> x </button>"
+var header_inner_html = "<button id='close_qanairy_ide' class='btn-sm' style='position:relative;left:270px;height:90%'><i class='fa fa-times'></i> </button>"
 var header = document.createElement("div");
 header.style.cssText = 'width:300px;height:20px;z-index:100;background-color:#553fc0';
 header.id="qanairy_ide_header";
