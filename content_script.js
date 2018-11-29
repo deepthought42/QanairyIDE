@@ -126,10 +126,15 @@ let runTest = function(path){
         //verify that element exists on page
         if(xpathResult){
           //perform action on element
-          xpathResult.click();
-          console.log("performed click");
-          xpathResult.value = "testing yo!";
-          console.log("set value on input   :  "+xpathResult.value);
+          if(path[idx].action.name === "click"){
+            xpathResult.click();
+          }
+          else if(path[idx].action.name === 'doubleClick'){
+            xpathResult.doubleClick();
+          }
+          else if(path[idx].action.name === 'sendKeys'){
+            xpathResult.value = path[idx].action.value;
+          }
         }
         else{
 
@@ -143,7 +148,7 @@ let runTest = function(path){
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.msg == "start_recording"){
+    if (request.msg === "start_recording"){
       path = [];
       status = "recording";
 
@@ -153,7 +158,7 @@ chrome.runtime.onMessage.addListener(
 
       sendResponse({status: "starting"});
     }
-    else if (request.msg == "stop_recording") {
+    else if (request.msg === "stop_recording") {
       status = "stopped";
 
       document.removeEventListener("click", recorder_click_listener);
