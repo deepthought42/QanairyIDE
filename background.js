@@ -43,7 +43,7 @@ chrome.runtime.onMessage.addListener(
           chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: path}, function(response) {
           });
         });
-      }, 5000);
+      }, 1500);
 
     }
     else if(request.msg === "addToPath" && status !== "stopped"){
