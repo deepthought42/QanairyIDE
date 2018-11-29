@@ -9,8 +9,6 @@
 
 
   $("#login").on('click',  function(){
-    console.log("login clicked");
-
     var settings = {
       "async": true,
       "crossDomain": true,
@@ -27,10 +25,8 @@
       }
     };
 
-    console.log("login clicked");
-
     auth0.loginAndAuthorize(settings.data, function(err, res){
-      console.log("response :: "+err + "   :    " + Object.keys(res));
+      //console.log("response :: "+err + "   :    " + Object.keys(res));
       if(!err){
 
       }

@@ -1,7 +1,5 @@
 //fire event to listen for url change events and action events
 
-console.log("loading content script");
-
 var iframe = document.createElement("iframe");
 iframe.id="qanairy_ide_frame";
 iframe.style.cssText = 'position:absolute;width:300px;height:450px;z-index:100';
@@ -31,7 +29,6 @@ let last_node = null;
 
 let close_ide_button = document.getElementById("close_qanairy_ide");
 close_ide_button.onclick = function(){
-  console.log("clicked on close button");
   //hide parent element
   parent.style.display = "none";
 }
@@ -42,7 +39,6 @@ let recorder_click_listener = function(event){
   document.querySelectorAll('body *').forEach(function(node){
     var rect = node.getBoundingClientRect();
     if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
-      //console.log(rect.top, rect.right, rect.bottom, rect.left);
       xpath = generateXpath(node);
       last_xpath = xpath;
       last_node = node;
@@ -70,14 +66,12 @@ let recorder_click_listener = function(event){
                                    }
                                  },
      function(response) {
-       console.log("response ::  " +JSON.stringify(response));
+       //console.log("response ::  " +JSON.stringify(response));
      }
    );
 }
 
 let recorder_keyup_listener = function(event){
-
-  console.log("last node value :: "+last_node.value);
   chrome.runtime.sendMessage({msg: "addToPath",
                               data: {url: window.location.toString(),
                                      pathElement: {
@@ -95,7 +89,7 @@ let recorder_keyup_listener = function(event){
                                    }
                                  },
      function(response) {
-       console.log("response ::  " +JSON.stringify(response));
+       //console.log("response ::  " +JSON.stringify(response));
      }
    );
 }
@@ -122,22 +116,15 @@ String.prototype.indexOfRegex = function(regex){
  * Runs a test from beginning to end
  */
 let runTest = function(path){
-  console.log("expecting page to be loaded now that I've waited for 5 seconds");
   //process elements
   for(var idx=1; idx< path.length; idx++){
       if(path[idx].url){
         //if element is a page then send message to background to navigate page
-        console.log("Another page was experienced");
       }
       else if(path[idx].element){
-        console.log("Page element experienced. Performing + " + path[idx].action.name + "   on element with xpath : "+path[idx].element.xpath);
-        //document.evaluate(path[idx].element.xpath, Document, );
-
-        console.log("xpath :: "+path[idx].element.xpath);
         var xpathResult = document.evaluate(path[idx].element.xpath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
         //verify that element exists on page
         if(xpathResult){
-          console.log("xpath result exists  :   "+xpathResult);
           //perform action on element
           xpathResult.click();
           console.log("performed click");
@@ -149,16 +136,13 @@ let runTest = function(path){
         }
       }
       else {
-        console.log("Unknown path element experienced at index "+idx);
+        alert("Unknown path element experienced at index "+idx);
       }
   }
 };
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log("request :: "+request);
-    console.log("sender :: "+sender);
-    console.log("sendResponse  ::  "+sendResponse);
     if (request.msg == "start_recording"){
       path = [];
       status = "recording";
@@ -186,19 +170,12 @@ chrome.runtime.onMessage.addListener(
 
 //generates x unique xpath for a given element
 let generateXpath = function(elem){
-  console.log("ELEM ;; "+elem);
   var xpath = "//"+elem.tagName.toLowerCase();
   var attributes = ["id", "name", "class"];
   var attributes_check = [];
 
-  console.log("xpath :: "+xpath);
-
   for(var idx=0; idx< attributes.length; idx++){
-    console.log("xpath with attributes :: "+xpath);
-
     if(elem.getAttribute(attributes[idx]) !== undefined && elem.getAttribute(attributes[idx]) !== null){
-      console.log("attributes :: "+elem.getAttribute(attributes[idx]));
-
       attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
     }
 
@@ -212,7 +189,6 @@ let generateXpath = function(elem){
       }
       xpath += "]";
     }
-    console.log("xpath 1 :: "+xpath);
 
     var elements = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
 
@@ -226,9 +202,6 @@ let generateXpath = function(elem){
         count++;
       }
     }
-    console.log("xpath 2 :: "+xpath);
-
-  //  console.log("xpath  :::   "+xpath);
 
     return xpath;
   }

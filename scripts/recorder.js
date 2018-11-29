@@ -188,19 +188,11 @@ $jquery("#runTestButton").on("click", function(element){
   var path = JSON.parse(localStorage.getItem("path"));
   //send path to content script to be ran
 
-/*  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-    chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: path}, function(response) {
-      console.log("Test run request received response  ::  "+JSON.stringify(response));
-    });
-  });
-  */
   chrome.runtime.sendMessage({msg: "start_test_run", data: path}, function(response) {
-    console.log("Test run request received response  ::  "+JSON.stringify(response));
   });
 });
 
 $jquery("#actionName").change(function(){
-  console.log("ACTION NAME :: " + $jquery("#actionName option:selected").val());
   if( $jquery("#actionName option:selected").val() === "sendKeys"){
     $jquery("#actionValueContainer").show();
   }
@@ -336,7 +328,6 @@ let deletePathElement = function(path, index){
 }
 
 $jquery("#element_selector").on('click', function(){
-  console.log("clicked element selector");
   //if recording is currently running pause it
   selector_status = "active";
 
@@ -359,8 +350,6 @@ chrome.runtime.onMessage.addListener(
           //if selector button set selector status to active then retrieve xpath and set it to element xpath field value
           if(selector_status === "active"){
             selector_status = "disabled";
-            console.log("Request value :: "+request);
-              console.log("Request value 2 :: "+JSON.stringify(request));
             //fire event to stop listening for url change events and action events
             if(recording_status === "stopped"){
               chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
@@ -385,14 +374,11 @@ chrome.runtime.onMessage.addListener(
               $jquery("#test_path_viewer").append( generatePagePathListItem(request.data, path.length-1 ));
             }
 
-            console.log("Path length after adding page :: "+path.length);
             //check if last element is equal to this element
             if(path[path.length-1].element && path[path.length-1].element.xpath === request.data.pathElement.element.xpath && path[path.length-1].action.name === request.data.pathElement.action.name){
               //check if last element actin pair was a typing action
               if(path[path.length-1].action.name === "sendKeys" && request.data.pathElement.action.name === "sendKeys"){
-                console.log("sendKeys experienced, Adding action value to existing action");
                 path[path.length-1].action.value = request.data.pathElement.action.value;
-                console.log("new action value :: "+path[path.length-1].action.value);
                 localStorage.setItem('path', JSON.stringify(path));
                 redrawPath(path);
               }
@@ -401,10 +387,6 @@ chrome.runtime.onMessage.addListener(
 
             path.push(request.data.pathElement);
             localStorage.setItem("path", JSON.stringify(path));
-
-            console.log("path size :: "+path.length);
-            console.log("PATH :: "+JSON.stringify(path));
-            console.log("REQUEST DATA FOR ADDING TO PATH :: " + JSON.stringify(request.data));
 
             $jquery("#test_path_viewer").append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
           }
