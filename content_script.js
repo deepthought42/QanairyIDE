@@ -180,36 +180,40 @@ let generateXpath = function(elem){
   var attributes_check = [];
 
   for(var idx=0; idx< attributes.length; idx++){
-    if(elem.getAttribute(attributes[idx]) !== undefined && elem.getAttribute(attributes[idx]) !== null){
+    if(elem.getAttribute(attributes[idx])){
       attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
     }
 
     if(attributes_check.length > 0){
       xpath += "[";
-      for(var idx=0; idx < attributes_check.length; idx++){
-        xpath += attributes_check[idx];
-        if(idx < attributes_check.length-1){
+      for(var idx1=0; idx1 < attributes_check.length; idx1++){
+        xpath += attributes_check[idx1];
+        if(idx1 < attributes_check.length-1){
           xpath += " and ";
         }
       }
       xpath += "]";
     }
-
-    var elements = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-
-    if(elements.length > 1){
-      var count = 1;
-      for(var idx=0; idx < elements.length; idx++){
-        if(elements[idx].getTagName().equals(elem.getTagName())
-            && elements[idx].getText().equals(elem.getText())){
-              xpath += ("("+xpath+")[" + count + "]");
-        }
-        count++;
-      }
-    }
-
-    return xpath;
   }
+  var elements = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+  var element = null;
+  var count = 1;
+  var indexed_xpath = "";
+  while(element = elements.iterateNext()){
+    if(element.tagName === elem.tagName
+        && element.text === elem.text
+        && element.innerHTML === elem.innerHTML){
+          indexed_xpath = "("+xpath+")[" + count + "]";
+          break;
+    }
+    count++;
+  }
+
+  if(count > 1){
+    xpath = indexed_xpath;
+  }
+
+  return xpath;
 }
 
 /**
