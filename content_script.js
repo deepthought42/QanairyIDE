@@ -183,18 +183,19 @@ let generateXpath = function(elem){
     if(elem.getAttribute(attributes[idx])){
       attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
     }
-
-    if(attributes_check.length > 0){
-      xpath += "[";
-      for(var idx1=0; idx1 < attributes_check.length; idx1++){
-        xpath += attributes_check[idx1];
-        if(idx1 < attributes_check.length-1){
-          xpath += " and ";
-        }
-      }
-      xpath += "]";
-    }
   }
+
+  if(attributes_check.length > 0){
+    xpath += "[";
+    for(var idx1=0; idx1 < attributes_check.length; idx1++){
+      xpath += attributes_check[idx1];
+      if(idx1 < attributes_check.length-1){
+        xpath += " and ";
+      }
+    }
+    xpath += "]";
+  }
+  
   var elements = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
   var element = null;
   var count = 1;

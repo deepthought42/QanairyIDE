@@ -209,13 +209,13 @@ $jquery("#actionName").change(function(){
 $jquery("#exportTest").on("click", function(element){
     var path = JSON.parse(localStorage.getItem("path"));
     console.log("Initiating export");
-    alert("Please name your test");
+    var test_name = prompt("Please name your test");
     //****************************************
     //test path export code
     //****************************************
     var xhr = new XMLHttpRequest();
     //xhr.open("POST", "https://api.qanairy.com/testIDE", true);
-    xhr.open("POST", "http://localhost:9080/testIDE", true);
+    xhr.open("POST", "https://staging-api.qanairy.com/testIDE", true);
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.onload = function() {
       console.log("xhr  : : "+xhr);
@@ -228,7 +228,7 @@ $jquery("#exportTest").on("click", function(element){
         //document.getElementById("resp").innerText = xhr.responseText;
       }
     }
-    xhr.send(JSON.stringify({name: "test testing", path: path}));
+    xhr.send(JSON.stringify({name: test_name, path: path}));
 });
 
 /*
