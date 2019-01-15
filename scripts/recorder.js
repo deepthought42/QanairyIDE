@@ -24,8 +24,9 @@ $jquery("#createNewTest").on("click", function(){
 $jquery("#test_path_viewer").on("click", ".delete-icon", function(e){
   var path = JSON.parse(localStorage.getItem("path"));
   var confirmed = confirm("Are you sure you want to delete this step?");
+  var index = $jquery(this).parent().parent().data("index");
   if(confirmed){
-    deletePathElement(path);
+    deletePathElement(path, index);
   }
 });
 
@@ -208,7 +209,6 @@ $jquery("#actionName").change(function(){
  */
 $jquery("#exportTest").on("click", function(element){
     var path = JSON.parse(localStorage.getItem("path"));
-    console.log("Initiating export");
     var test_name = prompt("Please name your test");
     //****************************************
     //test path export code
@@ -218,10 +218,6 @@ $jquery("#exportTest").on("click", function(element){
     xhr.open("POST", "https://staging-api.qanairy.com/testIDE", true);
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.onload = function() {
-      console.log("xhr  : : "+xhr);
-      console.log("onloaded stuff  "+JSON.parse(xhr));
-
-      console.log("onloaded stuff  "+JSON.parse(xhr.responseText));
       if (xhr.readyState === 4) {
         // JSON.parse does not evaluate the attacker's scripts.
         var resp = JSON.parse(xhr.responseText);
