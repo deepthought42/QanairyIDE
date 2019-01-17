@@ -2,7 +2,7 @@
     "name": "Qanairy IDE",
     "version": "0.0.1",
     "description": "Allows recording custom tests for the Qanairy.com platform",
-    "permissions": ["declarativeContent", "storage", "webNavigation", "tabs", "activeTab", "https://*.qanairy.com/*"],
+    "permissions": ["declarativeContent", "storage", "webNavigation", "tabs", "activeTab","webRequest","webRequestBlocking","https://*.qanairy.com/*"],
     "background": {
       "scripts": ["background.js"],
       "persistent": true
@@ -31,5 +31,6 @@
       "48": "images/qanairy_logo.png",
       "128": "images/qanairy_logo.png"
     },
+    "content_security_policy": "script-src 'self' https://cdn.auth0.com/client/mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6.js; object-src 'self'",
     "manifest_version": 2
 }
