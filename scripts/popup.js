@@ -1,29 +1,67 @@
+    function isLoggedIn(token) {
+      // The user is logged in if their token isn't expired
+      return jwt_decode(token).exp > Date.now() / 1000;
+    }
 
-  var lock = new Auth0Lock(
-    'mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6',
-    'staging-qanairy.auth0.com', {
-    auth: {
-      responseType: 'code',
-      params: {
-        scope: 'openid email' // Learn about scopes: https://auth0.com/docs/scopes
+    function logout() {
+      // Remove the idToken from storage
+      localStorage.clear();
+      main();
+    }
+
+    // Minimal jQuery
+    const $$ = document.querySelectorAll.bind(document);
+    const $  = document.querySelector.bind(document);
+
+
+    function renderProfileView(authResult) {
+      $('.default').classList.add('hidden');
+      $('.loading').classList.remove('hidden');
+      fetch(`https://staging-qanairy.auth0.com/userinfo`, {
+        headers: {
+          'Authorization': `Bearer ${authResult.access_token}`
+        }
+      }).then(resp => resp.json()).then((profile) => {
+        ['picture', 'name', 'nickname'].forEach((key) => {
+
+           const element = $('.' +  key);
+           if( element.nodeName === 'DIV' ) {
+             element.style.backgroundImage = 'url(' + profile[key] + ')';
+             return;
+           }
+
+           element.textContent = profile[key];
+        });
+        $('.loading').classList.add('hidden');
+        $('.profile').classList.remove('hidden');
+        $('.logout-button').addEventListener('click', logout);
+      }).catch(logout);
+    }
+
+
+    function renderDefaultView() {
+      $('.default').classList.remove('hidden');
+      $('.profile').classList.add('hidden');
+      $('.loading').classList.add('hidden');
+
+      $('.login-button').addEventListener('click', () => {
+        console.log("login button clicked");
+        $('.default').classList.add('hidden');
+        $('.loading').classList.remove('hidden');
+        chrome.runtime.sendMessage({
+          msg: "authenticate"
+        });
+      });
+    }
+
+    function main () {
+      const authResult = JSON.parse(localStorage.authResult || '{}');
+      const token = authResult.id_token;
+      if (token && isLoggedIn(token)) {
+        renderProfileView(authResult);
+      } else {
+        renderDefaultView();
       }
     }
-  });
 
-  // Listening for the authenticated event
-  lock.on("authenticated", function(authResult) {
-    // Use the token in authResult to getUserInfo() and save it to localStorage
-    lock.getUserInfo(authResult.accessToken, function(error, profile) {
-      if (error) {
-        // Handle error
-        return;
-      }
-
-      document.getElementById('nick').textContent = profile.nickname;
-
-      localStorage.setItem('accessToken', authResult.accessToken);
-      localStorage.setItem('profile', JSON.stringify(profile));
-    });
-  });
-
-  lock.show();
+    document.addEventListener('DOMContentLoaded', main);

@@ -2,9 +2,13 @@
     "name": "Qanairy IDE",
     "version": "0.0.1",
     "description": "Allows recording custom tests for the Qanairy.com platform",
-    "permissions": ["declarativeContent", "storage", "webNavigation", "tabs", "activeTab","webRequest","webRequestBlocking","https://*.qanairy.com/*"],
+    "permissions": ["declarativeContent", "storage", "webNavigation", "tabs", "activeTab","webRequest","webRequestBlocking","identity",
+        "notifications",
+        "https://*.auth0.com/*"],
     "background": {
-      "scripts": ["background.js"],
+      "scripts": [
+        "node_modules/auth0-chrome/dist/auth0chrome.min.js",
+        "background.js"],
       "persistent": true
     },
     "page_action": {
