@@ -1,5 +1,7 @@
 let path = [];
 let status = "stopped";
+
+// src/main.js
 chrome.runtime.onInstalled.addListener(function() {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function(){
     chrome.declarativeContent.onPageChanged.addRules([{
@@ -70,4 +72,98 @@ chrome.runtime.onMessage.addListener(
           data: request.data.action
       });
     }
+
+    else if (request.msg === 'authenticate') {
+      // scope
+      //  - openid if you want an id_token returned
+      //  - offline_access if you want a refresh_token returned
+      // device
+      //  - required if requesting the offline_access scope.
+      let options = {
+        scope: 'openid profile offline_access',
+        device: 'chrome-extension'
+      };
+
+      new Auth0Chrome('staging-qanairy.auth0.com', 'mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6')
+        .authenticate(options)
+        .then(function (authResult) {
+          localStorage.authResult = JSON.stringify(authResult);
+          chrome.notifications.create({
+            type: 'basic',
+            iconUrl: 'images/qanairy_logo.png',
+            title: 'Login Successful',
+            message: 'You can use the app now'
+          });
+
+          fetch(`https://staging-qanairy.auth0.com/userinfo`, {
+            headers: {
+              'Authorization': `Bearer ${authResult.access_token}`
+            }
+          }).then(resp => resp.json()).then((profile) => {
+              localStorage.profile = profile;
+              subscribe(profile);
+            });
+
+          console.log("sending message");
+          chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+            chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {});
+          });
+          //call show recorder here
+        }).catch(function (err) {
+          console.log("unsuccessful authentication ::  "+err);
+          chrome.notifications.create({
+            type: 'basic',
+            title: 'Login Failed',
+            message: err.message,
+            iconUrl: 'images/qanairy_logo.png'
+          });
+        });
+    }
   });
+
+
+// Enable Pusher logging - don't include this in production
+Pusher.log = function(message) {
+  if (window.console && window.console.log) {
+    window.console.log(message);
+  }
+};
+
+var pusher = new Pusher('77fec1184d841b55919e', {
+  cluster: 'us2',
+  encrypted: true,
+  disableStats: true
+});
+
+var subscribe = function(profile){
+  var channel = pusher.subscribe(profile.name);
+
+  channel.bind("pusher:subscription_succeeded", function() {
+    console.log("Successfully subscribed to channel for user");
+  });
+
+  channel.bind("edit-test", function(test) {
+    chrome.storage.local.get({
+      notifications: true
+    }, function(event_data) {
+      console.log("data :: "+JSON.stringify(test));
+        //send path to recorder
+        chrome.runtime.sendMessage({
+            msg: "loadTest",
+            data: JSON.parse(test)
+        });
+
+        // Trigger desktop notification
+        var options = {
+          type: "basic",
+          title: "Test Received",
+          message: "A test has been received for editing",
+          iconUrl: "images/qanairy_logo.png",
+          isClickable: true
+        }
+
+        chrome.notifications.create("edit-test-" + JSON.parse(test).key, options, function(id) {});
+    });
+
+  });
+}

@@ -22,16 +22,7 @@
           'Authorization': `Bearer ${authResult.access_token}`
         }
       }).then(resp => resp.json()).then((profile) => {
-        ['picture', 'name', 'nickname'].forEach((key) => {
-
-           const element = $('.' +  key);
-           if( element.nodeName === 'DIV' ) {
-             element.style.backgroundImage = 'url(' + profile[key] + ')';
-             return;
-           }
-
-           element.textContent = profile[key];
-        });
+        localStorage.profile = profile;
         $('.loading').classList.add('hidden');
         $('.profile').classList.remove('hidden');
         $('.logout-button').addEventListener('click', logout);
@@ -40,17 +31,10 @@
 
 
     function renderDefaultView() {
-      $('.default').classList.remove('hidden');
-      $('.profile').classList.add('hidden');
-      $('.loading').classList.add('hidden');
-
-      $('.login-button').addEventListener('click', () => {
-        console.log("login button clicked");
-        $('.default').classList.add('hidden');
-        $('.loading').classList.remove('hidden');
-        chrome.runtime.sendMessage({
-          msg: "authenticate"
-        });
+      $('.default').classList.add('hidden');
+      $('.loading').classList.remove('hidden');
+      chrome.runtime.sendMessage({
+        msg: "authenticate"
       });
     }
 

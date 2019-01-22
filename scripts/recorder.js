@@ -387,5 +387,12 @@ chrome.runtime.onMessage.addListener(
             $jquery("#test_path_viewer").append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
           }
         }
+        else if (request.msg === "loadTest") {
+          console.log("load test received :: "+ JSON.stringify(request));
+          console.log("request data :: "+request.data);
+          console.log("request path :: "+JSON.stringify(request.data.path));
+
+          redrawPath(request.data.path);
+        }
       }
 );
