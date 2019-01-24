@@ -4,14 +4,59 @@ let uppercase = false;
 let last_xpath = "";
 let last_node = null;
 
+//generates x unique xpath for a given element
+let generateXpath = function(elem){
+  var xpath = "//"+elem.tagName.toLowerCase();
+  var attributes = ["id", "name", "class"];
+  var attributes_check = [];
+
+  for(var idx=0; idx< attributes.length; idx++){
+    if(elem.getAttribute(attributes[idx])){
+      attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
+    }
+  }
+
+  if(attributes_check.length > 0){
+    xpath += "[";
+    for(var idx1=0; idx1 < attributes_check.length; idx1++){
+      xpath += attributes_check[idx1];
+      if(idx1 < attributes_check.length-1){
+        xpath += " and ";
+      }
+    }
+    xpath += "]";
+  }
+
+  var elements = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+  var element = null;
+  var count = 1;
+  var indexed_xpath = "";
+  while(element = elements.iterateNext()){
+    if(element.tagName === elem.tagName
+        && element.text === elem.text
+        && element.innerHTML === elem.innerHTML){
+          indexed_xpath = "("+xpath+")[" + count + "]";
+          break;
+    }
+    count++;
+  }
+
+  if(count > 1){
+    xpath = indexed_xpath;
+  }
+
+  return xpath;
+}
+
 var main = function(){
+
   let close_ide_button = document.getElementById("close_qanairy_ide");
   close_ide_button.onclick = function(){
     //hide parent element
     parent.style.display = "none";
   }
 
-  let recorder_click_listener = function(event){
+  let recorderClickListener = function(event){
     var xpath = "";
     //get all elements on page
     document.querySelectorAll("body *").forEach(function(node){
@@ -21,7 +66,7 @@ var main = function(){
         last_xpath = xpath;
         last_node = node;
       }
-    })
+    });
     //build list of elements where the x,y coords and height,width encompass the event x,y coords
 
 
@@ -49,7 +94,7 @@ var main = function(){
      );
   }
 
-  let recorder_keyup_listener = function(event){
+  let recorderKeyupListener = function(event){
     chrome.runtime.sendMessage({msg: "addToPath",
                                 data: {url: window.location.toString(),
                                        pathElement: {
@@ -72,7 +117,7 @@ var main = function(){
      );
   }
 
-  let recorder_keydown_listener = function(event){
+  let recorderKeydownListener = function(event){
     //check if shift key
     if(event.keyCode === 16){
       uppercase = !uppercase;
@@ -122,49 +167,6 @@ var main = function(){
           alert("Unknown path element experienced at index "+idx);
         }
     }
-  };
-  //generates x unique xpath for a given element
-  let generateXpath = function(elem){
-    var xpath = "//"+elem.tagName.toLowerCase();
-    var attributes = ["id", "name", "class"];
-    var attributes_check = [];
-
-    for(var idx=0; idx< attributes.length; idx++){
-      if(elem.getAttribute(attributes[idx])){
-        attributes_check.push("contains(@"+attributes[idx] +",'"+elem.getAttribute(attributes[idx])+"')");
-      }
-    }
-
-    if(attributes_check.length > 0){
-      xpath += "[";
-      for(var idx1=0; idx1 < attributes_check.length; idx1++){
-        xpath += attributes_check[idx1];
-        if(idx1 < attributes_check.length-1){
-          xpath += " and ";
-        }
-      }
-      xpath += "]";
-    }
-
-    var elements = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-    var element = null;
-    var count = 1;
-    var indexed_xpath = "";
-    while(element = elements.iterateNext()){
-      if(element.tagName === elem.tagName
-          && element.text === elem.text
-          && element.innerHTML === elem.innerHTML){
-            indexed_xpath = "("+xpath+")[" + count + "]";
-            break;
-      }
-      count++;
-    }
-
-    if(count > 1){
-      xpath = indexed_xpath;
-    }
-
-    return xpath;
   }
 
   /**
@@ -230,18 +232,18 @@ chrome.runtime.onMessage.addListener(
       path = [];
       status = "recording";
 
-      document.addEventListener("click", recorder_click_listener);
-      document.addEventListener("keyup", recorder_keyup_listener);
-      document.addEventListener("keydown", recorder_keydown_listener);
+      document.addEventListener("click", recorderClickListener);
+      document.addEventListener("keyup", recorderKeyupListener);
+      document.addEventListener("keydown", recorderKeydownListener);
 
       sendResponse({status: "starting"});
     }
     else if (request.msg === "stop_recording") {
       status = "stopped";
 
-      document.removeEventListener("click", recorder_click_listener);
-      document.removeEventListener("keyup", recorder_keydown_listener);
-      document.removeEventListener("keydown", recorder_keydown_listener);
+      document.removeEventListener("click", recorderClickListener);
+      document.removeEventListener("keyup", recorderKeyupListener);
+      document.removeEventListener("keydown", recorderKeydownListener);
 
       sendResponse({status: "stopping"});
     }

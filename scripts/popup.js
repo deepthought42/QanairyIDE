@@ -17,7 +17,7 @@
     function renderProfileView(authResult) {
       $(".default").classList.add("hidden");
       $(".loading").classList.remove("hidden");
-      fetch(`https://staging-qanairy.auth0.com/userinfo`, {
+      fetch("https://staging-qanairy.auth0.com/userinfo", {
         headers: {
           "Authorization": `Bearer ${authResult.access_token}`
         }

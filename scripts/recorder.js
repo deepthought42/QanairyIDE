@@ -9,6 +9,90 @@ let pageElementEditPanel = document.getElementById("pageElementForm");
 let selector_status = "disabled";
 let recording_status = "stopped";
 
+
+
+/*
+ * Shows page creation form when button is clicked
+ */
+$jquery("#createPageButton").on("click", function(page){
+  pageEditPanel.style.display = "block";
+  pageElementEditPanel.style.display = "none";
+  $jquery("#pageIndexInPath").val("");
+});
+
+let generatePagePathListItem = function(page, index){
+  var element=  `
+  <div  class="row path-element" data-index="` + index + `">
+    <div class="path-element-data">
+      <div class="col-xs-2 path-element-type">
+        URL
+      </div>
+      <div class="col-xs-8 path-element-value">`
+        + page.url +`
+      </div>
+    </div>
+    <div class="col-xs-2 icons" >
+      <i class="fa fa-pencil icon fa-lg"></i>
+      <i class="fa fa-times icon delete-icon fa-lg" ></i>
+    </div>
+  </div>`;
+     //  To do something
+
+   return element;
+}
+
+let generatePageElementPathListItem = function(path_element, index){
+  var element=  `
+    <div class="row path-element" data-index="` + index + `">
+      <div class="col-xs-10  path-element-data">
+        <div class="col-xs-2 path-element-type">
+          xpath
+        </div>
+        <div class="col-xs-10 path-element-value">`
+          + path_element.element.xpath +`
+        </div>
+        <div class="col-xs-3 path-element-value">
+          `+ path_element.action.name + `
+        </div>
+        <div class="col-xs-9 path-element-value" >`
+          + path_element.action.value + `
+        </div>
+      </div>
+      <div class="col-xs-2 icons" >
+        <i class="fa fa-pencil fa-lg icon edit-icon"></i>
+        <i class="fa fa-times fa-lg icon delete-icon"></i>
+      </div>
+    </div>`;
+     //  To do something
+
+     return element;
+}
+
+/*
+ * redraw a specific element
+ */
+let redrawPathElement = function(element, index){
+  var list_item_html = generatePageElementPathListItem(element, index);
+  $jquery("#test_path_viewer").children().get(index).html(list_item_html);
+}
+
+/*
+ * Redraws the entire list of path elements
+ */
+let redrawPath = function(path){
+  var list_html = "";
+  for(var idx=0; idx<path.length; idx++){
+    var element = path[idx];
+    if(element.url){
+      list_html += generatePagePathListItem(element, idx);
+    }
+    else if(element.element){
+      list_html += generatePageElementPathListItem(element, idx);
+    }
+  }
+  $jquery("#test_path_viewer").html(list_html);
+}
+
 $jquery(document).ready(function(){
   var path = JSON.parse(localStorage.getItem("path"));
   if(path){
@@ -228,92 +312,6 @@ $jquery("#exportTest").on("click", function(element){
 });
 
 /*
- * Shows page creation form when button is clicked
- */
-$jquery("#createPageButton").on("click", function(page){
-  pageEditPanel.style.display = "block";
-  pageElementEditPanel.style.display = "none";
-  $jquery("#pageIndexInPath").val("");
-});
-
-let editPathElement = function(element_idx){
-  PubSub.publish("edit-path-element", element);
-}
-
-let generatePagePathListItem = function(page, index){
-  var element=  `
-  <div  class="row path-element" data-index="` + index + `">
-    <div class="path-element-data">
-      <div class="col-xs-2 path-element-type">
-        URL
-      </div>
-      <div class="col-xs-8 path-element-value">`
-        + page.url +`
-      </div>
-    </div>
-    <div class="col-xs-2 icons" >
-      <i class="fa fa-pencil icon fa-lg"></i>
-      <i class="fa fa-times icon delete-icon fa-lg" ></i>
-    </div>
-  </div>`;
-     //  To do something
-
-   return element;
-}
-
-let generatePageElementPathListItem = function(path_element, index){
-  var element=  `
-    <div class="row path-element" data-index="` + index + `">
-      <div class="col-xs-10  path-element-data">
-        <div class="col-xs-2 path-element-type">
-          xpath
-        </div>
-        <div class="col-xs-10 path-element-value">`
-          + path_element.element.xpath +`
-        </div>
-        <div class="col-xs-3 path-element-value">
-          `+ path_element.action.name + `
-        </div>
-        <div class="col-xs-9 path-element-value" >`
-          + path_element.action.value + `
-        </div>
-      </div>
-      <div class="col-xs-2 icons" >
-        <i class="fa fa-pencil fa-lg icon edit-icon"></i>
-        <i class="fa fa-times fa-lg icon delete-icon"></i>
-      </div>
-    </div>`;
-     //  To do something
-
-     return element;
-}
-
-/*
- * redraw a specific element
- */
-let redrawPathElement = function(element, index){
-  var list_item_html = generatePageElementPathListItem(element, indexz);
-  $jquery("#test_path_viewer").children().get(index).html(list_item_html);
-}
-
-/*
- * Redraws the entire list of path elements
- */
-let redrawPath = function(path){
-  var list_html = "";
-  for(var idx=0; idx<path.length; idx++){
-    var element = path[idx];
-    if(element.url){
-      list_html += generatePagePathListItem(element, idx);
-    }
-    else if(element.element){
-      list_html += generatePageElementPathListItem(element, idx);
-    }
-  }
-  $jquery("#test_path_viewer").html(list_html);
-}
-
-/*
  * Deletes an element at the given index form the given path array,
  *    then redraws the path
  */
@@ -337,7 +335,7 @@ $jquery("#element_selector").on("click", function(){
   //activate listener for click events similar to recording, but return element and xpath here
 
   //if recording was running at start of session then resume recording
-})
+});
 
 //receive path element
 chrome.runtime.onMessage.addListener(
@@ -388,10 +386,6 @@ chrome.runtime.onMessage.addListener(
           }
         }
         else if (request.msg === "loadTest") {
-          console.log("load test received :: "+ JSON.stringify(request));
-          console.log("request data :: "+request.data);
-          console.log("request path :: "+JSON.stringify(request.data.path));
-
           redrawPath(request.data.path);
         }
       }

@@ -9,9 +9,41 @@ chrome.runtime.onInstalled.addListener(function() {
         pageUrl: {}
       })],
       actions: [ new chrome.declarativeContent.ShowPageAction()]
-    }])
-  })
+    }]);
+  });
 });
+
+var subscribe = function(profile){
+  var channel = pusher.subscribe(profile.name);
+
+  channel.bind("pusher:subscription_succeeded", function() {
+    console.log("Successfully subscribed to channel :"+profile.name);
+  });
+
+  channel.bind("edit-test", function(test) {
+    chrome.storage.local.get({
+      notifications: true
+    }, function(event_data) {
+        //send path to recorder
+        chrome.runtime.sendMessage({
+            msg: "loadTest",
+            data: JSON.parse(test)
+        });
+
+        // Trigger desktop notification
+        var options = {
+          type: "basic",
+          title: "Test Received",
+          message: "A test has been received for editing",
+          iconUrl: "images/qanairy_logo.png",
+          isClickable: true
+        }
+
+        chrome.notifications.create("edit-test-" + JSON.parse(test).key, options, function(id) {});
+    });
+
+  });
+}
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -30,7 +62,7 @@ chrome.runtime.onMessage.addListener(
       var path = request.data;
       //get first element from path. First element is expected to be a page, if it isn't then throw an error
       if(path[0].url){
-        var url = path[0].url
+        var url = path[0].url;
         //redirect to url
         chrome.tabs.query({currentWindow: true, active: true}, function(tab){
           chrome.tabs.update(tab.id, {url: url});
@@ -49,6 +81,7 @@ chrome.runtime.onMessage.addListener(
 
     }
     else if(request.msg === "addToPath" && status !== "stopped"){
+      var path = localStorage.path;
       if(path.length === 0 || path[path.length-1].type !== "page"){
         path.push({type: "page", url: sender.tab.url});
         chrome.runtime.sendMessage({
@@ -104,13 +137,11 @@ chrome.runtime.onMessage.addListener(
               subscribe(profile);
             });
 
-          console.log("sending message");
           chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
             chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {});
           });
           //call show recorder here
         }).catch(function (err) {
-          console.log("unsuccessful authentication ::  "+err);
           chrome.notifications.create({
             type: "basic",
             title: "Login Failed",
@@ -134,36 +165,3 @@ var pusher = new Pusher("77fec1184d841b55919e", {
   encrypted: true,
   disableStats: true
 });
-
-var subscribe = function(profile){
-  var channel = pusher.subscribe(profile.name);
-
-  channel.bind("pusher:subscription_succeeded", function() {
-    console.log("Successfully subscribed to channel for user");
-  });
-
-  channel.bind("edit-test", function(test) {
-    chrome.storage.local.get({
-      notifications: true
-    }, function(event_data) {
-      console.log("data :: "+JSON.stringify(test));
-        //send path to recorder
-        chrome.runtime.sendMessage({
-            msg: "loadTest",
-            data: JSON.parse(test)
-        });
-
-        // Trigger desktop notification
-        var options = {
-          type: "basic",
-          title: "Test Received",
-          message: "A test has been received for editing",
-          iconUrl: "images/qanairy_logo.png",
-          isClickable: true
-        }
-
-        chrome.notifications.create("edit-test-" + JSON.parse(test).key, options, function(id) {});
-    });
-
-  });
-}
