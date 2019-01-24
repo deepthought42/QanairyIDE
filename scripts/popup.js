@@ -15,31 +15,31 @@
 
 
     function renderProfileView(authResult) {
-      $('.default').classList.add('hidden');
-      $('.loading').classList.remove('hidden');
+      $(".default").classList.add("hidden");
+      $(".loading").classList.remove("hidden");
       fetch(`https://staging-qanairy.auth0.com/userinfo`, {
         headers: {
-          'Authorization': `Bearer ${authResult.access_token}`
+          "Authorization": `Bearer ${authResult.access_token}`
         }
       }).then(resp => resp.json()).then((profile) => {
         localStorage.profile = profile;
-        $('.loading').classList.add('hidden');
-        $('.profile').classList.remove('hidden');
-        $('.logout-button').addEventListener('click', logout);
+        $(".loading").classList.add("hidden");
+        $(".profile").classList.remove("hidden");
+        $(".logout-button").addEventListener("click", logout);
       }).catch(logout);
     }
 
 
     function renderDefaultView() {
-      $('.default').classList.add('hidden');
-      $('.loading').classList.remove('hidden');
+      $(".default").classList.add("hidden");
+      $(".loading").classList.remove("hidden");
       chrome.runtime.sendMessage({
         msg: "authenticate"
       });
     }
 
     function main () {
-      const authResult = JSON.parse(localStorage.authResult || '{}');
+      const authResult = JSON.parse(localStorage.authResult || "{}");
       const token = authResult.id_token;
       if (token && isLoggedIn(token)) {
         renderProfileView(authResult);
@@ -48,4 +48,4 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', main);
+    document.addEventListener("DOMContentLoaded", main);

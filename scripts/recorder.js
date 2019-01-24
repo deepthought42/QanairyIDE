@@ -323,7 +323,7 @@ let deletePathElement = function(path, index){
   redrawPath(path);
 }
 
-$jquery("#element_selector").on('click', function(){
+$jquery("#element_selector").on("click", function(){
   //if recording is currently running pause it
   selector_status = "active";
 
@@ -375,7 +375,7 @@ chrome.runtime.onMessage.addListener(
               //check if last element actin pair was a typing action
               if(path[path.length-1].action.name === "sendKeys" && request.data.pathElement.action.name === "sendKeys"){
                 path[path.length-1].action.value = request.data.pathElement.action.value;
-                localStorage.setItem('path', JSON.stringify(path));
+                localStorage.setItem("path", JSON.stringify(path));
                 redrawPath(path);
               }
               return;

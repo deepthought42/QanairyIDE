@@ -14,7 +14,7 @@ var main = function(){
   let recorder_click_listener = function(event){
     var xpath = "";
     //get all elements on page
-    document.querySelectorAll('body *').forEach(function(node){
+    document.querySelectorAll("body *").forEach(function(node){
       var rect = node.getBoundingClientRect();
       if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
         xpath = generateXpath(node);
@@ -107,10 +107,10 @@ var main = function(){
             if(path[idx].action.name === "click"){
               xpathResult.click();
             }
-            else if(path[idx].action.name === 'doubleClick'){
+            else if(path[idx].action.name === "doubleClick"){
               xpathResult.doubleClick();
             }
-            else if(path[idx].action.name === 'sendKeys'){
+            else if(path[idx].action.name === "sendKeys"){
               xpathResult.value = path[idx].action.value;
             }
           }
@@ -231,8 +231,8 @@ chrome.runtime.onMessage.addListener(
       status = "recording";
 
       document.addEventListener("click", recorder_click_listener);
-      document.addEventListener('keyup', recorder_keyup_listener);
-      document.addEventListener('keydown', recorder_keydown_listener);
+      document.addEventListener("keyup", recorder_keyup_listener);
+      document.addEventListener("keydown", recorder_keydown_listener);
 
       sendResponse({status: "starting"});
     }
@@ -252,22 +252,22 @@ chrome.runtime.onMessage.addListener(
      console.log("received open recorder message");
      var iframe = document.createElement("iframe");
      iframe.id="qanairy_ide_frame";
-     iframe.style.cssText = 'position:absolute;width:300px;height:450px;z-index:100';
-     iframe.src = chrome.extension.getURL('/recorder.html');
+     iframe.style.cssText = "position:absolute;width:300px;height:450px;z-index:100";
+     iframe.src = chrome.extension.getURL("/recorder.html");
 
      var header_inner_html = "<button id='close_qanairy_ide' class='btn-sm' style='position:relative;left:270px;height:90%'><i class='fa fa-times'></i> </button>"
      var header = document.createElement("div");
-     header.style.cssText = 'width:300px;height:20px;z-index:100;background-color:#553fc0';
+     header.style.cssText = "width:300px;height:20px;z-index:100;background-color:#553fc0";
      header.id="qanairy_ide_header";
      header.innerHTML = header_inner_html;
 
      var body = document.createElement("div");
-     body.style.cssText = 'width:100%;height:20px';
+     body.style.cssText = "width:100%;height:20px";
      body.id="qanairy_ide_body";
      body.appendChild(iframe);
 
      var parent = document.createElement("div");
-     parent.style.cssText = 'position:absolute;width:300px;height:450px;z-index:100';
+     parent.style.cssText = "position:absolute;width:300px;height:450px;z-index:100";
      parent.id="qanairy_ide";
      parent.appendChild(header);
      parent.appendChild(body);
