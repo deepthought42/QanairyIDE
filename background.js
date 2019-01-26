@@ -52,6 +52,9 @@ chrome.runtime.onMessage.addListener(
       chrome.webNavigation.onCompleted.addListener(
         function(details){
           var path = JSON.parse(localStorage.getItem("path"));
+          if(!path){
+            path = [];
+          }
           path.push({type: "page", url: details.url});
           localStorage.setItem("path", path);
         }
