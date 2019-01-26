@@ -4,6 +4,40 @@ let uppercase = false;
 let last_xpath = "";
 let last_node = null;
 
+let recorderKeyupListener = function(event){
+  chrome.runtime.sendMessage({msg: "addToPath",
+                              data: {url: window.location.toString(),
+                                     pathElement: {
+                                       element: {
+                                         type: "pageElement",
+                                         target: event.relatedTarget,
+                                         xpath: last_xpath
+                                       },
+                                       action: {
+                                         type: "action",
+                                         name: "sendKeys",
+                                         value: last_node.value
+                                       }
+                                     }
+                                   }
+                                 },
+     function(response) {
+       //console.log("response ::  " +JSON.stringify(response));
+     }
+   );
+}
+
+let recorderKeydownListener = function(event){
+  //check if shift key
+  if(event.keyCode === 16){
+    uppercase = !uppercase;
+  }
+  //check for caps lock key
+  else if(event.keyCode === 20){
+    uppercase = !uppercase;
+  }
+}
+
 //generates x unique xpath for a given element
 let generateXpath = function(elem){
   var xpath = "//"+elem.tagName.toLowerCase();
@@ -48,29 +82,21 @@ let generateXpath = function(elem){
   return xpath;
 }
 
-var main = function(){
 
-  let close_ide_button = document.getElementById("close_qanairy_ide");
-  close_ide_button.onclick = function(){
-    //hide parent element
-    parent.style.display = "none";
-  }
+let recorderClickListener = function(event){
 
-  let recorderClickListener = function(event){
-    var xpath = "";
-    //get all elements on page
-    document.querySelectorAll("body *").forEach(function(node){
-      var rect = node.getBoundingClientRect();
-      if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
-        xpath = generateXpath(node);
-        last_xpath = xpath;
-        last_node = node;
-      }
-    });
-    //build list of elements where the x,y coords and height,width encompass the event x,y coords
+  var xpath = "";
+  //get all elements on page
+  document.querySelectorAll("body *").forEach(function(node){
+    var rect = node.getBoundingClientRect();
+    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
+      xpath = generateXpath(node);
+      last_xpath = xpath;
+      last_node = node;
+    }
+  });
 
-
-    //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
+console.log("adding xpath :: "+xpath);
 
     chrome.runtime.sendMessage({msg: "addToPath",
                                 data: {url: window.location.toString(),
@@ -92,41 +118,13 @@ var main = function(){
          //console.log("response ::  " +JSON.stringify(response));
        }
      );
-  }
+}
 
-  let recorderKeyupListener = function(event){
-    chrome.runtime.sendMessage({msg: "addToPath",
-                                data: {url: window.location.toString(),
-                                       pathElement: {
-                                         element: {
-                                           type: "pageElement",
-                                           target: event.relatedTarget,
-                                           xpath: last_xpath
-                                         },
-                                         action: {
-                                           type: "action",
-                                           name: "sendKeys",
-                                           value: last_node.value
-                                         }
-                                       }
-                                     }
-                                   },
-       function(response) {
-         //console.log("response ::  " +JSON.stringify(response));
-       }
-     );
-  }
+    //build list of elements where the x,y coords and height,width encompass the event x,y coords
 
-  let recorderKeydownListener = function(event){
-    //check if shift key
-    if(event.keyCode === 16){
-      uppercase = !uppercase;
-    }
-    //check for caps lock key
-    else if(event.keyCode === 20){
-      uppercase = !uppercase;
-    }
-  }
+
+    //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
+
 
 
   String.prototype.indexOfRegex = function(regex){
@@ -175,8 +173,15 @@ var main = function(){
    *
    */
 
+let main = function(){
 
-  // Make the DIV element draggable:
+   let close_ide_button = document.getElementById("close_qanairy_ide");
+   close_ide_button.onclick = function(){
+     //hide parent element
+     parent.style.display = "none";
+   }
+
+   // Make the DIV element draggable:
   function dragElement(elmnt) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
@@ -227,8 +232,10 @@ var main = function(){
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
+
     console.log("a message was received :: "+JSON.stringify(request));
     if (request.msg === "start_recording"){
+      console.log("start recording received");
       path = [];
       status = "recording";
 
@@ -248,9 +255,10 @@ chrome.runtime.onMessage.addListener(
       sendResponse({status: "stopping"});
     }
     else if(request.msg === "run_test"){
-     runTest(request.data);
-   }
-   if (request.msg === "open_recorder"){
+      runTest(request.data);
+    }
+   else if (request.msg === "open_recorder"){
+
      console.log("received open recorder message");
      var iframe = document.createElement("iframe");
      iframe.id="qanairy_ide_frame";
@@ -274,8 +282,8 @@ chrome.runtime.onMessage.addListener(
      parent.appendChild(header);
      parent.appendChild(body);
      document.body.appendChild(parent);
+     this.main;
 
-     main();
    }
 });
   /**
