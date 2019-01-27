@@ -167,6 +167,14 @@ console.log("adding xpath :: "+xpath);
     }
   }
 
+
+let close_ide = function(){
+  //hide parent element
+  console.log("closing ide");
+  qanairy_ide = document.getElementById("qanairy_ide");
+  qanairy_ide.style.display = "none";
+}
+
   /**
    *
    * Make plugin frame draggable by using the header to drag frame around
@@ -175,11 +183,7 @@ console.log("adding xpath :: "+xpath);
 
 let main = function(){
 
-   let close_ide_button = document.getElementById("close_qanairy_ide");
-   close_ide_button.onclick = function(){
-     //hide parent element
-     parent.style.display = "none";
-   }
+
 
    // Make the DIV element draggable:
   function dragElement(elmnt) {
@@ -265,7 +269,7 @@ chrome.runtime.onMessage.addListener(
      iframe.style.cssText = "position:absolute;width:300px;height:450px;z-index:100";
      iframe.src = chrome.extension.getURL("/recorder.html");
 
-     var header_inner_html = "<button id='close_qanairy_ide' class='btn-sm' style='position:relative;left:270px;height:90%'><i class='fa fa-times'></i> </button>"
+     var header_inner_html = "<button id='close_qanairy_ide' onclick='close_ide()' class='btn-sm' style='position:relative;left:270px;height:100%; margin:0px;padding:0px'><i class='fa fa-times'></i> </button>"
      var header = document.createElement("div");
      header.style.cssText = "width:300px;height:20px;z-index:100;background-color:#553fc0";
      header.id="qanairy_ide_header";
@@ -277,7 +281,7 @@ chrome.runtime.onMessage.addListener(
      body.appendChild(iframe);
 
      var parent = document.createElement("div");
-     parent.style.cssText = "position:absolute;width:300px;height:450px;z-index:100";
+     parent.style.cssText = "position:absolute;width:300px;height:450px;z-index:10000;left:20px;top:20px";
      parent.id="qanairy_ide";
      parent.appendChild(header);
      parent.appendChild(body);
