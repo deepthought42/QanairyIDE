@@ -8,7 +8,7 @@
       localStorage.clear();
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
         chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "close_recorder"}, function(response) {
-          console.log("received response from request for open recorder :: "+response);
+          //console.log("received response from request for open recorder :: "+response);
         });
       });
       window.close();
@@ -26,7 +26,7 @@
         headers: {
           "Authorization": `Bearer ${authResult.access_token}`
         }
-      }).then(resp => resp.json()).then((profile) => {
+      }).then((resp) => resp.json()).then((profile) => {
         localStorage.profile = profile;
         $(".loading").classList.add("hidden");
         $(".profile").classList.remove("hidden");
@@ -54,7 +54,7 @@
 
         //send message to open recorder panel
         chrome.runtime.sendMessage({msg: "subscribe_to_platform"}, function(response) {
-            console.log("received response from request for subscribe_to_platform :: "+response);
+            //console.log("received response from request for subscribe_to_platform :: "+response);
           });
       } else {
         renderDefaultView();

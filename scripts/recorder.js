@@ -93,6 +93,34 @@ let redrawPath = function(path){
   $jquery("#test_path_viewer").html(list_html);
 }
 
+/*
+ * Deletes an element at the given index form the given path array,
+ *    then redraws the path
+ */
+let deletePathElement = function(path, index){
+  path.splice(index, 1);
+  localStorage.setItem("path", JSON.stringify(path));
+  redrawPath(path);
+};
+
+$jquery("#element_selector").on("click", function(){
+  //if recording is currently running pause it
+  selector_status = "active";
+
+  console.log("recording status :: "+recording_status);
+  if(recording_status === "started"){
+    console.log("seding message to stop recording ");
+    //fire event to stop listening for url change events and action events
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+      chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording", selector_enabled: true}, function(response) {
+      });
+    });
+  }
+  //activate listener for click events similar to recording, but return element and xpath here
+
+  //if recording was running at start of session then resume recording
+});
+
 $jquery(document).ready(function(){
   var path = JSON.parse(localStorage.getItem("path"));
   if(path){
@@ -309,34 +337,6 @@ $jquery("#exportTest").on("click", function(element){
       }
     }
     xhr.send(JSON.stringify({name: test_name, path: path}));
-});
-
-/*
- * Deletes an element at the given index form the given path array,
- *    then redraws the path
- */
-let deletePathElement = function(path, index){
-  path.splice(index, 1);
-  localStorage.setItem("path", JSON.stringify(path));
-  redrawPath(path);
-}
-
-$jquery("#element_selector").on("click", function(){
-  //if recording is currently running pause it
-  selector_status = "active";
-
-  console.log("recording status :: "+recording_status);
-  if(recording_status === "started"){
-    console.log("seding message to stop recording ");
-    //fire event to stop listening for url change events and action events
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-      chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording", selector_enabled: true}, function(response) {
-      });
-    });
-  }
-  //activate listener for click events similar to recording, but return element and xpath here
-
-  //if recording was running at start of session then resume recording
 });
 
 //receive path element

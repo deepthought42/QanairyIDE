@@ -162,9 +162,6 @@ let recorderClickListener = function(event){
               xpathResult.value = path[idx].action.value;
             }
           }
-          else{
-
-          }
         }
         else {
           alert("Unknown path element experienced at index "+idx);
@@ -239,13 +236,12 @@ let main = function(){
   // Make the DIV element draggable:
   dragElement(document.getElementById("qanairy_ide"));
 
-}
+};
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
     if (request.msg === "start_recording"){
-      path = [];
       status = "recording";
 
       document.addEventListener("click", recorderClickListener);
@@ -276,9 +272,9 @@ chrome.runtime.onMessage.addListener(
        iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
        iframe.src = chrome.extension.getURL("/recorder.html");
 
-       var header_inner_html = "<style>#qanairy_ide_header {cursor: grab;}#ide_close_icon:hover {cursor: pointer;}</style><span id='ide_close_icon' onclick='close_ide()' style='z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><b>X</b></i>"
+       var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><b>X</b></i>";
        var header = document.createElement("div");
-       header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0";
+       header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
        header.id="qanairy_ide_header";
        header.innerHTML = header_inner_html;
 
