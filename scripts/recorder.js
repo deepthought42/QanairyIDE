@@ -325,10 +325,12 @@ $jquery("#element_selector").on("click", function(){
   //if recording is currently running pause it
   selector_status = "active";
 
-  if(recording_status === "stopped"){
+  console.log("recording status :: "+recording_status);
+  if(recording_status === "started"){
+    console.log("seding message to stop recording ");
     //fire event to stop listening for url change events and action events
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-      chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
+      chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording", selector_enabled: true}, function(response) {
       });
     });
   }
@@ -347,7 +349,7 @@ chrome.runtime.onMessage.addListener(
             //fire event to stop listening for url change events and action events
             if(recording_status === "stopped"){
               chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-                chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording"}, function(response) {
+                chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
                 });
               });
             }

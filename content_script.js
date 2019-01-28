@@ -3,8 +3,10 @@
 let uppercase = false;
 let last_xpath = "";
 let last_node = null;
+let selector_enabled = false;
 
 let recorderKeyupListener = function(event){
+
   chrome.runtime.sendMessage({msg: "addToPath",
                               data: {url: window.location.toString(),
                                      pathElement: {
@@ -84,6 +86,11 @@ let generateXpath = function(elem){
 
 
 let recorderClickListener = function(event){
+
+  console.log("selector enabled :: " + selector_enabled);
+  if(selector_enabled){
+    event.preventDefault();
+  }
 
   var xpath = "";
   //get all elements on page
@@ -249,8 +256,11 @@ chrome.runtime.onMessage.addListener(
     }
     else if (request.msg === "stop_recording") {
       status = "stopped";
+      selector_enabled = request.selector_enabled;
 
-      document.removeEventListener("click", recorderClickListener);
+      if(!selector_enabled){
+        document.removeEventListener("click", recorderClickListener);
+      }
       document.removeEventListener("keyup", recorderKeyupListener);
       document.removeEventListener("keydown", recorderKeydownListener);
 
@@ -260,12 +270,13 @@ chrome.runtime.onMessage.addListener(
       runTest(request.data);
     }
     else if (request.msg === "open_recorder"){
+
        var iframe = document.createElement("iframe");
        iframe.id="qanairy_ide_frame";
-       iframe.style.cssText = "position:absolute;width:300px;height:450px;z-index:10001";
+       iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
        iframe.src = chrome.extension.getURL("/recorder.html");
 
-       var header_inner_html = "<button id='close_qanairy_ide' onclick='close_ide()' class='btn-sm' style='position:relative;left:270px;height:100%; margin:0px;padding:0px'><i class='fa fa-times'></i> </button>"
+       var header_inner_html = "<i class='fa fa-times'  onclick='close_ide()' style='z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'></i>"
        var header = document.createElement("div");
        header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0";
        header.id="qanairy_ide_header";
@@ -277,7 +288,7 @@ chrome.runtime.onMessage.addListener(
        body.appendChild(iframe);
 
        var parent = document.createElement("div");
-       parent.style.cssText = "position:absolute;width:300px;height:450px;z-index:10000;left:20px;top:20px";
+       parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px";
        parent.id="qanairy_ide";
        parent.appendChild(header);
        parent.appendChild(body);

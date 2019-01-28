@@ -14,6 +14,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 var subscribe = function(profile){
+  console.log("subscribing profile to pusher :: "+profile.name);
   var channel = pusher.subscribe(profile.name);
 
   channel.bind("pusher:subscription_succeeded", function() {
@@ -24,6 +25,7 @@ var subscribe = function(profile){
     chrome.storage.local.get({
       notifications: true
     }, function(event_data) {
+      console.log("Loading test");
         //send path to recorder
         chrome.runtime.sendMessage({
             msg: "loadTest",
@@ -151,6 +153,28 @@ chrome.runtime.onMessage.addListener(
             message: err.message,
             iconUrl: "images/qanairy_logo.png"
           });
+        });
+    }
+    else if(request.msg === "subscribe_to_platform"){
+      //send message to open recorder panel
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {
+          console.log("received response from request for open recorder :: "+response);
+        });
+      });
+
+      var authResult = JSON.parse(localStorage.getItem("authResult"));
+      console.log("Auth result :: "+JSON.stringify(authResult));
+
+      console.log("Auth result access token :: "+authResult["access_token"]);
+      console.log(Object.keys(authResult));
+      fetch(`https://staging-qanairy.auth0.com/userinfo`, {
+        headers: {
+          "Authorization": "Bearer "+authResult.access_token
+        }
+      }).then(resp => resp.json()).then((profile) => {
+          localStorage.profile = profile;
+          subscribe(profile);
         });
     }
   });
