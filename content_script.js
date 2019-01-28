@@ -96,8 +96,6 @@ let recorderClickListener = function(event){
     }
   });
 
-console.log("adding xpath :: "+xpath);
-
     chrome.runtime.sendMessage({msg: "addToPath",
                                 data: {url: window.location.toString(),
                                        pathElement: {
@@ -170,9 +168,11 @@ console.log("adding xpath :: "+xpath);
 
 let close_ide = function(){
   //hide parent element
-  console.log("closing ide");
   qanairy_ide = document.getElementById("qanairy_ide");
   qanairy_ide.style.display = "none";
+
+  //reset localStorage
+  localStorage.removeItem("path");
 }
 
   /**
@@ -237,9 +237,7 @@ let main = function(){
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
-    console.log("a message was received :: "+JSON.stringify(request));
     if (request.msg === "start_recording"){
-      console.log("start recording received");
       path = [];
       status = "recording";
 
@@ -258,37 +256,38 @@ chrome.runtime.onMessage.addListener(
 
       sendResponse({status: "stopping"});
     }
-    else if(request.msg === "run_test"){
+    else if (request.msg === "run_test"){
       runTest(request.data);
     }
-   else if (request.msg === "open_recorder"){
+    else if (request.msg === "open_recorder"){
+       var iframe = document.createElement("iframe");
+       iframe.id="qanairy_ide_frame";
+       iframe.style.cssText = "position:absolute;width:300px;height:450px;z-index:10001";
+       iframe.src = chrome.extension.getURL("/recorder.html");
 
-     console.log("received open recorder message");
-     var iframe = document.createElement("iframe");
-     iframe.id="qanairy_ide_frame";
-     iframe.style.cssText = "position:absolute;width:300px;height:450px;z-index:100";
-     iframe.src = chrome.extension.getURL("/recorder.html");
+       var header_inner_html = "<button id='close_qanairy_ide' onclick='close_ide()' class='btn-sm' style='position:relative;left:270px;height:100%; margin:0px;padding:0px'><i class='fa fa-times'></i> </button>"
+       var header = document.createElement("div");
+       header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0";
+       header.id="qanairy_ide_header";
+       header.innerHTML = header_inner_html;
 
-     var header_inner_html = "<button id='close_qanairy_ide' onclick='close_ide()' class='btn-sm' style='position:relative;left:270px;height:100%; margin:0px;padding:0px'><i class='fa fa-times'></i> </button>"
-     var header = document.createElement("div");
-     header.style.cssText = "width:300px;height:20px;z-index:100;background-color:#553fc0";
-     header.id="qanairy_ide_header";
-     header.innerHTML = header_inner_html;
+       var body = document.createElement("div");
+       body.style.cssText = "width:100%;height:20px";
+       body.id="qanairy_ide_body";
+       body.appendChild(iframe);
 
-     var body = document.createElement("div");
-     body.style.cssText = "width:100%;height:20px";
-     body.id="qanairy_ide_body";
-     body.appendChild(iframe);
+       var parent = document.createElement("div");
+       parent.style.cssText = "position:absolute;width:300px;height:450px;z-index:10000;left:20px;top:20px";
+       parent.id="qanairy_ide";
+       parent.appendChild(header);
+       parent.appendChild(body);
+       document.body.appendChild(parent);
+       main();
 
-     var parent = document.createElement("div");
-     parent.style.cssText = "position:absolute;width:300px;height:450px;z-index:10000;left:20px;top:20px";
-     parent.id="qanairy_ide";
-     parent.appendChild(header);
-     parent.appendChild(body);
-     document.body.appendChild(parent);
-     this.main;
-
-   }
+    }
+    else if (request.msg === "close_recorder"){
+      close_ide();
+    }
 });
   /**
 	 * creates a unique xpath based on a given hash of xpaths
