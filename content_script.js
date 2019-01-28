@@ -276,7 +276,7 @@ chrome.runtime.onMessage.addListener(
        iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
        iframe.src = chrome.extension.getURL("/recorder.html");
 
-       var header_inner_html = "<i class='fa fa-times'  onclick='close_ide()' style='z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'></i>"
+       var header_inner_html = "<style>#qanairy_ide_header {cursor: grab;}#ide_close_icon:hover {cursor: pointer;}</style><span id='ide_close_icon' onclick='close_ide()' style='z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><b>X</b></i>"
        var header = document.createElement("div");
        header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0";
        header.id="qanairy_ide_header";
