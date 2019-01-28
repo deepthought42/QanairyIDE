@@ -1,6 +1,20 @@
 let path = [];
 let status = "stopped";
 
+
+// Enable Pusher logging - don't include this in production
+Pusher.log = function(message) {
+  if (window.console && window.console.log) {
+    window.console.log(message);
+  }
+};
+
+var pusher = new Pusher("77fec1184d841b55919e", {
+  cluster: "us2",
+  encrypted: true,
+  disableStats: true
+});
+
 // src/main.js
 chrome.runtime.onInstalled.addListener(function() {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function(){
@@ -178,17 +192,3 @@ chrome.runtime.onMessage.addListener(
         });
     }
   });
-
-
-// Enable Pusher logging - don't include this in production
-Pusher.log = function(message) {
-  if (window.console && window.console.log) {
-    window.console.log(message);
-  }
-};
-
-var pusher = new Pusher("77fec1184d841b55919e", {
-  cluster: "us2",
-  encrypted: true,
-  disableStats: true
-});
