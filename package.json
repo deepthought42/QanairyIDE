@@ -4,6 +4,8 @@
   "description": "Qanairy IDE allows you to record tests easily",
   "main": "background.js",
   "dependencies": {
+    "auth0-chrome": "^0.1.2",
+    "jwt-decode": "^2.2.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "webpack": "^4.21.0",
