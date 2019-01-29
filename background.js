@@ -55,6 +55,23 @@ var subscribe = function(profile){
 
         chrome.notifications.create("edit-test-" + JSON.parse(test).key, options, function(id) {});
     });
+  });
+
+  channel.bind("test-created", function(test) {
+    chrome.storage.local.get({
+      notifications: true
+    }, function(event_data) {
+        // Trigger desktop notification
+        var options = {
+          type: "basic",
+          title: "Test Created",
+          message: test.name + " was created successfully in Qanairy",
+          iconUrl: "images/qanairy_q_logo_white.png",
+          isClickable: true
+        }
+
+        chrome.notifications.create("test-created" + JSON.parse(test).key, options, function(id) {});
+    });
 
   });
 }
