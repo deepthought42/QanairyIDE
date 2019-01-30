@@ -147,17 +147,18 @@ chrome.runtime.onMessage.addListener(
       // device
       //  - required if requesting the offline_access scope.
       let options = {
-        scope: "openid profile offline_access",
+        scope: "token profile offline_access",
         device: "chrome-extension"
       };
 
+      console.log("authenticating ");
       new Auth0Chrome("staging-qanairy.auth0.com", "mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6")
         .authenticate(options)
         .then(function (authResult) {
           localStorage.authResult = JSON.stringify(authResult);
           chrome.notifications.create({
             type: "basic",
-            iconUrl: "images/qanairy_logo.png",
+            iconUrl: "images/qanairy_q_logo_white.png",
             title: "Login Successful",
             message: "You can use the app now"
           });
@@ -180,7 +181,7 @@ chrome.runtime.onMessage.addListener(
             type: "basic",
             title: "Login Failed",
             message: err.message,
-            iconUrl: "images/qanairy_logo.png"
+            iconUrl: "images/qanairy_q_logo_white.png"
           });
         });
     }

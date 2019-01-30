@@ -1,6 +1,9 @@
 let $jquery = jQuery.noConflict();
 
 $jquery("#actionValueContainer").hide();
+$jquery("#export-error").hide();
+$jquery("#export_test_btn_text").show();
+$jquery("#export_test_btn_waiting_txt").hide();
 
 let startRecording = document.getElementById("startRecording");
 let stopRecording = document.getElementById("stopRecording");
@@ -320,6 +323,17 @@ $jquery("#actionName").change(function(){
  *
  */
 $jquery("#exportTest").on("click", function(element){
+    $jquery(this).prop("disabled",true);
+    $jquery("#export_test_btn_text").hide();
+    $jquery("#export_test_btn_waiting_txt").show();
+    console.log("localStorage ::   "+Object.keys(localStorage));
+
+    console.log("localStorage ::   "+localStorage.getItem("authResult"));
+    var auth = JSON.parse(localStorage.getItem("authResult"));
+
+    console.log("localStorage ::   "+auth.access_token);
+
+    console.log("localStorage ::   "+Object.keys(auth));
     var path = JSON.parse(localStorage.getItem("path"));
     var test_name = prompt("Please name your test");
     //****************************************
@@ -329,10 +343,23 @@ $jquery("#exportTest").on("click", function(element){
     //xhr.open("POST", "https://api.qanairy.com/testIDE", true);
     xhr.open("POST", "https://staging-api.qanairy.com/testIDE", true);
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.onload = function() {
-      if (xhr.readyState === 4) {
+    xhr.setRequestHeader("Authorization", "Bearer "+ auth.access_token);
+    xhr.onreadystatechange = function() {
+      if (this.readyState === XMLHttpRequest.DONE){
+
+        $jquery("#exportTest").prop("disabled",false);
+
+        $jquery("#export_test_btn_text").show();
+        $jquery("#export_test_btn_waiting_txt").hide();
+        var resp = JSON.parse(this.responseText);
+
+        if(this.status === 200) {
+
+        }
+        else if(this.status/100 == 5){
+          $jquery("#export-error").show(0).delay(5000).hide(0);
+        }
         // JSON.parse does not evaluate the attacker's scripts.
-        var resp = JSON.parse(xhr.responseText);
         //document.getElementById("resp").innerText = xhr.responseText;
       }
     }
