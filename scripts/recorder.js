@@ -342,8 +342,11 @@ $jquery("#exportTest").on("click", function(element){
     var xhr = new XMLHttpRequest();
     //xhr.open("POST", "https://api.qanairy.com/testIDE", true);
     xhr.open("POST", "https://staging-api.qanairy.com/testIDE", true);
+    xhr.withCredentials = true;
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhr.setRequestHeader("Authorization", "Bearer "+ auth.access_token);
+    xhr.send(JSON.stringify({name: test_name, path: path}));
+
     xhr.onreadystatechange = function() {
       if (this.readyState === XMLHttpRequest.DONE){
 
@@ -363,7 +366,6 @@ $jquery("#exportTest").on("click", function(element){
         //document.getElementById("resp").innerText = xhr.responseText;
       }
     }
-    xhr.send(JSON.stringify({name: test_name, path: path}));
 });
 
 //receive path element
