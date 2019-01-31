@@ -259,10 +259,35 @@ let main = function(){
 
 };
 
+var renderRecorder = function(){
+   var iframe = document.createElement("iframe");
+   iframe.id="qanairy_ide_frame";
+   iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
+   iframe.src = chrome.extension.getURL("/recorder.html");
+
+   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><b>X</b></i>";
+   var header = document.createElement("div");
+   header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
+   header.id="qanairy_ide_header";
+   header.innerHTML = header_inner_html;
+
+   var body = document.createElement("div");
+   body.style.cssText = "width:100%;height:20px";
+   body.id="qanairy_ide_body";
+   body.appendChild(iframe);
+
+   var parent = document.createElement("div");
+   parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px";
+   parent.id="qanairy_ide";
+   parent.appendChild(header);
+   parent.appendChild(body);
+   document.body.appendChild(parent);
+}
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg === "start_recording"){
-      status = "recording";
+      localStorage.status = "recording";
       console.log("start recording request received");
       document.addEventListener("click", recorderClickListener);
       document.addEventListener("keyup", recorderKeyupListener);
@@ -271,7 +296,7 @@ chrome.runtime.onMessage.addListener(
       sendResponse({status: "starting"});
     }
     else if (request.msg === "stop_recording") {
-      status = "stopped";
+      localStorage.status = "stopped";
       selector_enabled = request.selector_enabled;
 
       if(!selector_enabled){
@@ -286,29 +311,7 @@ chrome.runtime.onMessage.addListener(
       runTest(request.data);
     }
     else if (request.msg === "open_recorder"){
-
-       var iframe = document.createElement("iframe");
-       iframe.id="qanairy_ide_frame";
-       iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
-       iframe.src = chrome.extension.getURL("/recorder.html");
-
-       var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><b>X</b></i>";
-       var header = document.createElement("div");
-       header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
-       header.id="qanairy_ide_header";
-       header.innerHTML = header_inner_html;
-
-       var body = document.createElement("div");
-       body.style.cssText = "width:100%;height:20px";
-       body.id="qanairy_ide_body";
-       body.appendChild(iframe);
-
-       var parent = document.createElement("div");
-       parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px";
-       parent.id="qanairy_ide";
-       parent.appendChild(header);
-       parent.appendChild(body);
-       document.body.appendChild(parent);
+      renderRecorder();
        main();
 
     }
@@ -347,3 +350,7 @@ let uniqifyXpath = function(WebElement elem, Map<String, Integer> xpathHash, Str
 		return xpath;
 	}
 */
+
+if(localStorage.status === "recording"){
+  renderRecorder();
+}

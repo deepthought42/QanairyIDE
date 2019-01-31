@@ -10,9 +10,6 @@ let stopRecording = document.getElementById("stopRecording");
 let pageEditPanel = document.getElementById("pageForm");
 let pageElementEditPanel = document.getElementById("pageElementForm");
 let selector_status = "disabled";
-let recording_status = "stopped";
-
-
 
 /*
  * Shows page creation form when button is clicked

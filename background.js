@@ -1,5 +1,5 @@
 let path = [];
-let status = "stopped";
+localStorage.status = "stopped";
 
 
 // Enable Pusher logging - don't include this in production
@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg === "start_recording"){
       console.log("staring recording in background");
-      status = "recording";
+      localStorage.status = "recording";
       chrome.webNavigation.onCompleted.addListener(
         function(details){
           var path = JSON.parse(localStorage.getItem("path"));
@@ -116,7 +116,7 @@ chrome.runtime.onMessage.addListener(
       }, 1500);
 
     }
-    else if(request.msg === "addToPath" && status !== "stopped"){
+    else if(request.msg === "addToPath" && localStorage.status !== "stopped"){
       var path = localStorage.path;
       if(path.length === 0 || path[path.length-1].type !== "page"){
         path.push({type: "page", url: sender.tab.url});
