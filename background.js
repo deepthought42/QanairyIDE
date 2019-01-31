@@ -66,7 +66,7 @@ var subscribe = function(profile){
         var options = {
           type: "basic",
           title: "Test Created",
-          message: test.name + " was created successfully in Qanairy",
+          message: test.name + " was created successfully",
           iconUrl: "images/qanairy_q_logo_white.png",
           isClickable: true
         }

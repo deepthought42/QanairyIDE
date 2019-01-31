@@ -333,6 +333,13 @@ $jquery("#exportTest").on("click", function(element){
     var path = JSON.parse(localStorage.getItem("path"));
     var test_name = prompt("Please name your test");
 
+    var start_url = "";
+    for(var idx=0; idx < path.length; idx++){
+      if(path[idx].url){
+        start_url = path[idx].url;
+        break;
+      }
+    }
 
     $jquery.ajax({
 
@@ -350,7 +357,7 @@ $jquery("#exportTest").on("click", function(element){
       // application/x-www-form-urlencoded, multipart/form-data, or text/plain,
       // you will trigger a preflight request.
       contentType: 'application/json',
-      data: JSON.stringify({name: test_name, path: path}),
+      data: JSON.stringify({domain_url: start_url, name: test_name, path: path}),
       xhrFields: {
         // The 'xhrFields' property sets additional fields on the XMLHttpRequest.
         // This can be used to set the 'withCredentials' property.
@@ -374,8 +381,8 @@ $jquery("#exportTest").on("click", function(element){
         // Trigger desktop notification that test was saved successfully
         var options = {
           type: "basic",
-          title: "Save was Successful",
-          message: "Test was saved successfully",
+          title: "Your test is being processed",
+          message: "Qanairy is building your test. We'll let you know when it's ready.",
           iconUrl: "images/qanairy_q_logo_white.png",
           isClickable: true
         }

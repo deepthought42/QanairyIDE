@@ -97,9 +97,12 @@ let recorderClickListener = function(event){
   //get all elements on page
   document.querySelectorAll("body *").forEach(function(node){
     console.log("looking through elements");
-    var rect = node.getBoundingClientRect();
-    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom){
-      possible_nodes.push(node);
+
+    if(node.id !== 'qanairy_ide_frame' && node.id !== 'qanairy_ide_header' && node.id !== 'qanairy_ide_body' && node.id !== 'qanairy_ide'){
+      var rect = node.getBoundingClientRect();
+      if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom){
+        possible_nodes.push(node);
+      }
     }
   });
 
@@ -112,7 +115,6 @@ let recorderClickListener = function(event){
       var rect2 = last_node.getBoundingClientRect();
       //smallest node
       if(rect2.left < rect.left || rect2.top < rect.top || rect2.right > rect.right || rect2.bottom > rect.bottom){
-        console.log("found smallest node");
         xpath = generateXpath(node);
         last_xpath = xpath;
         last_node = node;
@@ -122,6 +124,7 @@ let recorderClickListener = function(event){
       last_node = node;
     }
   }
+
   console.log("LAST NODE :: " + last_node);
 
     chrome.runtime.sendMessage({msg: "addToPath",
@@ -350,7 +353,3 @@ let uniqifyXpath = function(WebElement elem, Map<String, Integer> xpathHash, Str
 		return xpath;
 	}
 */
-
-if(localStorage.status === "recording"){
-  renderRecorder();
-}
