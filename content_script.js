@@ -93,15 +93,36 @@ let recorderClickListener = function(event){
   }
 
   var xpath = "";
+  var possible_nodes = [];
   //get all elements on page
   document.querySelectorAll("body *").forEach(function(node){
+    console.log("looking through elements");
     var rect = node.getBoundingClientRect();
-    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
-      xpath = generateXpath(node);
-      last_xpath = xpath;
-      last_node = node;
+    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom){
+      possible_nodes.push(node);
     }
   });
+
+  for(var idx =0; idx < possible_nodes.length; idx++){
+    var node = possible_nodes[idx];
+    console.log("looking for last node");
+    var rect = node.getBoundingClientRect();
+
+    if(last_node != null){
+      var rect2 = last_node.getBoundingClientRect();
+      //smallest node
+      if(rect2.left < rect.left || rect2.top < rect.top || rect2.right > rect.right || rect2.bottom > rect.bottom){
+        console.log("found smallest node");
+        xpath = generateXpath(node);
+        last_xpath = xpath;
+        last_node = node;
+      }
+    }
+    else{
+      last_node = node;
+    }
+  }
+  console.log("LAST NODE :: " + last_node);
 
     chrome.runtime.sendMessage({msg: "addToPath",
                                 data: {url: window.location.toString(),
@@ -120,7 +141,7 @@ let recorderClickListener = function(event){
                                      }
                                    },
        function(response) {
-         //console.log("response ::  " +JSON.stringify(response));
+         console.log("response ::  " +JSON.stringify(response));
        }
      );
 }
