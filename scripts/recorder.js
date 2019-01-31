@@ -110,7 +110,6 @@ $jquery("#element_selector").on("click", function(){
   //if recording is currently running pause it
   selector_status = "active";
 
-  console.log("recording status :: "+recording_status);
   if(recording_status === "started"){
     console.log("seding message to stop recording ");
     //fire event to stop listening for url change events and action events
@@ -374,7 +373,17 @@ $jquery("#exportTest").on("click", function(element){
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
         console.log("response :: "+response );
-        // Here's where you handle a successful response.
+
+        // Trigger desktop notification that test was saved successfully
+        var options = {
+          type: "basic",
+          title: "Save was Successful",
+          message: "Test was saved successfully",
+          iconUrl: "images/qanairy_q_logo_white.png",
+          isClickable: true
+        }
+
+        chrome.notifications.create("test-saved-successfully", options, function(id) {});
       },
 
       error: function(response) {
@@ -389,6 +398,16 @@ $jquery("#exportTest").on("click", function(element){
         // Note that if the error was due to a CORS issue,
         // this function will still fire, but there won't be any additional
         // information about the error.
+        // Trigger desktop notification that test was saved successfully
+        var options = {
+          type: "basic",
+          title: "Save failed",
+          message: "Unable to save test. Please try again.",
+          iconUrl: "images/qanairy_q_logo_white.png",
+          isClickable: true
+        }
+
+        chrome.notifications.create("test-save-failed", options, function(id) {});
       }
     });
 });
@@ -404,6 +423,7 @@ chrome.runtime.onMessage.addListener(
             if(recording_status === "stopped"){
               chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
                 chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
+                  console.log("starting record status :: "+response);
                 });
               });
             }

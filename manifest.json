@@ -4,7 +4,6 @@
     "description": "Allows recording custom tests for the Qanairy.com platform",
     "permissions": ["declarativeContent", "storage", "webNavigation", "tabs", "activeTab","webRequest","webRequestBlocking","identity",
         "notifications",
-        "https://*.auth0.com/*",
         "https://*/*"],
     "background": {
       "scripts": [

@@ -240,10 +240,9 @@ let main = function(){
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-
     if (request.msg === "start_recording"){
       status = "recording";
-
+      console.log("start recording request received");
       document.addEventListener("click", recorderClickListener);
       document.addEventListener("keyup", recorderKeyupListener);
       document.addEventListener("keydown", recorderKeydownListener);

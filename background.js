@@ -9,7 +9,7 @@ Pusher.log = function(message) {
   }
 };
 
-var pusher = new Pusher("77fec1184d841b55919e", {
+let pusher = new Pusher("77fec1184d841b55919e", {
   cluster: "us2",
   encrypted: true,
   disableStats: true
@@ -28,6 +28,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 var subscribe = function(profile){
+  console.log("provile  ::  "+JSON.stringify(profile));
   var channel = pusher.subscribe(profile.name);
 
   channel.bind("pusher:subscription_succeeded", function() {
@@ -49,7 +50,7 @@ var subscribe = function(profile){
           type: "basic",
           title: "Test Received",
           message: "A test has been received for editing",
-          iconUrl: "images/qanairy_logo.png",
+          iconUrl: "images/qanairy_q_logo_white.png",
           isClickable: true
         }
 
@@ -79,6 +80,7 @@ var subscribe = function(profile){
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg === "start_recording"){
+      console.log("staring recording in background");
       status = "recording";
       chrome.webNavigation.onCompleted.addListener(
         function(details){
@@ -147,7 +149,8 @@ chrome.runtime.onMessage.addListener(
       // device
       //  - required if requesting the offline_access scope.
       let options = {
-        scope: "token profile offline_access",
+        responseType: 'token id_token',
+        scope: "openid profile",
         audience: "https://staging-api.qanairy.com",
         device: "chrome-extension"
       };
@@ -156,6 +159,7 @@ chrome.runtime.onMessage.addListener(
       new Auth0Chrome("staging-qanairy.auth0.com", "mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6")
         .authenticate(options)
         .then(function (authResult) {
+
           localStorage.authResult = JSON.stringify(authResult);
           chrome.notifications.create({
             type: "basic",
@@ -164,18 +168,12 @@ chrome.runtime.onMessage.addListener(
             message: "You can use the app now"
           });
 
-          fetch("https://staging-qanairy.auth0.com/userinfo", {
-            headers: {
-              "Authorization": `Bearer ${authResult.access_token}`
-            }
-          }).then((resp) => resp.json()).then((profile) => {
-              localStorage.setItem("profile", profile);
-              subscribe(profile);
-            });
-
           chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
             chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {});
           });
+          console.log("JWT DECODED PROFILE :: " + jwt_decode(authResult.id_token));
+          subscribe( jwt_decode(authResult.id_token));
+
           //call show recorder here
         }).catch(function (err) {
           chrome.notifications.create({
