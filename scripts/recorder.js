@@ -336,36 +336,61 @@ $jquery("#exportTest").on("click", function(element){
     console.log("localStorage ::   "+Object.keys(auth));
     var path = JSON.parse(localStorage.getItem("path"));
     var test_name = prompt("Please name your test");
-    //****************************************
-    //test path export code
-    //****************************************
-    var xhr = new XMLHttpRequest();
-    //xhr.open("POST", "https://api.qanairy.com/testIDE", true);
-    xhr.open("POST", "https://staging-api.qanairy.com/testIDE", true);
-    xhr.withCredentials = true;
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.setRequestHeader("Authorization", "Bearer "+ auth.access_token);
-    xhr.send(JSON.stringify({name: test_name, path: path}));
 
-    xhr.onreadystatechange = function() {
-      if (this.readyState === XMLHttpRequest.DONE){
 
+    $jquery.ajax({
+
+      // The 'type' property sets the HTTP method.
+      // A value of 'PUT' or 'DELETE' will trigger a preflight request.
+      type: 'POST',
+
+      // The URL to make the request to.
+      url: 'https://staging-api.qanairy.com/testIDE',
+
+      // The 'contentType' property sets the 'Content-Type' header.
+      // The JQuery default for this property is
+      // 'application/x-www-form-urlencoded; charset=UTF-8', which does not trigger
+      // a preflight. If you set this value to anything other than
+      // application/x-www-form-urlencoded, multipart/form-data, or text/plain,
+      // you will trigger a preflight request.
+      contentType: 'application/json',
+      data: JSON.stringify({name: test_name, path: path}),
+      xhrFields: {
+        // The 'xhrFields' property sets additional fields on the XMLHttpRequest.
+        // This can be used to set the 'withCredentials' property.
+        // Set the value to 'true' if you'd like to pass cookies to the server.
+        // If this is enabled, your server must respond with the header
+        // 'Access-Control-Allow-Credentials: true'.
+        withCredentials: true
+      },
+      headers: {
+      },
+      beforeSend: function(xhr, settings) {
+        xhr.setRequestHeader('Authorization','Bearer ' + auth.access_token);
+      },
+      success: function(response) {
         $jquery("#exportTest").prop("disabled",false);
 
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
-        var resp = JSON.parse(this.responseText);
+        console.log("response :: "+response );
+        // Here's where you handle a successful response.
+      },
 
-        if(this.status === 200) {
+      error: function(response) {
+        $jquery("#exportTest").prop("disabled",false);
 
-        }
-        else if(this.status/100 == 5){
-          $jquery("#export-error").show(0).delay(5000).hide(0);
-        }
-        // JSON.parse does not evaluate the attacker's scripts.
-        //document.getElementById("resp").innerText = xhr.responseText;
+        $jquery("#export_test_btn_text").show();
+        $jquery("#export_test_btn_waiting_txt").hide();
+        console.log("response :: "+response );
+        $jquery("#export-error").show(0).delay(5000).hide(0);
+
+        // Here's where you handle an error response.
+        // Note that if the error was due to a CORS issue,
+        // this function will still fire, but there won't be any additional
+        // information about the error.
       }
-    }
+    });
 });
 
 //receive path element

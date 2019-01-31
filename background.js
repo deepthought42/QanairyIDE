@@ -148,6 +148,7 @@ chrome.runtime.onMessage.addListener(
       //  - required if requesting the offline_access scope.
       let options = {
         scope: "token profile offline_access",
+        audience: "https://staging-api.qanairy.com",
         device: "chrome-extension"
       };
 
