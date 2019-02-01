@@ -166,7 +166,7 @@ $jquery("#savePageElementButton").on("click", function(){
       xpath: $jquery("#pageElementXpath").val()
     },
     action :{
-      name : $jquery("actionName").val(),
+      name : $jquery("#actionName").val(),
       value: $jquery("#actionValue").val()
     }
   }
