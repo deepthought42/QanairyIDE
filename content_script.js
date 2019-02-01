@@ -90,6 +90,8 @@ let recorderClickListener = function(event){
   console.log("selector enabled :: " + selector_enabled);
   if(selector_enabled){
     event.preventDefault();
+    document.removeEventListener("click", recorderClickListener);
+    selector_enabled = false;
   }
 
   var xpath = "";
@@ -289,6 +291,7 @@ var renderRecorder = function(){
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
+    console.log("recieved request :: "+JSON.stringify(request));
     if (request.msg === "start_recording"){
       localStorage.status = "recording";
       console.log("start recording request received");
@@ -300,15 +303,16 @@ chrome.runtime.onMessage.addListener(
     }
     else if (request.msg === "stop_recording") {
       localStorage.status = "stopped";
-      selector_enabled = request.selector_enabled;
 
-      if(!selector_enabled){
-        document.removeEventListener("click", recorderClickListener);
-      }
+      document.removeEventListener("click", recorderClickListener);
       document.removeEventListener("keyup", recorderKeyupListener);
       document.removeEventListener("keydown", recorderKeydownListener);
 
       sendResponse({status: "stopping"});
+    }
+    else if(request.msg === "listen_for_element_selector"){
+      selector_enabled = true;
+      document.addEventListener("click", recorderClickListener);
     }
     else if (request.msg === "run_test"){
       runTest(request.data);
