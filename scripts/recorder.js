@@ -32,7 +32,7 @@ let generatePagePathListItem = function(page, index){
       </div>
     </div>
     <div class="col-xs-2 icons" >
-      <i class="fa fa-pencil icon fa-lg"></i>
+      <i class="fa fa-pencil icon edit-icon fa-lg"></i>
       <i class="fa fa-times icon delete-icon fa-lg" ></i>
     </div>
   </div>`;
@@ -104,14 +104,9 @@ let deletePathElement = function(path, index){
 };
 
 $jquery("#element_selector").on("click", function(){
-
-    console.log("clicked element selector :: "+localStorage.status);
-    console.log("clicked element selector :: "+JSON.stringify(localStorage.status));
-  console.log("clicked element selector :: "+JSON.stringify(localStorage.getItem("status")))
   //if recording is currently running pause it
   selector_status = "active";
 
-  console.log("seding message to stop recording ");
   //fire event to stop listening for url change events and action events
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {msg: "listen_for_element_selector"}, function(response) {
@@ -124,7 +119,7 @@ $jquery("#element_selector").on("click", function(){
 });
 
 $jquery(document).ready(function(){
-  var path = JSON.parse(localStorage.getItem("path"));
+  var path = JSON.parse(localStorage.test).path;
   if(path){
     redrawPath(path);
   }
@@ -325,18 +320,12 @@ $jquery("#exportTest").on("click", function(element){
     $jquery(this).prop("disabled",true);
     $jquery("#export_test_btn_text").hide();
     $jquery("#export_test_btn_waiting_txt").show();
-    console.log("localStorage ::   "+Object.keys(localStorage));
 
-    console.log("localStorage ::   "+localStorage.getItem("authResult"));
     var auth = JSON.parse(localStorage.getItem("authResult"));
-
-    console.log("localStorage ::   "+auth.access_token);
-
-    console.log("localStorage ::   "+Object.keys(auth));
     var path = JSON.parse(localStorage.getItem("path"));
     var test_name = prompt("Please name your test");
-
     var start_url = "";
+
     for(var idx=0; idx < path.length; idx++){
       if(path[idx].url){
         start_url = path[idx].url;
@@ -376,10 +365,8 @@ $jquery("#exportTest").on("click", function(element){
       },
       success: function(response) {
         $jquery("#exportTest").prop("disabled",false);
-
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
-        console.log("response :: "+response );
 
         // Trigger desktop notification that test was saved successfully
         var options = {
@@ -398,7 +385,6 @@ $jquery("#exportTest").on("click", function(element){
 
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
-        console.log("response :: "+response );
         $jquery("#export-error").show(0).delay(5000).hide(0);
 
         // Here's where you handle an error response.
@@ -423,7 +409,6 @@ $jquery("#exportTest").on("click", function(element){
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.msg === "addToPath") {
-          console.log("adding to path");
           //if selector button set selector status to active then retrieve xpath and set it to element xpath field value
           if(selector_status === "active"){
             selector_status = "disabled";
@@ -431,7 +416,7 @@ chrome.runtime.onMessage.addListener(
             if(localStorage.status === "stopped"){
               chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
                 chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
-                  console.log("starting record status :: "+response);
+                  //console.log("starting record status :: "+response);
                 });
               });
             }
@@ -470,7 +455,7 @@ chrome.runtime.onMessage.addListener(
           }
         }
         else if (request.msg === "loadTest") {
-          redrawPath(request.data.path);
+          redrawPath(localStorage.path);
         }
       }
 );

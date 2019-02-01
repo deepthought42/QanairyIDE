@@ -28,23 +28,43 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 var subscribe = function(profile){
-  console.log("provile  ::  "+JSON.stringify(profile));
   var channel = pusher.subscribe(profile.name);
 
   channel.bind("pusher:subscription_succeeded", function() {
     //console.log("Successfully subscribed to channel :"+profile.name);
   });
 
-  channel.bind("edit-test", function(test) {
-    chrome.storage.local.get({
-      notifications: true
-    }, function(event_data) {
+  channel.bind("edit-test", function(msg) {
+    localStorage.status = "editing";
+    var test = JSON.parse(msg);
+    localStorage.test = msg;
+    //retrieve first url in path
+    var start_url= "";
+    for(var idx = 0; idx < test.path.length; idx++){
+      if(test.path[idx].url){
+        start_url = test.path[idx].url;
+        break;
+      }
+    }
+
+    localStorage.path = JSON.stringify(test.path);
+    //open new tab
+    chrome.tabs.create({ url: start_url }, function(tab){
+      //open recorder
+      chrome.tabs.sendMessage(tab.id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {
         //send path to recorder
         chrome.runtime.sendMessage({
             msg: "loadTest",
-            data: JSON.parse(test)
+            data: test
         });
+      });
+    });
 
+
+
+    chrome.storage.local.get({
+      notifications: true
+    }, function(event_data) {
         // Trigger desktop notification
         var options = {
           type: "basic",
@@ -54,7 +74,7 @@ var subscribe = function(profile){
           isClickable: true
         }
 
-        chrome.notifications.create("edit-test-" + JSON.parse(test).key, options, function(id) {});
+        chrome.notifications.create("edit-test-" + test.key, options, function(id) {});
     });
   });
 
@@ -80,7 +100,6 @@ var subscribe = function(profile){
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg === "start_recording"){
-      console.log("staring recording in background");
       localStorage.status = "recording";
       chrome.webNavigation.onCompleted.addListener(
         function(details){
@@ -155,7 +174,6 @@ chrome.runtime.onMessage.addListener(
         device: "chrome-extension"
       };
 
-      console.log("authenticating ");
       new Auth0Chrome("staging-qanairy.auth0.com", "mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6")
         .authenticate(options)
         .then(function (authResult) {
@@ -171,7 +189,6 @@ chrome.runtime.onMessage.addListener(
           chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
             chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {});
           });
-          console.log("JWT DECODED PROFILE :: " + jwt_decode(authResult.id_token));
           subscribe( jwt_decode(authResult.id_token));
 
           //call show recorder here

@@ -86,8 +86,6 @@ let generateXpath = function(elem){
 
 
 let recorderClickListener = function(event){
-
-  console.log("selector enabled :: " + selector_enabled);
   if(selector_enabled){
     event.preventDefault();
     document.removeEventListener("click", recorderClickListener);
@@ -98,8 +96,6 @@ let recorderClickListener = function(event){
   var possible_nodes = [];
   //get all elements on page
   document.querySelectorAll("body *").forEach(function(node){
-    console.log("looking through elements");
-
     if(node.id !== 'qanairy_ide_frame' && node.id !== 'qanairy_ide_header' && node.id !== 'qanairy_ide_body' && node.id !== 'qanairy_ide'){
       var rect = node.getBoundingClientRect();
       if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom){
@@ -110,7 +106,6 @@ let recorderClickListener = function(event){
 
   for(var idx =0; idx < possible_nodes.length; idx++){
     var node = possible_nodes[idx];
-    console.log("looking for last node");
     var rect = node.getBoundingClientRect();
 
     if(last_node != null){
@@ -127,28 +122,26 @@ let recorderClickListener = function(event){
     }
   }
 
-  console.log("LAST NODE :: " + last_node);
-
-    chrome.runtime.sendMessage({msg: "addToPath",
-                                data: {url: window.location.toString(),
-                                       pathElement: {
-                                         element: {
-                                           type: "pageElement",
-                                           target: event.relatedTarget,
-                                           xpath: xpath
-                                         },
-                                         action: {
-                                           type: "action",
-                                           name: "click",
-                                           value: ""
-                                         }
+  chrome.runtime.sendMessage({msg: "addToPath",
+                              data: {url: window.location.toString(),
+                                     pathElement: {
+                                       element: {
+                                         type: "pageElement",
+                                         target: event.relatedTarget,
+                                         xpath: xpath
+                                       },
+                                       action: {
+                                         type: "action",
+                                         name: "click",
+                                         value: ""
                                        }
                                      }
-                                   },
-       function(response) {
-         console.log("response ::  " +JSON.stringify(response));
-       }
-     );
+                                   }
+                                 },
+     function(response) {
+       //console.log("response ::  " +JSON.stringify(response));
+     }
+   );
 }
 
     //build list of elements where the x,y coords and height,width encompass the event x,y coords
@@ -212,9 +205,6 @@ let close_ide = function(){
    */
 
 let main = function(){
-
-
-
    // Make the DIV element draggable:
   function dragElement(elmnt) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -291,10 +281,8 @@ var renderRecorder = function(){
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log("recieved request :: "+JSON.stringify(request));
     if (request.msg === "start_recording"){
       localStorage.status = "recording";
-      console.log("start recording request received");
       document.addEventListener("click", recorderClickListener);
       document.addEventListener("keyup", recorderKeyupListener);
       document.addEventListener("keydown", recorderKeydownListener);
@@ -319,13 +307,27 @@ chrome.runtime.onMessage.addListener(
     }
     else if (request.msg === "open_recorder"){
       renderRecorder();
-       main();
-
+      main();
     }
     else if (request.msg === "close_recorder"){
       close_ide();
     }
 });
+
+if(localStorage.status === "recording" || localStorage.status === "editing"){
+  renderRecorder();
+  main();
+
+  if(localStorage.status === "editing"){
+    //send path to recorder
+    chrome.runtime.sendMessage({
+        msg: "loadTest",
+        data: localStorage.test
+    });
+    localStorage.removeItem(status);
+  }
+}
+
   /**
 	 * creates a unique xpath based on a given hash of xpaths
 	 *
