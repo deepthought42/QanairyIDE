@@ -119,7 +119,15 @@ $jquery("#element_selector").on("click", function(){
 });
 
 $jquery(document).ready(function(){
-  var path = JSON.parse(localStorage.test).path;
+  var test_mem = localStorage.test;
+  var path = null;
+
+  if(!test_mem) {
+    path = JSON.parse(test_mem).path;
+  }
+  else {
+    path = JSON.parse(localStorage.path);
+  }
   if(path){
     redrawPath(path);
   }
@@ -323,6 +331,7 @@ $jquery("#exportTest").on("click", function(element){
 
     var auth = JSON.parse(localStorage.getItem("authResult"));
     var path = JSON.parse(localStorage.getItem("path"));
+    var key = JSON.parse(localStorage.test).key;
     var test_name = prompt("Please name your test");
     var start_url = "";
 
@@ -349,7 +358,7 @@ $jquery("#exportTest").on("click", function(element){
       // application/x-www-form-urlencoded, multipart/form-data, or text/plain,
       // you will trigger a preflight request.
       contentType: 'application/json',
-      data: JSON.stringify({domain_url: start_url, name: test_name, path: path}),
+      data: JSON.stringify({key: key, domain_url: start_url, name: test_name, path: path}),
       xhrFields: {
         // The 'xhrFields' property sets additional fields on the XMLHttpRequest.
         // This can be used to set the 'withCredentials' property.

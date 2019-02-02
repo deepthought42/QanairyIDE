@@ -84,6 +84,26 @@ let generateXpath = function(elem){
   return xpath;
 }
 
+/**
+ * Traverses parent nodes in tree from current node toward root until it reaches the main html element or locates a z-Index value
+ */
+let findParentZIndex = function(node){
+
+  var current_node = node;
+  var z_index = null;
+  while(current_node && (!z_index || !z_index.length || z_index === "auto")){
+    z_index = document.defaultView.getComputedStyle(current_node).getPropertyValue("z-index");
+    if(current_node.tagName === "HTML"){
+      if(z_index === "auto"){
+        return 0;
+      }
+    }
+
+    current_node = current_node.parentNode;
+  }
+
+  return z_index;
+}
 
 let recorderClickListener = function(event){
   if(selector_enabled){
@@ -94,6 +114,7 @@ let recorderClickListener = function(event){
 
   var xpath = "";
   var possible_nodes = [];
+  var top_z_index = -10000000;
   //get all elements on page
   document.querySelectorAll("body *").forEach(function(node){
     if(node.id !== 'qanairy_ide_frame' && node.id !== 'qanairy_ide_header' && node.id !== 'qanairy_ide_body' && node.id !== 'qanairy_ide'){
@@ -105,16 +126,19 @@ let recorderClickListener = function(event){
   });
 
   for(var idx =0; idx < possible_nodes.length; idx++){
+
     var node = possible_nodes[idx];
     var rect = node.getBoundingClientRect();
 
     if(last_node != null){
+      var z_index = findParentZIndex(possible_nodes[idx]);
       var rect2 = last_node.getBoundingClientRect();
       //smallest node
-      if(rect2.left < rect.left || rect2.top < rect.top || rect2.right > rect.right || rect2.bottom > rect.bottom){
+      if((rect2.left < rect.left || rect2.top < rect.top || rect2.right > rect.right || rect2.bottom > rect.bottom) && z_index >= top_z_index ){
         xpath = generateXpath(node);
         last_xpath = xpath;
         last_node = node;
+        top_z_index = z_index;
       }
     }
     else{
@@ -260,7 +284,7 @@ var renderRecorder = function(){
    iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
    iframe.src = chrome.extension.getURL("/recorder.html");
 
-   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><b>X</b></i>";
+   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><i class='fa fa-times'></i>";
    var header = document.createElement("div");
    header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
    header.id="qanairy_ide_header";
@@ -272,7 +296,7 @@ var renderRecorder = function(){
    body.appendChild(iframe);
 
    var parent = document.createElement("div");
-   parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px";
+   parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px;padding:0px";
    parent.id="qanairy_ide";
    parent.appendChild(header);
    parent.appendChild(body);
