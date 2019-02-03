@@ -370,7 +370,7 @@ $jquery("#exportTest").on("click", function(element){
       headers: {
       },
       beforeSend: function(xhr, settings) {
-        xhr.setRequestHeader("Authorization","Bearer "" + auth.access_token);
+        xhr.setRequestHeader("Authorization","Bearer " + auth.access_token);
       },
       success: function(response) {
         $jquery("#exportTest").prop("disabled",false);
