@@ -84,45 +84,88 @@ let generateXpath = function(elem){
   return xpath;
 }
 
+/**
+ * Traverses parent nodes in tree from current node toward root until it reaches the main html element or locates a z-Index value
+ */
+let findParentZIndex = function(node){
+
+  var current_node = node;
+  var z_index = null;
+  while(current_node && (!z_index || !z_index.length || z_index === "auto")){
+    z_index = document.defaultView.getComputedStyle(current_node).getPropertyValue("z-index");
+    if(current_node.tagName === "HTML"){
+      if(z_index === "auto"){
+        return 0;
+      }
+    }
+
+    current_node = current_node.parentNode;
+  }
+
+  return z_index;
+}
 
 let recorderClickListener = function(event){
-
-  console.log("selector enabled :: " + selector_enabled);
   if(selector_enabled){
     event.preventDefault();
+    document.removeEventListener("click", recorderClickListener);
+    selector_enabled = false;
   }
 
   var xpath = "";
+  var possible_nodes = [];
+  var top_z_index = -10000000;
   //get all elements on page
   document.querySelectorAll("body *").forEach(function(node){
-    var rect = node.getBoundingClientRect();
-    if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom ){
-      xpath = generateXpath(node);
-      last_xpath = xpath;
-      last_node = node;
+    if(node.id !== "qanairy_ide_frame" && node.id !== "qanairy_ide_header" && node.id !== "qanairy_ide_body" && node.id !== "qanairy_ide"){
+      var rect = node.getBoundingClientRect();
+      if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom){
+        possible_nodes.push(node);
+      }
     }
   });
 
-    chrome.runtime.sendMessage({msg: "addToPath",
-                                data: {url: window.location.toString(),
-                                       pathElement: {
-                                         element: {
-                                           type: "pageElement",
-                                           target: event.relatedTarget,
-                                           xpath: xpath
-                                         },
-                                         action: {
-                                           type: "action",
-                                           name: "click",
-                                           value: ""
-                                         }
+  for(var idx =0; idx < possible_nodes.length; idx++){
+
+    var node = possible_nodes[idx];
+    var rect = node.getBoundingClientRect();
+
+    if(last_node != null){
+      var z_index = findParentZIndex(possible_nodes[idx]);
+      var rect2 = last_node.getBoundingClientRect();
+      //smallest node
+      if((rect2.left < rect.left || rect2.top < rect.top || rect2.right > rect.right || rect2.bottom > rect.bottom) && z_index >= top_z_index ){
+        xpath = generateXpath(node);
+        last_xpath = xpath;
+        last_node = node;
+        top_z_index = z_index;
+      }
+    }
+    else{
+      last_node = node;
+    }
+  }
+
+  chrome.runtime.sendMessage({msg: "addToPath",
+                              data: {url: window.location.toString(),
+                                     pathElement: {
+                                       element: {
+                                         type: "pageElement",
+                                         target: event.relatedTarget,
+                                         xpath: xpath
+                                       },
+                                       action: {
+                                         type: "action",
+                                         name: "click",
+                                         value: ""
                                        }
                                      }
-                                   },
-       function(response) {
-         //console.log("response ::  " +JSON.stringify(response));
-       }
-     );
+                                   }
+                                 },
+     function(response) {
+       //console.log("response ::  " +JSON.stringify(response));
+     }
+   );
 }
 
     //build list of elements where the x,y coords and height,width encompass the event x,y coords
@@ -186,9 +229,6 @@ let close_ide = function(){
    */
 
 let main = function(){
-
-
-
    // Make the DIV element draggable:
   function dragElement(elmnt) {
     var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -238,12 +278,35 @@ let main = function(){
 
 };
 
+var renderRecorder = function(){
+   var iframe = document.createElement("iframe");
+   iframe.id="qanairy_ide_frame";
+   iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
+   iframe.src = chrome.extension.getURL("/recorder.html");
+
+   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><i class='fa fa-times'></i>";
+   var header = document.createElement("div");
+   header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
+   header.id="qanairy_ide_header";
+   header.innerHTML = header_inner_html;
+
+   var body = document.createElement("div");
+   body.style.cssText = "width:100%;height:20px";
+   body.id="qanairy_ide_body";
+   body.appendChild(iframe);
+
+   var parent = document.createElement("div");
+   parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px;padding:0px";
+   parent.id="qanairy_ide";
+   parent.appendChild(header);
+   parent.appendChild(body);
+   document.body.appendChild(parent);
+}
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-
     if (request.msg === "start_recording"){
-      status = "recording";
-
+      localStorage.status = "recording";
       document.addEventListener("click", recorderClickListener);
       document.addEventListener("keyup", recorderKeyupListener);
       document.addEventListener("keydown", recorderKeydownListener);
@@ -251,51 +314,44 @@ chrome.runtime.onMessage.addListener(
       sendResponse({status: "starting"});
     }
     else if (request.msg === "stop_recording") {
-      status = "stopped";
-      selector_enabled = request.selector_enabled;
+      localStorage.status = "stopped";
 
-      if(!selector_enabled){
-        document.removeEventListener("click", recorderClickListener);
-      }
+      document.removeEventListener("click", recorderClickListener);
       document.removeEventListener("keyup", recorderKeyupListener);
       document.removeEventListener("keydown", recorderKeydownListener);
 
       sendResponse({status: "stopping"});
     }
+    else if(request.msg === "listen_for_element_selector"){
+      selector_enabled = true;
+      document.addEventListener("click", recorderClickListener);
+    }
     else if (request.msg === "run_test"){
       runTest(request.data);
     }
     else if (request.msg === "open_recorder"){
-
-       var iframe = document.createElement("iframe");
-       iframe.id="qanairy_ide_frame";
-       iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
-       iframe.src = chrome.extension.getURL("/recorder.html");
-
-       var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><b>X</b></i>";
-       var header = document.createElement("div");
-       header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
-       header.id="qanairy_ide_header";
-       header.innerHTML = header_inner_html;
-
-       var body = document.createElement("div");
-       body.style.cssText = "width:100%;height:20px";
-       body.id="qanairy_ide_body";
-       body.appendChild(iframe);
-
-       var parent = document.createElement("div");
-       parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px";
-       parent.id="qanairy_ide";
-       parent.appendChild(header);
-       parent.appendChild(body);
-       document.body.appendChild(parent);
-       main();
-
+      renderRecorder();
+      main();
     }
     else if (request.msg === "close_recorder"){
       close_ide();
     }
 });
+
+if(localStorage.status === "recording" || localStorage.status === "editing"){
+  renderRecorder();
+  main();
+
+  if(localStorage.status === "editing"){
+    //send path to recorder
+    chrome.runtime.sendMessage({
+        msg: "loadTest",
+        data: localStorage.test
+    });
+    localStorage.removeItem(status);
+  }
+}
+
   /**
 	 * creates a unique xpath based on a given hash of xpaths
 	 *

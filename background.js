@@ -1,5 +1,5 @@
 let path = [];
-let status = "stopped";
+localStorage.status = "stopped";
 
 
 // Enable Pusher logging - don't include this in production
@@ -9,7 +9,7 @@ Pusher.log = function(message) {
   }
 };
 
-var pusher = new Pusher("77fec1184d841b55919e", {
+let pusher = new Pusher("77fec1184d841b55919e", {
   cluster: "us2",
   encrypted: true,
   disableStats: true
@@ -34,26 +34,47 @@ var subscribe = function(profile){
     //console.log("Successfully subscribed to channel :"+profile.name);
   });
 
-  channel.bind("edit-test", function(test) {
-    chrome.storage.local.get({
-      notifications: true
-    }, function(event_data) {
+  channel.bind("edit-test", function(msg) {
+    localStorage.status = "editing";
+    var test = JSON.parse(msg);
+    localStorage.test = msg;
+    //retrieve first url in path
+    var start_url= "";
+    for(var idx = 0; idx < test.path.length; idx++){
+      if(test.path[idx].url){
+        start_url = test.path[idx].url;
+        break;
+      }
+    }
+
+    localStorage.path = JSON.stringify(test.path);
+    //open new tab
+    chrome.tabs.create({ url: start_url }, function(tab){
+      //open recorder
+      chrome.tabs.sendMessage(tab.id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {
         //send path to recorder
         chrome.runtime.sendMessage({
             msg: "loadTest",
-            data: JSON.parse(test)
+            data: test
         });
+      });
+    });
 
+
+
+    chrome.storage.local.get({
+      notifications: true
+    }, function(event_data) {
         // Trigger desktop notification
         var options = {
           type: "basic",
           title: "Test Received",
           message: "A test has been received for editing",
-          iconUrl: "images/qanairy_logo.png",
+          iconUrl: "images/qanairy_q_logo_white.png",
           isClickable: true
         }
 
-        chrome.notifications.create("edit-test-" + JSON.parse(test).key, options, function(id) {});
+        chrome.notifications.create("edit-test-" + test.key, options, function(id) {});
     });
   });
 
@@ -65,7 +86,7 @@ var subscribe = function(profile){
         var options = {
           type: "basic",
           title: "Test Created",
-          message: test.name + " was created successfully in Qanairy",
+          message: test.name + " was created successfully",
           iconUrl: "images/qanairy_q_logo_white.png",
           isClickable: true
         }
@@ -79,7 +100,7 @@ var subscribe = function(profile){
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg === "start_recording"){
-      status = "recording";
+      localStorage.status = "recording";
       chrome.webNavigation.onCompleted.addListener(
         function(details){
           var path = JSON.parse(localStorage.getItem("path"));
@@ -114,7 +135,7 @@ chrome.runtime.onMessage.addListener(
       }, 1500);
 
     }
-    else if(request.msg === "addToPath" && status !== "stopped"){
+    else if(request.msg === "addToPath" && localStorage.status !== "stopped"){
       var path = localStorage.path;
       if(path.length === 0 || path[path.length-1].type !== "page"){
         path.push({type: "page", url: sender.tab.url});
@@ -147,40 +168,36 @@ chrome.runtime.onMessage.addListener(
       // device
       //  - required if requesting the offline_access scope.
       let options = {
-        scope: "openid profile offline_access",
+        responseType: "token id_token",
+        scope: "openid profile",
+        audience: "https://staging-api.qanairy.com",
         device: "chrome-extension"
       };
 
       new Auth0Chrome("staging-qanairy.auth0.com", "mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6")
         .authenticate(options)
         .then(function (authResult) {
+
           localStorage.authResult = JSON.stringify(authResult);
           chrome.notifications.create({
             type: "basic",
-            iconUrl: "images/qanairy_logo.png",
+            iconUrl: "images/qanairy_q_logo_white.png",
             title: "Login Successful",
             message: "You can use the app now"
           });
 
-          fetch("https://staging-qanairy.auth0.com/userinfo", {
-            headers: {
-              "Authorization": `Bearer ${authResult.access_token}`
-            }
-          }).then((resp) => resp.json()).then((profile) => {
-              localStorage.setItem("profile", profile);
-              subscribe(profile);
-            });
-
           chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
             chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {});
           });
+          subscribe( jwt_decode(authResult.id_token));
+
           //call show recorder here
         }).catch(function (err) {
           chrome.notifications.create({
             type: "basic",
             title: "Login Failed",
             message: err.message,
-            iconUrl: "images/qanairy_logo.png"
+            iconUrl: "images/qanairy_q_logo_white.png"
           });
         });
     }

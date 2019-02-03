@@ -1,15 +1,15 @@
 let $jquery = jQuery.noConflict();
 
 $jquery("#actionValueContainer").hide();
+$jquery("#export-error").hide();
+$jquery("#export_test_btn_text").show();
+$jquery("#export_test_btn_waiting_txt").hide();
 
 let startRecording = document.getElementById("startRecording");
 let stopRecording = document.getElementById("stopRecording");
 let pageEditPanel = document.getElementById("pageForm");
 let pageElementEditPanel = document.getElementById("pageElementForm");
 let selector_status = "disabled";
-let recording_status = "stopped";
-
-
 
 /*
  * Shows page creation form when button is clicked
@@ -32,7 +32,7 @@ let generatePagePathListItem = function(page, index){
       </div>
     </div>
     <div class="col-xs-2 icons" >
-      <i class="fa fa-pencil icon fa-lg"></i>
+      <i class="fa fa-pencil icon edit-icon fa-lg"></i>
       <i class="fa fa-times icon delete-icon fa-lg" ></i>
     </div>
   </div>`;
@@ -107,22 +107,27 @@ $jquery("#element_selector").on("click", function(){
   //if recording is currently running pause it
   selector_status = "active";
 
-  console.log("recording status :: "+recording_status);
-  if(recording_status === "started"){
-    console.log("seding message to stop recording ");
-    //fire event to stop listening for url change events and action events
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-      chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording", selector_enabled: true}, function(response) {
-      });
+  //fire event to stop listening for url change events and action events
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {msg: "listen_for_element_selector"}, function(response) {
     });
-  }
+  });
+
   //activate listener for click events similar to recording, but return element and xpath here
 
   //if recording was running at start of session then resume recording
 });
 
 $jquery(document).ready(function(){
-  var path = JSON.parse(localStorage.getItem("path"));
+  var test_mem = localStorage.test;
+  var path = null;
+
+  if(!test_mem) {
+    path = JSON.parse(test_mem).path;
+  }
+  else {
+    path = JSON.parse(localStorage.path);
+  }
   if(path){
     redrawPath(path);
   }
@@ -164,7 +169,7 @@ $jquery("#savePageElementButton").on("click", function(){
       xpath: $jquery("#pageElementXpath").val()
     },
     action :{
-      name : $jquery("actionName").val(),
+      name : $jquery("#actionName").val(),
       value: $jquery("#actionValue").val()
     }
   }
@@ -279,7 +284,7 @@ startRecording.onclick = function(element) {
 
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording", data: {}}, function(response) {
-      recording_status = "started";
+      localStorage.status = "recording";
     });
   });
 };
@@ -292,7 +297,7 @@ stopRecording.onclick = function(element){
   //fire event to stop listening for url change events and action events
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {msg: "stop_recording"}, function(response) {
-      recording_status = "stopped";
+      localStorage.status = "stopped";
     });
   });
 };
@@ -320,23 +325,93 @@ $jquery("#actionName").change(function(){
  *
  */
 $jquery("#exportTest").on("click", function(element){
+    $jquery(this).prop("disabled",true);
+    $jquery("#export_test_btn_text").hide();
+    $jquery("#export_test_btn_waiting_txt").show();
+
+    var auth = JSON.parse(localStorage.getItem("authResult"));
     var path = JSON.parse(localStorage.getItem("path"));
+    var key = JSON.parse(localStorage.test).key;
     var test_name = prompt("Please name your test");
-    //****************************************
-    //test path export code
-    //****************************************
-    var xhr = new XMLHttpRequest();
-    //xhr.open("POST", "https://api.qanairy.com/testIDE", true);
-    xhr.open("POST", "https://staging-api.qanairy.com/testIDE", true);
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.onload = function() {
-      if (xhr.readyState === 4) {
-        // JSON.parse does not evaluate the attacker's scripts.
-        var resp = JSON.parse(xhr.responseText);
-        //document.getElementById("resp").innerText = xhr.responseText;
+    var start_url = "";
+
+    for(var idx=0; idx < path.length; idx++){
+      if(path[idx].url){
+        start_url = path[idx].url;
+        break;
       }
     }
-    xhr.send(JSON.stringify({name: test_name, path: path}));
+
+    $jquery.ajax({
+
+      // The 'type' property sets the HTTP method.
+      // A value of 'PUT' or 'DELETE' will trigger a preflight request.
+      type: "POST",
+
+      // The URL to make the request to.
+      url: "https://staging-api.qanairy.com/testIDE",
+
+      // The 'contentType' property sets the 'Content-Type' header.
+      // The JQuery default for this property is
+      // 'application/x-www-form-urlencoded; charset=UTF-8', which does not trigger
+      // a preflight. If you set this value to anything other than
+      // application/x-www-form-urlencoded, multipart/form-data, or text/plain,
+      // you will trigger a preflight request.
+      contentType: "application/json",
+      data: JSON.stringify({key: key, domain_url: start_url, name: test_name, path: path}),
+      xhrFields: {
+        // The 'xhrFields' property sets additional fields on the XMLHttpRequest.
+        // This can be used to set the 'withCredentials' property.
+        // Set the value to 'true' if you'd like to pass cookies to the server.
+        // If this is enabled, your server must respond with the header
+        // 'Access-Control-Allow-Credentials: true'.
+        withCredentials: true
+      },
+      headers: {
+      },
+      beforeSend: function(xhr, settings) {
+        xhr.setRequestHeader("Authorization","Bearer "" + auth.access_token);
+      },
+      success: function(response) {
+        $jquery("#exportTest").prop("disabled",false);
+        $jquery("#export_test_btn_text").show();
+        $jquery("#export_test_btn_waiting_txt").hide();
+
+        // Trigger desktop notification that test was saved successfully
+        var options = {
+          type: "basic",
+          title: "Your test is being processed",
+          message: "Qanairy is building your test. We'll let you know when it's ready.",
+          iconUrl: "images/qanairy_q_logo_white.png",
+          isClickable: true
+        }
+
+        chrome.notifications.create("test-saved-successfully", options, function(id) {});
+      },
+
+      error: function(response) {
+        $jquery("#exportTest").prop("disabled",false);
+
+        $jquery("#export_test_btn_text").show();
+        $jquery("#export_test_btn_waiting_txt").hide();
+        $jquery("#export-error").show(0).delay(5000).hide(0);
+
+        // Here's where you handle an error response.
+        // Note that if the error was due to a CORS issue,
+        // this function will still fire, but there won't be any additional
+        // information about the error.
+        // Trigger desktop notification that test was saved successfully
+        var options = {
+          type: "basic",
+          title: "Save failed",
+          message: "Unable to save test. Please try again.",
+          iconUrl: "images/qanairy_q_logo_white.png",
+          isClickable: true
+        }
+
+        chrome.notifications.create("test-save-failed", options, function(id) {});
+      }
+    });
 });
 
 //receive path element
@@ -347,9 +422,10 @@ chrome.runtime.onMessage.addListener(
           if(selector_status === "active"){
             selector_status = "disabled";
             //fire event to stop listening for url change events and action events
-            if(recording_status === "stopped"){
+            if(localStorage.status === "stopped"){
               chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
                 chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
+                  //console.log("starting record status :: "+response);
                 });
               });
             }
@@ -388,7 +464,7 @@ chrome.runtime.onMessage.addListener(
           }
         }
         else if (request.msg === "loadTest") {
-          redrawPath(request.data.path);
+          redrawPath(localStorage.path);
         }
       }
 );
