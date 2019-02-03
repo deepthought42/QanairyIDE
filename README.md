@@ -19,7 +19,6 @@ Clone the Qanairy IDE repository using [git][git]:
 
 ```
 git clone https://github.com/deepthought42/QanairyIDE.git
-cd Minion/app
 ```
 
 ### Install Dependencies
