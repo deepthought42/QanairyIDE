@@ -1,10 +1,8 @@
-
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/db7f804418df427c864c05c3622f9b56)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=deepthought42/QanairyIDE&amp;utm_campaign=Badge_Grade)
 
 # Qanairy IDE (Chrome Extension)
 
 This project is a Chrome extension that enables users to record or edit tests.
-
 
 ## Getting Started
 

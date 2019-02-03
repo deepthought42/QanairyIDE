@@ -117,7 +117,7 @@ let recorderClickListener = function(event){
   var top_z_index = -10000000;
   //get all elements on page
   document.querySelectorAll("body *").forEach(function(node){
-    if(node.id !== 'qanairy_ide_frame' && node.id !== 'qanairy_ide_header' && node.id !== 'qanairy_ide_body' && node.id !== 'qanairy_ide'){
+    if(node.id !== "qanairy_ide_frame" && node.id !== "qanairy_ide_header" && node.id !== "qanairy_ide_body" && node.id !== "qanairy_ide"){
       var rect = node.getBoundingClientRect();
       if(event.clientX >= rect.left && event.clientY >= rect.top && event.clientX <= rect.right && event.clientY <= rect.bottom){
         possible_nodes.push(node);

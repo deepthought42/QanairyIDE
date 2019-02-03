@@ -168,7 +168,7 @@ chrome.runtime.onMessage.addListener(
       // device
       //  - required if requesting the offline_access scope.
       let options = {
-        responseType: 'token id_token',
+        responseType: "token id_token",
         scope: "openid profile",
         audience: "https://staging-api.qanairy.com",
         device: "chrome-extension"

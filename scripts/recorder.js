@@ -346,10 +346,10 @@ $jquery("#exportTest").on("click", function(element){
 
       // The 'type' property sets the HTTP method.
       // A value of 'PUT' or 'DELETE' will trigger a preflight request.
-      type: 'POST',
+      type: "POST",
 
       // The URL to make the request to.
-      url: 'https://staging-api.qanairy.com/testIDE',
+      url: "https://staging-api.qanairy.com/testIDE",
 
       // The 'contentType' property sets the 'Content-Type' header.
       // The JQuery default for this property is
@@ -357,7 +357,7 @@ $jquery("#exportTest").on("click", function(element){
       // a preflight. If you set this value to anything other than
       // application/x-www-form-urlencoded, multipart/form-data, or text/plain,
       // you will trigger a preflight request.
-      contentType: 'application/json',
+      contentType: "application/json",
       data: JSON.stringify({key: key, domain_url: start_url, name: test_name, path: path}),
       xhrFields: {
         // The 'xhrFields' property sets additional fields on the XMLHttpRequest.
@@ -370,7 +370,7 @@ $jquery("#exportTest").on("click", function(element){
       headers: {
       },
       beforeSend: function(xhr, settings) {
-        xhr.setRequestHeader('Authorization','Bearer ' + auth.access_token);
+        xhr.setRequestHeader("Authorization","Bearer "" + auth.access_token);
       },
       success: function(response) {
         $jquery("#exportTest").prop("disabled",false);
