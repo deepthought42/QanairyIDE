@@ -331,7 +331,12 @@ $jquery("#exportTest").on("click", function(element){
 
     var auth = JSON.parse(localStorage.getItem("authResult"));
     var path = JSON.parse(localStorage.getItem("path"));
-    var key = JSON.parse(localStorage.test).key;
+
+    var key = null;
+    if(localStorage.test){
+      key = JSON.parse(localStorage.test).key;
+    }
+
     var test_name = prompt("Please name your test");
     var start_url = "";
 
