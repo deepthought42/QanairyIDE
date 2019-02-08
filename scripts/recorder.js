@@ -122,7 +122,7 @@ $jquery(document).ready(function(){
   var test_mem = localStorage.test;
   var path = null;
 
-  if(!test_mem) {
+  if(test_mem) {
     path = JSON.parse(test_mem).path;
   }
   else {
