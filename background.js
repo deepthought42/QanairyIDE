@@ -78,7 +78,8 @@ var subscribe = function(profile){
     });
   });
 
-  channel.bind("test-created", function(test) {
+  channel.bind("test-created", function(test_msg) {
+    var test = JSON.parse(test_msg);
     chrome.storage.local.get({
       notifications: true
     }, function(event_data) {
@@ -126,6 +127,17 @@ chrome.runtime.onMessage.addListener(
       else{
         alert("Paths are expected to start with a page");
       }
+
+      window.setTimeout( function(){
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+          chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: path}, function(response) {
+          });
+        });
+      }, 1500);
+
+    }
+    else if (request.msg === "continue_test_run") {
+      var path = localhost.path;
 
       window.setTimeout( function(){
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){

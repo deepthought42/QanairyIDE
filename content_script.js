@@ -186,8 +186,11 @@ let recorderClickListener = function(event){
    */
   let runTest = function(path){
     //process elements
-    for(var idx=1; idx< path.length; idx++){
+    var url = "";
+    for(var idx = localStorage.run_idx; idx < path.length; idx++){
+      localStorage.run_idx = idx;
         if(path[idx].url){
+          url = path[idx].url
           //if element is a page then send message to background to navigate page
         }
         else if(path[idx].element){
@@ -204,12 +207,18 @@ let recorderClickListener = function(event){
             else if(path[idx].action.name === "sendKeys"){
               xpathResult.value = path[idx].action.value;
             }
+            var new_url = window.location.toString()
+            if(new_url !== url){
+              localStorage.run_idx = idx + 1;
+              break;
+            }
           }
         }
         else {
-          alert("Unknown path element experienced at index "+idx);
+          console.log("Unknown path element experienced at index "+idx);
         }
     }
+
   }
 
 
@@ -327,7 +336,12 @@ chrome.runtime.onMessage.addListener(
       document.addEventListener("click", recorderClickListener);
     }
     else if (request.msg === "run_test"){
-      runTest(request.data);
+      localStorage.run_idx = 0;
+      localStorage.status = "RUNNING";
+      if(request.data){
+        localStorage.path = JSON.stringify(request.data);
+      }
+      runTest(JSON.parse(localStorage.path));
     }
     else if (request.msg === "open_recorder"){
       renderRecorder();
@@ -338,7 +352,7 @@ chrome.runtime.onMessage.addListener(
     }
 });
 
-if(localStorage.status === "recording" || localStorage.status === "editing"){
+if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING"){
   renderRecorder();
   main();
 
@@ -349,6 +363,15 @@ if(localStorage.status === "recording" || localStorage.status === "editing"){
         data: localStorage.test
     });
     localStorage.removeItem(status);
+  }
+  else if(localStorage.status === "RUNNING"){
+    runTest(JSON.parse(localStorage.path));
+    chrome.runtime.sendMessage({
+        msg: "continue_test_run",
+        data: ""
+    },
+    function(response) {
+    });
   }
 }
 

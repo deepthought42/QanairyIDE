@@ -122,7 +122,7 @@ $jquery(document).ready(function(){
   var test_mem = localStorage.test;
   var path = null;
 
-  if(!test_mem) {
+  if(test_mem) {
     path = JSON.parse(test_mem).path;
   }
   else {
@@ -331,7 +331,12 @@ $jquery("#exportTest").on("click", function(element){
 
     var auth = JSON.parse(localStorage.getItem("authResult"));
     var path = JSON.parse(localStorage.getItem("path"));
-    var key = JSON.parse(localStorage.test).key;
+
+    var key = null;
+    if(localStorage.test){
+      key = JSON.parse(localStorage.test).key;
+    }
+
     var test_name = prompt("Please name your test");
     var start_url = "";
 
@@ -468,3 +473,15 @@ chrome.runtime.onMessage.addListener(
         }
       }
 );
+
+if(localStorage.status === 'recording'){
+  console.log("Recording is already active");
+  stopRecording.style.display = "block";
+  startRecording.style.display = "none";
+
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording", data: {}}, function(response) {
+      localStorage.status = "recording";
+    });
+  });
+}
