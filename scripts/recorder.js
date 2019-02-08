@@ -473,3 +473,15 @@ chrome.runtime.onMessage.addListener(
         }
       }
 );
+
+if(localStorage.status === 'recording'){
+  console.log("Recording is already active");
+  stopRecording.style.display = "block";
+  startRecording.style.display = "none";
+
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording", data: {}}, function(response) {
+      localStorage.status = "recording";
+    });
+  });
+}
