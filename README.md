@@ -10,16 +10,23 @@ To get you started you can simply clone the Minion repository and install the de
 
 ### Prerequisites
 
-You need git to clone the [Qanairy IDE](https://github.com/deepthought42/QanairyIDE.git) repository. You can get git from
-[http://git-scm.com/](http://git-scm.com/).
+In order to work on this project you will need Git. If you prefer to use a user interface other than the command line then you will also need Github desktop. You can find the links below
 
+ [Git](http://git-scm.com/).
+ [Github Desktop](https://desktop.github.com/)
+ 
 ### Clone the project
 
+#### Command Line:
 Clone the Qanairy IDE repository using [git][git]:
 
 ```
 git clone https://github.com/deepthought42/QanairyIDE.git
 ```
+
+#### Github desktop
+
+Go to File > Clone Repository and click on the URL tab. Enter  https://github.com/deepthought42/QanairyIDE.git in the url input box
 
 ### Install Dependencies
 
