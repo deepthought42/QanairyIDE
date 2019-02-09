@@ -350,6 +350,7 @@ chrome.runtime.onMessage.addListener(
     else if (request.msg === "close_recorder"){
       close_ide();
     }
+    return Promise.resolve("Dummy response to keep the console quiet");
 });
 
 if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING"){

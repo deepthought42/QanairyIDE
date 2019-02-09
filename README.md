@@ -14,7 +14,7 @@ In order to work on this project you will need Git. If you prefer to use a user 
 
  [Git](http://git-scm.com/).
  [Github Desktop](https://desktop.github.com/)
- 
+
 ### Clone the project
 
 #### Command Line:
@@ -36,3 +36,5 @@ Go to File > Clone Repository and click on the URL tab. Enter  https://github.co
 
   Go to chrome Settings > Extensions and click "Load Unpacked". Add folder where Qanairy IDE repository was saved
   The plugin should now be loaded
+
+  Once the extension is installed make sure that your browser is in "developer mode"(Unpacked apps don't work with developer mode disabled)

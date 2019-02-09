@@ -12,7 +12,8 @@ Pusher.log = function(message) {
 let pusher = new Pusher("77fec1184d841b55919e", {
   cluster: "us2",
   encrypted: true,
-  disableStats: true
+  disableStats: true,
+  logToConsole: false
 });
 
 // src/main.js
@@ -70,7 +71,7 @@ var subscribe = function(profile){
           type: "basic",
           title: "Test Received",
           message: "A test has been received for editing",
-          iconUrl: "images/qanairy_q_logo_white.png",
+          iconUrl: "images/qanairy_q_logo_black_48.png",
           isClickable: true
         }
 
@@ -88,7 +89,7 @@ var subscribe = function(profile){
           type: "basic",
           title: "Test Created",
           message: test.name + " was created successfully",
-          iconUrl: "images/qanairy_q_logo_white.png",
+          iconUrl: "images/qanairy_q_logo_black_48.png",
           isClickable: true
         }
 
@@ -193,7 +194,7 @@ chrome.runtime.onMessage.addListener(
           localStorage.authResult = JSON.stringify(authResult);
           chrome.notifications.create({
             type: "basic",
-            iconUrl: "images/qanairy_q_logo_white.png",
+            iconUrl: "images/qanairy_q_logo_black_48.png",
             title: "Login Successful",
             message: "You can use the app now"
           });
@@ -209,7 +210,7 @@ chrome.runtime.onMessage.addListener(
             type: "basic",
             title: "Login Failed",
             message: err.message,
-            iconUrl: "images/qanairy_q_logo_white.png"
+            iconUrl: "images/qanairy_q_logo_black_48.png"
           });
         });
     }
