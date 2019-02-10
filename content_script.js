@@ -5,6 +5,11 @@ let last_xpath = "";
 let last_node = null;
 let selector_enabled = false;
 
+let pause = function(milliseconds) {
+	var dt = new Date();
+	while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
+}
+
 let recorderKeyupListener = function(event){
 
   chrome.runtime.sendMessage({msg: "addToPath",
@@ -228,7 +233,6 @@ let recorderClickListener = function(event){
 
 
 let close_ide = function(){
-  console.log("close ide");
   //hide parent element
   qanairy_ide = document.getElementById("qanairy_ide");
   qanairy_ide.style.display = "none";
@@ -238,7 +242,7 @@ let close_ide = function(){
 }
 
 let logout = function(){
-  localStorage.removeItem("authResult")
+  localStorage.removeItem("authResult");
   close_ide();
 }
   /**
