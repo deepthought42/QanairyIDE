@@ -73,7 +73,8 @@ let generatePageElementPathListItem = function(path_element, index){
  */
 let redrawPathElement = function(element, index){
   var list_item_html = generatePageElementPathListItem(element, index);
-  $jquery("#test_path_viewer").children().get(index).html(list_item_html);
+  console.log("index :: "+index);
+  $jquery("#test_path_viewer").children().eq(index).html(list_item_html);
 }
 
 /*
@@ -186,14 +187,13 @@ $jquery("#savePageElementButton").on("click", function(){
   var index = $jquery("#pageElementIndexInPath").val();
   if(index && index.length > 0){
     path[ index ] = element_action;
-    redrawPathElement(element_action, index);
   }
   else {
     path.push(element_action);
     $jquery("#test_path_viewer").append( generatePageElementPathListItem(element_action, path.length-1 ));
   }
+  redrawPath(path);
   localStorage.setItem("path", JSON.stringify(path));
-
   //reset page element <-> action form fields
    $jquery("#pageElementXpath").val(null);
    $jquery("actionName").val(null);
@@ -220,7 +220,6 @@ $jquery("#savePageButton").on("click", function(){
   var index = $jquery("#pageIndexInPath").val();
   if(index && index.length > 0){
     path[ index ] = page;
-    redrawPathElement(page, index);
   }
   else {
     path.push(page);
@@ -228,6 +227,7 @@ $jquery("#savePageButton").on("click", function(){
   }
   localStorage.setItem("path", JSON.stringify(path));
 
+  redrawPath(path);
   //reset page form fields
   $jquery("#pageIndexInPath").val(null);
   $jquery("#pageUrl").val(null);
@@ -265,6 +265,7 @@ $jquery("#test_path_viewer").on("click", ".path-element-data", function(){
 $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
     //send element to path element form
     var index = $jquery(this).parent().parent().data("index");
+    $jquery("#pageIndexInPath").val(index);
     var element = JSON.parse(localStorage.getItem("path"))[index];
 
     if(element.element){
