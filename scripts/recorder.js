@@ -198,8 +198,15 @@ $jquery("#savePageElementButton").on("click", function(){
  * the path stored in localhost
 */
 $jquery("#savePageButton").on("click", function(){
+
+  var url = $jquery("#pageUrl").val();
+  if(url.indexOf("http://") < 0 && url.indexOf("https://") < 0){
+    url = "http://"+url;
+  }
+  console.log("url :: "+url);
+
   var page = {
-    url: $jquery("#pageUrl").val()
+    url: url
   }
 
   var path = JSON.parse(localStorage.path);
