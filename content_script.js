@@ -290,7 +290,7 @@ let main = function(){
 var renderRecorder = function(){
    var iframe = document.createElement("iframe");
    iframe.id="qanairy_ide_frame";
-   iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
+   iframe.style.cssText = "position:absolute;width:300px;height:650px;z-index:10001";
    iframe.src = chrome.extension.getURL("/recorder.html");
 
    var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><i class='fa fa-times'></i>";
@@ -305,7 +305,7 @@ var renderRecorder = function(){
    body.appendChild(iframe);
 
    var parent = document.createElement("div");
-   parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px;padding:0px";
+   parent.style.cssText = "position:absolute;width:300px;height:700px;z-index:10000;left:20px;top:20px;padding:0px";
    parent.id="qanairy_ide";
    parent.appendChild(header);
    parent.appendChild(body);
