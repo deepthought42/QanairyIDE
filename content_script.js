@@ -5,6 +5,11 @@ let last_xpath = "";
 let last_node = null;
 let selector_enabled = false;
 
+let pause = function(milliseconds) {
+	var dt = new Date();
+	while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
+}
+
 let recorderKeyupListener = function(event){
 
   chrome.runtime.sendMessage({msg: "addToPath",
@@ -42,6 +47,7 @@ let recorderKeydownListener = function(event){
 
 //generates x unique xpath for a given element
 let generateXpath = function(elem){
+
   var xpath = "//"+elem.tagName.toLowerCase();
   var attributes = ["id", "name", "class"];
   var attributes_check = [];
@@ -134,7 +140,7 @@ let recorderClickListener = function(event){
       var z_index = findParentZIndex(possible_nodes[idx]);
       var rect2 = last_node.getBoundingClientRect();
       //smallest node
-      if((rect2.left < rect.left || rect2.top < rect.top || rect2.right > rect.right || rect2.bottom > rect.bottom) && z_index >= top_z_index ){
+      if((rect2.left <= rect.left || rect2.top <= rect.top || rect2.right >= rect.right || rect2.bottom >= rect.bottom) && z_index >= top_z_index ){
         xpath = generateXpath(node);
         last_xpath = xpath;
         last_node = node;
@@ -146,26 +152,29 @@ let recorderClickListener = function(event){
     }
   }
 
-  chrome.runtime.sendMessage({msg: "addToPath",
-                              data: {url: window.location.toString(),
-                                     pathElement: {
-                                       element: {
-                                         type: "pageElement",
-                                         target: event.relatedTarget,
-                                         xpath: xpath
-                                       },
-                                       action: {
-                                         type: "action",
-                                         name: "click",
-                                         value: ""
+  if(xpath.length > 0){
+
+    chrome.runtime.sendMessage({msg: "addToPath",
+                                data: {url: window.location.toString(),
+                                       pathElement: {
+                                         element: {
+                                           type: "pageElement",
+                                           target: event.relatedTarget,
+                                           xpath: xpath
+                                         },
+                                         action: {
+                                           type: "action",
+                                           name: "click",
+                                           value: ""
+                                         }
                                        }
                                      }
-                                   }
-                                 },
-     function(response) {
-       //console.log("response ::  " +JSON.stringify(response));
-     }
-   );
+                                   },
+       function(response) {
+         //console.log("response ::  " +JSON.stringify(response));
+       }
+     );
+   }
 }
 
     //build list of elements where the x,y coords and height,width encompass the event x,y coords
@@ -188,6 +197,7 @@ let recorderClickListener = function(event){
     //process elements
     var url = "";
     for(var idx = localStorage.run_idx; idx < path.length; idx++){
+      setTimeout(function () {}, 4000);
       localStorage.run_idx = idx;
         if(path[idx].url){
           url = path[idx].url
@@ -231,6 +241,10 @@ let close_ide = function(){
   localStorage.removeItem("path");
 }
 
+let logout = function(){
+  localStorage.removeItem("authResult");
+  close_ide();
+}
   /**
    *
    * Make plugin frame draggable by using the header to drag frame around
@@ -281,7 +295,6 @@ let main = function(){
     }
   }
 
-
   // Make the DIV element draggable:
   dragElement(document.getElementById("qanairy_ide"));
 
@@ -290,10 +303,10 @@ let main = function(){
 var renderRecorder = function(){
    var iframe = document.createElement("iframe");
    iframe.id="qanairy_ide_frame";
-   iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:10001";
+   iframe.style.cssText = "position:absolute;width:300px;height:650px;z-index:10001";
    iframe.src = chrome.extension.getURL("/recorder.html");
 
-   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#ffdc05'><i class='fa fa-times'></i>";
+   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#FFFFFF'><i class='fa fa-times'></i>";
    var header = document.createElement("div");
    header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
    header.id="qanairy_ide_header";
@@ -305,7 +318,7 @@ var renderRecorder = function(){
    body.appendChild(iframe);
 
    var parent = document.createElement("div");
-   parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px;padding:0px";
+   parent.style.cssText = "position:absolute;width:300px;height:700px;z-index:10000;left:20px;top:20px;padding:0px";
    parent.id="qanairy_ide";
    parent.appendChild(header);
    parent.appendChild(body);
@@ -344,12 +357,18 @@ chrome.runtime.onMessage.addListener(
       runTest(JSON.parse(localStorage.path));
     }
     else if (request.msg === "open_recorder"){
-      renderRecorder();
+      var elem = document.getElementById("qanairy_ide");
+      if(!elem){
+        renderRecorder();
+
+      }
+      elem.style.display = "block";
       main();
     }
     else if (request.msg === "close_recorder"){
       close_ide();
     }
+    return Promise.resolve("Dummy response to keep the console quiet");
 });
 
 if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING"){
