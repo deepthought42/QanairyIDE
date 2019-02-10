@@ -206,7 +206,6 @@ $jquery("#savePageButton").on("click", function(){
   if(url.indexOf("http://") < 0 && url.indexOf("https://") < 0){
     url = "http://"+url;
   }
-  console.log("url :: "+url);
 
   var page = {
     url: url
@@ -494,7 +493,6 @@ chrome.runtime.onMessage.addListener(
 );
 
 if(localStorage.status === 'recording'){
-  console.log("Recording is already active");
   stopRecording.style.display = "block";
   startRecording.style.display = "none";
 

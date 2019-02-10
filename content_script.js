@@ -192,6 +192,7 @@ let recorderClickListener = function(event){
     //process elements
     var url = "";
     for(var idx = localStorage.run_idx; idx < path.length; idx++){
+      setTimeout(function () {}, 4000);
       localStorage.run_idx = idx;
         if(path[idx].url){
           url = path[idx].url
