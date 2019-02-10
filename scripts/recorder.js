@@ -73,7 +73,6 @@ let generatePageElementPathListItem = function(path_element, index){
  */
 let redrawPathElement = function(element, index){
   var list_item_html = generatePageElementPathListItem(element, index);
-  console.log("index :: "+index);
   $jquery("#test_path_viewer").children().eq(index).html(list_item_html);
 }
 
@@ -126,17 +125,13 @@ $jquery(document).ready(function(){
   var test_mem = localStorage.test;
   var path = null;
 
-  if(test_mem) {
-    path = JSON.parse(test_mem).path;
+  if(localStorage.path){
+    path = JSON.parse(localStorage.path);
   }
-  else {
-    if(localStorage.path){
-      path = JSON.parse(localStorage.path);
-    }
-    else{
-      path = [];
-    }
+  else{
+    path = [];
   }
+
   if(path){
     redrawPath(path);
   }
@@ -481,19 +476,18 @@ chrome.runtime.onMessage.addListener(
               if(path[path.length-1].action.name === "sendKeys" && request.data.pathElement.action.name === "sendKeys"){
                 path[path.length-1].action.value = request.data.pathElement.action.value;
                 localStorage.setItem("path", JSON.stringify(path));
+
                 redrawPath(path);
               }
               return;
             }
-
-            path.push(request.data.pathElement);
-            localStorage.setItem("path", JSON.stringify(path));
-
-            $jquery("#test_path_viewer").append( generatePageElementPathListItem(request.data.pathElement, path.length-1 ));
+              path.push(request.data.pathElement);
+              last_node = request.data.pathElement;
+              localStorage.setItem("path", JSON.stringify(path));
+              redrawPath(path);
           }
         }
         else if (request.msg === "loadTest") {
-          console.log("test :: "+request.data);
           redrawPath(JSON.parse(request.data).path);
         }
       }

@@ -132,7 +132,6 @@ let recorderClickListener = function(event){
   });
 
   for(var idx =0; idx < possible_nodes.length; idx++){
-
     var node = possible_nodes[idx];
     var rect = node.getBoundingClientRect();
 
@@ -153,7 +152,6 @@ let recorderClickListener = function(event){
   }
 
   if(xpath.length > 0){
-
     chrome.runtime.sendMessage({msg: "addToPath",
                                 data: {url: window.location.toString(),
                                        pathElement: {
@@ -300,7 +298,6 @@ let main = function(){
 };
 
 var open_recorder = function(){
-  console.log("open recorder message received")
   var elem = document.getElementById("qanairy_ide");
   if(!elem){
     renderRecorder();
@@ -376,8 +373,6 @@ chrome.runtime.onMessage.addListener(
     return Promise.resolve("Dummy response to keep the console quiet");
 });
 
-console.log("Loading status :: "+localStorage.status);
-console.log("local storage status");
 renderRecorder();
 main();
 if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING"){
@@ -408,12 +403,8 @@ if(localStorage.status === "recording" || localStorage.status === "editing" || l
 // Called sometime after postMessage is called
 function receiveMessage(event)
 {
-  console.log("event origin")
   // Do we trust the sender of this message?
   if (event.origin.includes("localhost") || event.origin.includes("qanairy.com")){
-    console.log("event.data :: "+event.data);
-    console.log("event.status :: "+JSON.parse(event.data).status);
-    console.log("event.data.accessToken :: "+JSON.parse(event.data).accessToken);
     open_recorder();
     //send path to recorder
     chrome.runtime.sendMessage({
