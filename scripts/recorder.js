@@ -32,8 +32,8 @@ let generatePagePathListItem = function(page, index){
       </div>
     </div>
     <div class="col-xs-2 icons" >
-      <i class="fa fa-pencil icon edit-icon fa-lg"></i>
-      <i class="fa fa-times icon delete-icon fa-lg" ></i>
+      <i class="fas fa-pencil icon edit-icon fa-2x"></i>
+      <i class="fas fa-times icon delete-icon fa-2x" ></i>
     </div>
   </div>`;
      //  To do something
@@ -59,8 +59,8 @@ let generatePageElementPathListItem = function(path_element, index){
         </div>
       </div>
       <div class="col-xs-2 icons" >
-        <i class="fa fa-pencil fa-lg icon edit-icon"></i>
-        <i class="fa fa-times fa-lg icon delete-icon"></i>
+        <i class="fas fa-pencil fa-lg icon edit-icon fa-2x"></i>
+        <i class="fas fa-times fa-lg icon delete-icon fa-2x"></i>
       </div>
     </div>`;
      //  To do something
