@@ -37,6 +37,10 @@ Go to File > Clone Repository and click on the URL tab. Enter  https://github.co
 
 ### Run the extension
 
+
   Go to chrome Settings > Extensions. In the upper right toggle on "Developer Mode". Then click "Load Unpacked" on the left hand side. Find and select the folder where the Qanairy IDE repository was saved.
   
-  The plugin should now be loaded. Click on the Qanairy icon in the upper 
+  The plugin should now be loaded. Click on the Qanairy icon in the upper right of your browser.
+
+  Once the extension is installed make sure that your browser is in "Developer Mode". Unpacked apps do not work with developer mode disabled.
+
