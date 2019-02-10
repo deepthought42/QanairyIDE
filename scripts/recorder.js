@@ -256,6 +256,10 @@ $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
     if(element.element){
       //send to path element form
       $jquery("#pageElementXpath").val(element.element.xpath);
+      $jquery("#pageElementXpath").addClass("highlighted-background").delay(10000).queue(function(next){
+          $jquery(this).removeClass("highlighted-background");
+      });
+
       $jquery("actionName").val(element.action.name);
       $jquery("#actionValue").val(element.action.value);
       $jquery("#pageElementIndexInPath").val(index);
@@ -387,7 +391,7 @@ $jquery("#exportTest").on("click", function(element){
           type: "basic",
           title: "Your test is being processed",
           message: "Qanairy is building your test. We'll let you know when it's ready.",
-          iconUrl: "images/qanairy_q_logo_white.png",
+          iconUrl: "images/qanairy_q_logo_black_48.png",
           isClickable: true
         }
 
@@ -410,7 +414,7 @@ $jquery("#exportTest").on("click", function(element){
           type: "basic",
           title: "Save failed",
           message: "Unable to save test. Please try again.",
-          iconUrl: "images/qanairy_q_logo_white.png",
+          iconUrl: "images/qanairy_q_logo_black_48.png",
           isClickable: true
         }
 

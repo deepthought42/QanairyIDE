@@ -88,3 +88,20 @@ body {
 .col-xs-2 {
   padding: 0px 5px !important;
 }
+
+@-o-keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #ffdc05; }
+  100% { background-color: #FFFFFF; }
+}
+@keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #ffdc05; }
+  100% { background-color: #FFFFFF; }
+}
+
+.highlighted-background{
+    background-image:none !important;
+         -o-animation: fadeIt 5s ease-in-out;
+            animation: fadeIt 10s ease-in-out;
+}
