@@ -32,8 +32,8 @@ let generatePagePathListItem = function(page, index){
       </div>
     </div>
     <div class="col-xs-2 icons" >
-      <i class="fa fa-pencil icon edit-icon fa-lg"></i>
-      <i class="fa fa-times icon delete-icon fa-lg" ></i>
+      <i class="fas fa-pencil icon edit-icon fa-2x"></i>
+      <i class="fas fa-times icon delete-icon fa-2x" ></i>
     </div>
   </div>`;
      //  To do something
@@ -59,8 +59,8 @@ let generatePageElementPathListItem = function(path_element, index){
         </div>
       </div>
       <div class="col-xs-2 icons" >
-        <i class="fa fa-pencil fa-lg icon edit-icon"></i>
-        <i class="fa fa-times fa-lg icon delete-icon"></i>
+        <i class="fas fa-pencil fa-lg icon edit-icon fa-2x"></i>
+        <i class="fas fa-times fa-lg icon delete-icon fa-2x"></i>
       </div>
     </div>`;
      //  To do something
@@ -110,6 +110,9 @@ $jquery("#element_selector").on("click", function(){
   //fire event to stop listening for url change events and action events
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {msg: "listen_for_element_selector"}, function(response) {
+      localStorage.status_before_select = localStorage.status;
+      localStorage.status="selecting";
+
     });
   });
 
@@ -126,7 +129,12 @@ $jquery(document).ready(function(){
     path = JSON.parse(test_mem).path;
   }
   else {
-    path = JSON.parse(localStorage.path);
+    if(localStorage.path){
+      path = JSON.parse(localStorage.path);
+    }
+    else{
+      path = [];
+    }
   }
   if(path){
     redrawPath(path);
@@ -198,8 +206,14 @@ $jquery("#savePageElementButton").on("click", function(){
  * the path stored in localhost
 */
 $jquery("#savePageButton").on("click", function(){
+
+  var url = $jquery("#pageUrl").val();
+  if(url.indexOf("http://") < 0 && url.indexOf("https://") < 0){
+    url = "http://"+url;
+  }
+
   var page = {
-    url: $jquery("#pageUrl").val()
+    url: url
   }
 
   var path = JSON.parse(localStorage.path);
@@ -435,9 +449,10 @@ chrome.runtime.onMessage.addListener(
           if(selector_status === "active"){
             selector_status = "disabled";
             //fire event to stop listening for url change events and action events
-            if(localStorage.status === "stopped"){
+            if(localStorage.status === "selecting" && localStorage.status_before_select === "recording"){
               chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
                 chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
+                  localStorage.removeItem("status_before_select");
                   //console.log("starting record status :: "+response);
                 });
               });
@@ -483,7 +498,6 @@ chrome.runtime.onMessage.addListener(
 );
 
 if(localStorage.status === 'recording'){
-  console.log("Recording is already active");
   stopRecording.style.display = "block";
   startRecording.style.display = "none";
 

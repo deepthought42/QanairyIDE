@@ -3,6 +3,9 @@
     <link rel="stylesheet" href="styles/bootstrap.min.css">
     <link rel="stylesheet" href="styles/fontawesome.min.css">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/fontawesome.min.css">
+    <link rel="stylesheet" href="styles/regular.min.css">
+    <link rel="stylesheet" href="styles/solid.min.css">
   </head>
   <body id="qanairy-ide" class="container-fluid">
     <div class="row spacer" >
@@ -10,16 +13,16 @@
     <div class="row">
       <div class="col-xs-12">
         <button id="createNewTest" class="btn btn-sm col-xs-4" type="button">
-          <i class="fa fa-plus"></i> New Test
+          Clear All <i class="far fa-trash-alt"></i>
         </button>
         <button id="startRecording" class="btn btn-sm col-xs-4" type="button">
-          Start <i class="fa fa-circle"></i>
+          Start <i class="fas fa-circle"></i>
         </button>
         <button id="stopRecording" class="btn btn-sm col-xs-4" type="button">
-          Stop <i class="fa fa-square" aria-hidden="true"></i>
+          Stop <i class="fas fa-stop" aria-hidden="true"></i>
         </button>
         <button id="runTestButton" class="btn btn-sm col-xs-4" type="button">
-          Run <i class="fa fa-play" aria-hidden="true"></i>
+          Run <i class="fas fa-play" aria-hidden="true"></i>
         </button>
       </div>
     </div>
@@ -27,19 +30,15 @@
     <div  id="test_path_viewer" class="path-container">
       <!-- path element list populates here -->
     </div>
-
-    <div class="row">
+    <div id="manualPathElementDefinitionForms" class="row">
       <div class="col-xs-12">
         <button id="createPageButton" class="btn btn-sm col-xs-6">
-          <i class="fa fa-plus"></i> Page
+          <i class="fas fa-plus"></i> Add Page
         </button>
         <button id="createPageElementButton" class="btn btn-sm col-xs-6">
-          <i class="fa fa-plus"></i> Element
+          <i class="fas fa-plus"></i> Add Element
         </button>
       </div>
-    </div>
-    <div id="manualPathElementDefinitionForms" class="row">
-
       <div id="pageElementForm" class="col-xs-12">
         <input type="hidden" id="pageElementIndexInPath"/>
         <div class="col-xs-12">
@@ -48,8 +47,8 @@
           </div>
           <div class="col-xs-12">
             <input id="pageElementXpath" type="text" placeholder="xpath" class="col-xs-10"/>
-            <button id="element_selector" class="col-xs-1">
-              <i class="fa fa-circle" ></i>
+            <button id="element_selector" class="col-xs-2 btn btn-primary">
+              <i class="far fa-bullseye-pointer" ></i>
             </button>
           </div>
         </div>
@@ -78,7 +77,7 @@
       <div id="pageForm" class="col-xs-12">
         <input type="hidden" id="pageIndexInPath"/>
         <div class="col-xs-12">
-          <input id="pageUrl" type="text" placeholder="www.example.com" class="col-xs-12"/>
+          <input id="pageUrl" type="text" placeholder="http://www.example.com" class="col-xs-12"/>
         </div>
         <button id="savePageButton" class="col-xs-12"> Save </button>
       </div>
@@ -98,6 +97,9 @@
     </div>
   </body>
   <script src="scripts/jquery.js"></script>
+  <script src="scripts/fontawesome.min.js"></script>
+  <script src="scripts/regular.min.js"></script>
+  <script src="scripts/solid.min.js"></script>
   <script src="scripts/bootstrap.min.js"></script>
   <script src="scripts/jwt-decode.min.js"></script>
   <script src="scripts/recorder.js"></script>
