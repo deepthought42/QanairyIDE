@@ -189,7 +189,6 @@ let recorderClickListener = function(event){
     return match ? this.indexOf(match[0]) : -1;
   }
 
-
   /*
    * Runs a test from beginning to end
    */
@@ -300,6 +299,17 @@ let main = function(){
 
 };
 
+var open_recorder = function(){
+  console.log("open recorder message received")
+  var elem = document.getElementById("qanairy_ide");
+  if(!elem){
+    renderRecorder();
+    elem = document.getElementById("qanairy_ide");
+  }
+  elem.style.display = "block";
+  main();
+}
+
 var renderRecorder = function(){
    var iframe = document.createElement("iframe");
    iframe.id="qanairy_ide_frame";
@@ -320,6 +330,7 @@ var renderRecorder = function(){
    var parent = document.createElement("div");
    parent.style.cssText = "position:absolute;width:300px;height:700px;z-index:10000;left:20px;top:20px;padding:0px";
    parent.id="qanairy_ide";
+   parent.style.display = "none";
    parent.appendChild(header);
    parent.appendChild(body);
    document.body.appendChild(parent);
@@ -357,13 +368,7 @@ chrome.runtime.onMessage.addListener(
       runTest(JSON.parse(localStorage.path));
     }
     else if (request.msg === "open_recorder"){
-      var elem = document.getElementById("qanairy_ide");
-      if(!elem){
-        renderRecorder();
-
-      }
-      elem.style.display = "block";
-      main();
+      open_recorder();
     }
     else if (request.msg === "close_recorder"){
       close_ide();
@@ -371,9 +376,14 @@ chrome.runtime.onMessage.addListener(
     return Promise.resolve("Dummy response to keep the console quiet");
 });
 
+console.log("Loading status :: "+localStorage.status);
+console.log("local storage status");
+renderRecorder();
+main();
 if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING"){
-  renderRecorder();
-  main();
+
+  qanairy_ide = document.getElementById("qanairy_ide");
+  qanairy_ide.style.display = "block";
 
   if(localStorage.status === "editing"){
     //send path to recorder
@@ -393,6 +403,39 @@ if(localStorage.status === "recording" || localStorage.status === "editing" || l
     });
   }
 }
+
+
+// Called sometime after postMessage is called
+function receiveMessage(event)
+{
+  console.log("event origin")
+  // Do we trust the sender of this message?
+  if (event.origin.includes("localhost") || event.origin.includes("qanairy.com")){
+    console.log("event.data :: "+event.data);
+    console.log("event.status :: "+JSON.parse(event.data).status);
+    console.log("event.data.accessToken :: "+JSON.parse(event.data).accessToken);
+    open_recorder();
+    //send path to recorder
+    chrome.runtime.sendMessage({
+        msg: "loadTest",
+        data: JSON.stringify(JSON.parse(event.data).test)
+    });
+    localStorage.removeItem(status);
+  }
+
+  // event.source is window.opener
+  // event.data is "hello there!"
+
+  // Assuming you've verified the origin of the received message (which
+  // you must do in any case), a convenient idiom for replying to a
+  // message is to call postMessage on event.source and provide
+  // event.origin as the targetOrigin.
+  //event.source.postMessage("hi there yourself!  the secret response " +
+  //                         "is: rheeeeet!",
+  //                         event.origin);
+}
+
+window.addEventListener("message", receiveMessage, false);
 
   /**
 	 * creates a unique xpath based on a given hash of xpaths

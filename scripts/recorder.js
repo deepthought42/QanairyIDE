@@ -492,7 +492,8 @@ chrome.runtime.onMessage.addListener(
           }
         }
         else if (request.msg === "loadTest") {
-          redrawPath(localStorage.path);
+          console.log("test :: "+request.data);
+          redrawPath(JSON.parse(request.data).path);
         }
       }
 );

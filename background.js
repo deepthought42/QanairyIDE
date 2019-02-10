@@ -36,6 +36,7 @@ var subscribe = function(profile){
   });
 
   channel.bind("edit-test", function(msg) {
+    console.log("editing test");
     localStorage.status = "editing";
     var test = JSON.parse(msg);
     localStorage.test = msg;
