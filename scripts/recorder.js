@@ -407,7 +407,7 @@ $jquery("#exportTest").on("click", function(element){
 
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
-        $jquery("#export-error").show(0).delay(5000).hide(0);
+        $jquery("#export-error").show(0).delay(15000).hide(0);
 
         // Here's where you handle an error response.
         // Note that if the error was due to a CORS issue,
