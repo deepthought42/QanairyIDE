@@ -228,6 +228,7 @@ let recorderClickListener = function(event){
 
 
 let close_ide = function(){
+  console.log("close ide");
   //hide parent element
   qanairy_ide = document.getElementById("qanairy_ide");
   qanairy_ide.style.display = "none";
@@ -236,6 +237,10 @@ let close_ide = function(){
   localStorage.removeItem("path");
 }
 
+let logout = function(){
+  localStorage.removeItem("authResult")
+  close_ide();
+}
   /**
    *
    * Make plugin frame draggable by using the header to drag frame around
@@ -285,7 +290,6 @@ let main = function(){
       elmnt.onmousedown = dragMouseDown;
     }
   }
-
 
   // Make the DIV element draggable:
   dragElement(document.getElementById("qanairy_ide"));
@@ -349,7 +353,12 @@ chrome.runtime.onMessage.addListener(
       runTest(JSON.parse(localStorage.path));
     }
     else if (request.msg === "open_recorder"){
-      renderRecorder();
+      var elem = document.getElementById("qanairy_ide");
+      if(!elem){
+        renderRecorder();
+
+      }
+      elem.style.display = "block";
       main();
     }
     else if (request.msg === "close_recorder"){

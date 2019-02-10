@@ -129,7 +129,12 @@ $jquery(document).ready(function(){
     path = JSON.parse(test_mem).path;
   }
   else {
-    path = JSON.parse(localStorage.path);
+    if(localStorage.path){
+      path = JSON.parse(localStorage.path);
+    }
+    else{
+      path = [];
+    }
   }
   if(path){
     redrawPath(path);
