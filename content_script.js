@@ -42,6 +42,7 @@ let recorderKeydownListener = function(event){
 
 //generates x unique xpath for a given element
 let generateXpath = function(elem){
+
   var xpath = "//"+elem.tagName.toLowerCase();
   var attributes = ["id", "name", "class"];
   var attributes_check = [];
@@ -134,7 +135,7 @@ let recorderClickListener = function(event){
       var z_index = findParentZIndex(possible_nodes[idx]);
       var rect2 = last_node.getBoundingClientRect();
       //smallest node
-      if((rect2.left < rect.left || rect2.top < rect.top || rect2.right > rect.right || rect2.bottom > rect.bottom) && z_index >= top_z_index ){
+      if((rect2.left <= rect.left || rect2.top <= rect.top || rect2.right >= rect.right || rect2.bottom >= rect.bottom) && z_index >= top_z_index ){
         xpath = generateXpath(node);
         last_xpath = xpath;
         last_node = node;
@@ -146,26 +147,29 @@ let recorderClickListener = function(event){
     }
   }
 
-  chrome.runtime.sendMessage({msg: "addToPath",
-                              data: {url: window.location.toString(),
-                                     pathElement: {
-                                       element: {
-                                         type: "pageElement",
-                                         target: event.relatedTarget,
-                                         xpath: xpath
-                                       },
-                                       action: {
-                                         type: "action",
-                                         name: "click",
-                                         value: ""
+  if(xpath.length > 0){
+
+    chrome.runtime.sendMessage({msg: "addToPath",
+                                data: {url: window.location.toString(),
+                                       pathElement: {
+                                         element: {
+                                           type: "pageElement",
+                                           target: event.relatedTarget,
+                                           xpath: xpath
+                                         },
+                                         action: {
+                                           type: "action",
+                                           name: "click",
+                                           value: ""
+                                         }
                                        }
                                      }
-                                   }
-                                 },
-     function(response) {
-       //console.log("response ::  " +JSON.stringify(response));
-     }
-   );
+                                   },
+       function(response) {
+         //console.log("response ::  " +JSON.stringify(response));
+       }
+     );
+   }
 }
 
     //build list of elements where the x,y coords and height,width encompass the event x,y coords
