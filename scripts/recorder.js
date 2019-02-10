@@ -269,6 +269,10 @@ $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
     else if(element.url){
       //send to path element form
       $jquery("#pageUrl").val(element.url);
+      $jquery("#pageUrl").addClass("highlighted-background").delay(10000).queue(function(next){
+          $jquery(this).removeClass("highlighted-background");
+      });
+
       pageEditPanel.style.display = "block";
       pageElementEditPanel.style.display = "none";
     }
