@@ -11,6 +11,15 @@ let pageEditPanel = document.getElementById("pageForm");
 let pageElementEditPanel = document.getElementById("pageElementForm");
 let selector_status = "disabled";
 
+let close_ide = function(){
+  //hide parent element
+  var qanairy_ide = document.getElementById("qanairy_ide");
+  qanairy_ide.style.display = "none";
+
+  //reset localStorage
+  localStorage.removeItem("path");
+}
+
 /*
  * Shows page creation form when button is clicked
  */
