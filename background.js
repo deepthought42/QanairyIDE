@@ -119,16 +119,6 @@ chrome.runtime.onMessage.addListener(
     else if (request.msg === "start_test_run") {
       var path = request.data;
       //get first element from path. First element is expected to be a page, if it isn't then throw an error
-      if(path[0].url){
-        var url = path[0].url;
-        //redirect to url
-        chrome.tabs.query({currentWindow: true, active: true}, function(tab){
-          chrome.tabs.update(tab.id, {url: url});
-        });
-      }
-      else{
-        alert("Paths are expected to start with a page");
-      }
 
       window.setTimeout( function(){
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
@@ -150,7 +140,11 @@ chrome.runtime.onMessage.addListener(
 
     }
     else if(request.msg === "addToPath" && localStorage.status !== "stopped"){
-      var path = localStorage.path;
+      var path = JSON.parse(localStorage.getItem("path"));
+      if(path == null){
+        console.log("Path is empty")
+        path = [];
+      }
       if(path.length === 0 || path[path.length-1].type !== "page"){
         path.push({type: "page", url: sender.tab.url});
         chrome.runtime.sendMessage({

@@ -192,6 +192,11 @@ let recorderClickListener = function(event){
    * Runs a test from beginning to end
    */
   let runTest = function(path){
+    if(!path[0].url){
+      alert("Paths are expected to start with a page");
+      return;
+    }
+
     //process elements
     var url = "";
     for(var idx = localStorage.run_idx; idx < path.length; idx++){
@@ -199,6 +204,8 @@ let recorderClickListener = function(event){
       localStorage.run_idx = idx;
         if(path[idx].url){
           url = path[idx].url
+          window.location.href = path[idx].url;
+
           //if element is a page then send message to background to navigate page
         }
         else if(path[idx].element){
@@ -314,7 +321,7 @@ var renderRecorder = function(){
    iframe.style.cssText = "position:absolute;width:300px;height:650px;z-index:10001";
    iframe.src = chrome.extension.getURL("/recorder.html");
 
-   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:100%; margin:0px;padding:0px;color:#FFFFFF'><i class='fa fa-times'></i>";
+   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:20px;width:20px;margin:0px;padding:0px;color:#FFFFFF'><i class='fa fa-times'></i>";
    var header = document.createElement("div");
    header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
    header.id="qanairy_ide_header";
