@@ -318,12 +318,13 @@ var open_recorder = function(){
 var renderRecorder = function(){
    var iframe = document.createElement("iframe");
    iframe.id="qanairy_ide_frame";
-   iframe.style.cssText = "position:absolute;width:300px;height:650px;z-index:10001";
+   iframe.style.cssText = "position:absolute;width:300px;height:650px;z-index:998";
    iframe.src = chrome.extension.getURL("/recorder.html");
 
-   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='cursor: pointer;z-index:10002;position:relative;left:280px;height:20px;width:20px;margin:0px;padding:0px;color:#FFFFFF'><i class='fa fa-times'></i>";
+
+   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='display:block;cursor:pointer;z-index:999;position:absolute;top:0px; left:280px;height:20px;width:20px;margin:0px;padding:0px;color:#FFFFFF'><b>x</b></span>";
    var header = document.createElement("div");
-   header.style.cssText = "width:300px;height:20px;z-index:10001;background-color:#553fc0;cursor:grab";
+   header.style.cssText = "width:300px;height:20px;z-index:998;background-color:#553fc0;cursor:grab";
    header.id="qanairy_ide_header";
    header.innerHTML = header_inner_html;
 
