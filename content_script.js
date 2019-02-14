@@ -356,7 +356,7 @@ chrome.runtime.onMessage.addListener(
     }
     else if(request.msg === "listen_for_element_selector"){
       selector_enabled = true;
-      document.addEventListener("click", recorderClickListener);
+      document.addEventListener("click", recorderClickListener, true);
     }
     else if (request.msg === "run_test"){
       localStorage.run_idx = 0;
