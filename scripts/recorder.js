@@ -279,8 +279,13 @@ $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
           $jquery(this).removeClass("highlighted-background");
       });
 
-      $jquery("actionName").val(element.action.name);
-      $jquery("#actionValue").val(element.action.value);
+      console.log("action name :: "+element.action.name);
+      $jquery("#actionName").val(element.action.name);
+      if(element.action.name === "sendKeys"){
+          $jquery("#actionValue").val(element.action.value);
+          $jquery("#actionValueContainer").show();
+      }
+
       $jquery("#pageElementIndexInPath").val(index);
       pageEditPanel.style.display = "none";
       pageElementEditPanel.style.display = "block";
