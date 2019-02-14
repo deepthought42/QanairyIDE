@@ -112,6 +112,7 @@ let findParentZIndex = function(node){
 }
 
 let recorderClickListener = function(event){
+  console.log("selector is enabled :: "+selector_enabled);
   if(selector_enabled){
     event.preventDefault();
     document.removeEventListener("click", recorderClickListener);
@@ -337,9 +338,10 @@ chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg === "start_recording"){
       localStorage.status = "recording";
-      document.addEventListener("click", recorderClickListener);
-      document.addEventListener("keyup", recorderKeyupListener);
-      document.addEventListener("keydown", recorderKeydownListener);
+
+      document.addEventListener("click", recorderClickListener, true);
+      document.addEventListener("keyup", recorderKeyupListener, true);
+      document.addEventListener("keydown", recorderKeydownListener, true);
 
       sendResponse({status: "starting"});
     }
