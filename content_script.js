@@ -5,6 +5,21 @@ let last_xpath = "";
 let last_node = null;
 let selector_enabled = false;
 
+
+let close_ide = function(){
+  //hide parent element
+  qanairy_ide = document.getElementById("qanairy_ide");
+  qanairy_ide.style.display = "none";
+
+  //reset localStorage
+  localStorage.removeItem("path");
+}
+
+let logout = function(){
+  localStorage.removeItem("authResult");
+  close_ide();
+}
+
 let pause = function(milliseconds) {
 	var dt = new Date();
 	while ((new Date()) - dt <= milliseconds) { /* Do nothing */ }
@@ -238,21 +253,6 @@ let recorderClickListener = function(event){
 			localStorage.status = "POST_RUN";
 		}
   }
-
-
-let close_ide = function(){
-  //hide parent element
-  qanairy_ide = document.getElementById("qanairy_ide");
-  qanairy_ide.style.display = "none";
-
-  //reset localStorage
-  localStorage.removeItem("path");
-}
-
-let logout = function(){
-  localStorage.removeItem("authResult");
-  close_ide();
-}
   /**
    *
    * Make plugin frame draggable by using the header to drag frame around
@@ -324,7 +324,7 @@ var renderRecorder = function(){
    iframe.style.cssText = "position:absolute;width:300px;height:650px;z-index:998";
    iframe.src = chrome.extension.getURL("/recorder.html");
 
-   var header_inner_html = "<span id='ide_close_icon' onclick='close_ide()' style='display:block;cursor:pointer;z-index:999;position:absolute;top:0px; left:280px;height:20px;width:20px;margin:0px;padding:0px;color:#FFFFFF'><b>x</b></span>";
+   var header_inner_html = "<span id='ide_close_icon' onclick=\"document.getElementById('qanairy_ide').style.display='none';localStorage.removeItem('path');\" style='display:block;cursor:pointer;z-index:999;position:absolute;top:0px; left:280px;height:20px;width:20px;margin:0px;padding:0px;color:#FFFFFF'><b>x</b></span>";
    var header = document.createElement("div");
    header.style.cssText = "width:300px;height:20px;z-index:998;background-color:#553fc0;cursor:grab";
    header.id="qanairy_ide_header";
@@ -422,6 +422,7 @@ function receiveMessage(event)
   if (event.origin.includes("localhost") || event.origin.includes("qanairy.com")){
     open_recorder();
 
+		console.log("received message loading test : " + JSON.parse(event.data).test)
     //send path to recorder
     chrome.runtime.sendMessage({
         msg: "loadTest",
