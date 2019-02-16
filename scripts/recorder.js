@@ -286,6 +286,10 @@ $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
           $jquery("#actionValue").val(element.action.value);
           $jquery("#actionValueContainer").show();
       }
+      else if(element.action.name === "click"){
+          $jquery("#actionValue").val(element.action.value);
+          $jquery("#actionValueContainer").hide();
+      }
 
       $jquery("#pageElementIndexInPath").val(index);
       pageEditPanel.style.display = "none";
