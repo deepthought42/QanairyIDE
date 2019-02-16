@@ -35,51 +35,6 @@ var subscribe = function(profile){
     //console.log("Successfully subscribed to channel :"+profile.name);
   });
 
-  channel.bind("edit-test", function(msg) {
-    console.log("editing test");
-    localStorage.status = "editing";
-    var test = JSON.parse(msg);
-    localStorage.test = msg;
-    //retrieve first url in path
-    var start_url= "";
-    for(var idx = 0; idx < test.path.length; idx++){
-      if(test.path[idx].url){
-        start_url = test.path[idx].url;
-        break;
-      }
-    }
-
-    localStorage.path = JSON.stringify(test.path);
-    //open new tab
-    chrome.tabs.create({ url: start_url }, function(tab){
-      //open recorder
-      chrome.tabs.sendMessage(tab.id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {
-        //send path to recorder
-        chrome.runtime.sendMessage({
-            msg: "loadTest",
-            data: test
-        });
-      });
-    });
-
-
-
-    chrome.storage.local.get({
-      notifications: true
-    }, function(event_data) {
-        // Trigger desktop notification
-        var options = {
-          type: "basic",
-          title: "Test Received",
-          message: "A test has been received for editing",
-          iconUrl: "images/qanairy_q_logo_black_48.png",
-          isClickable: true
-        }
-
-        chrome.notifications.create("edit-test-" + test.key, options, function(id) {});
-    });
-  });
-
   channel.bind("test-created", function(test_msg) {
     var test = JSON.parse(test_msg);
     chrome.storage.local.get({
@@ -117,6 +72,7 @@ chrome.runtime.onMessage.addListener(
       sendResponse({status: "starting"});
     }
     else if (request.msg === "start_test_run") {
+      console.log("path :: "+request.data);
       var path = request.data;
       //get first element from path. First element is expected to be a page, if it isn't then throw an error
 
@@ -129,12 +85,11 @@ chrome.runtime.onMessage.addListener(
 
     }
     else if (request.msg === "continue_test_run") {
-      var path = localhost.path;
-
+      localStorage.path = request.data;
       window.setTimeout( function(){
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-          chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: path}, function(response) {
-          });
+          chrome.tabs.sendMessage(tabs[0].id, {msg: "coninue_test", data: request.data}, function(response) {
+          });f
         });
       }, 1500);
 
@@ -224,6 +179,32 @@ chrome.runtime.onMessage.addListener(
       }).then(resp => resp.json()).then((profile) => {
           localStorage.profile = profile;
           subscribe(profile);
+        });
+    }
+    else if(request.msg === 'edit-test'){
+        localStorage.status = "editing";
+        var test = request.data;
+        localStorage.test = JSON.stringify(test);
+
+        chrome.storage.local.get({
+    			notifications: true
+    		}, function(event_data) {
+    				// Trigger desktop notification
+    				var options = {
+    					type: "basic",
+    					title: "Test Received",
+    					message: "A test has been received for editing",
+    					iconUrl: "images/qanairy_q_logo_black_48.png",
+    					isClickable: true
+    				}
+
+    				chrome.notifications.create("edit-test-" + localStorage.test.name, options, function(id) {});
+    		});
+
+        localStorage.path = JSON.stringify(test.path);
+        chrome.runtime.sendMessage({
+            msg: "loadTest",
+            data: localStorage.test
         });
     }
   });

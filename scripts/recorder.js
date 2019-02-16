@@ -135,7 +135,7 @@ $jquery(document).ready(function(){
   var test_mem = localStorage.test;
   var path = null;
 
-  if(localStorage.path){
+  if(localStorage.path && localStorage.path !== "undefined"){
     path = JSON.parse(localStorage.path);
   }
   else{

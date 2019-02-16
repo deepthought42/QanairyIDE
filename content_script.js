@@ -207,15 +207,23 @@ let recorderClickListener = function(event){
    * Runs a test from beginning to end
    */
   let runTest = function(path){
-    if(!path[0].url){
+		console.log("path[0] :: "+path[0]);
+
+		console.log("path[0].url :: "+path[0].url);
+    if(path.length && localStorage.run_idx < path.length && !path[0].url){
       alert("Paths are expected to start with a page");
       return;
     }
 
-    //process elements
+		console.log("local run idx :: "+ localStorage.run_idx);
+	console.log("path idx :: "+JSON.stringify(path));
+
+	  //process elements
     var url = "";
     for(var idx = localStorage.run_idx; idx < path.length; idx++){
-      setTimeout(function () {}, 4000);
+			console.log("loop index :: "+idx);
+			console.log("path idx :: "+JSON.stringify(path[idx]));
+      setTimeout(function () {}, 1000);
       localStorage.run_idx = idx;
         if(path[idx].url){
           url = path[idx].url
@@ -249,7 +257,7 @@ let recorderClickListener = function(event){
         }
     }
 
-		if(localStorage.run_idx > path.length){
+		if(localStorage.run_idx >= path.length){
 			localStorage.status = "POST_RUN";
 		}
   }
@@ -376,6 +384,12 @@ chrome.runtime.onMessage.addListener(
       }
       runTest(JSON.parse(localStorage.path));
     }
+		else if (request.msg === "continue_test"){
+			if(request.data){
+				localStorage.path = JSON.stringify(request.data);
+			}
+			runTest(JSON.parse(localStorage.path));
+		}
     else if (request.msg === "open_recorder"){
       open_recorder();
     }
@@ -393,6 +407,7 @@ if(localStorage.status === "recording" || localStorage.status === "editing" || l
   qanairy_ide.style.display = "block";
 
   if(localStorage.status === "editing"){
+		console.log("editing");
     //send path to recorder
     chrome.runtime.sendMessage({
         msg: "loadTest",
@@ -401,10 +416,9 @@ if(localStorage.status === "recording" || localStorage.status === "editing" || l
     localStorage.removeItem(status);
   }
   else if(localStorage.status === "RUNNING"){
-    runTest(JSON.parse(localStorage.path));
     chrome.runtime.sendMessage({
         msg: "continue_test_run",
-        data: ""
+        data: localStorage.path
     },
     function(response) {
     });
@@ -421,12 +435,16 @@ function receiveMessage(event)
   // Do we trust the sender of this message?
   if (event.origin.includes("localhost") || event.origin.includes("qanairy.com")){
     open_recorder();
+		localStorage.test = JSON.stringify(JSON.parse(event.data).test);
+		localStorage.path = JSON.stringify(JSON.parse(event.data).test.path);
+		console.log("received message loading test : " + localStorage.test);
+		//send path to recorder
 
-		console.log("received message loading test : " + JSON.parse(event.data).test)
-    //send path to recorder
+		console.log("received message loading path : " + localStorage.path);
+
     chrome.runtime.sendMessage({
-        msg: "loadTest",
-        data: JSON.stringify(JSON.parse(event.data).test)
+        msg: "edit-test",
+        data: JSON.parse(localStorage.test)
     });
     localStorage.removeItem(status);
   }
