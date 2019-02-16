@@ -17,7 +17,7 @@ let close_ide = function(){
 
 let logout = function(){
   localStorage.removeItem("authResult");
-  close_ide();
+  close_ide;
 }
 
 let pause = function(milliseconds) {
@@ -196,13 +196,6 @@ let recorderClickListener = function(event){
 
     //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
 
-	var pauseThread = function(milliseconds){
-		var currentTime = new Date().getTime();
-
-	 	while (currentTime + milliseconds >= new Date().getTime()) {
-		}
-	}
-
   String.prototype.indexOfRegex = function(regex){
     var match = this.match(regex);
     return match ? this.indexOf(match[0]) : -1;
@@ -232,18 +225,19 @@ let recorderClickListener = function(event){
           url = path[idx].url
 					localStorage.run_idx = idx + 1;
 
-          window.location.href = path[idx].url;
-					//Update the url here.
-					chrome.runtime.sendMessage({
-							msg: "redirect-tab",
-							data: path[idx].url
-					});
-					break;
-					//pauseThread(3000);
-
+					if(path[idx].url !== window.location.href){
+	          window.location.href = path[idx].url;
+						//Update the url here.
+						chrome.runtime.sendMessage({
+								msg: "redirect-tab",
+								data: path[idx].url
+						});
+						break;
+					}
           //if element is a page then send message to background to navigate page
         }
         else if(path[idx].element){
+					pause(1000);
           var xpathResult = document.evaluate(path[idx].element.xpath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
           //verify that element exists on page
           if(xpathResult){
@@ -394,7 +388,7 @@ chrome.runtime.onMessage.addListener(
       if(request.data){
         localStorage.path = JSON.stringify(request.data);
       }
-      runTest(JSON.parse(localStorage.path));
+			setTimeout(runTest(JSON.parse(localStorage.path)), 2000);
     }
     else if (request.msg === "open_recorder"){
       open_recorder();
@@ -423,8 +417,8 @@ if(localStorage.status === "recording" || localStorage.status === "editing" || l
     localStorage.removeItem(status);
   }
   else if(localStorage.status === "RUNNING"){
-		console.log("test is still running : ");
-		runTest(JSON.parse(localStorage.path));
+		open_recorder();
+		setTimeout(runTest(JSON.parse(localStorage.path)), 2000);
   }
 	else if(localStorage.status === "POST_RUN"){
 		localStorage.status = "";

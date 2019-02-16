@@ -72,7 +72,6 @@ chrome.runtime.onMessage.addListener(
       sendResponse({status: "starting"});
     }
     else if (request.msg === "start_test_run") {
-      console.log("path :: "+request.data);
       var path = request.data;
       //get first element from path. First element is expected to be a page, if it isn't then throw an error
 
@@ -175,7 +174,7 @@ chrome.runtime.onMessage.addListener(
       console.log("redirectiong tab  to url :: "+request.msg.data);
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
 
-       chrome.tabs.update(tab[0].id, {url: request.msg.data});
+       chrome.tabs.update(tabs[0].id, {url: request.msg.data});
      });
     }
     else if(request.msg === 'edit-test'){

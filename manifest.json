@@ -9,6 +9,7 @@
       "scripts": [
         "scripts/auth0chrome.min.js",
         "scripts/pusher.min.js",
+        "scripts/jwt-decode.min.js",
         "background.js"],
       "persistent": true
     },
