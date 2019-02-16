@@ -196,7 +196,12 @@ let recorderClickListener = function(event){
 
     //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
 
+	var pauseThread = function(milliseconds){
+		var currentTime = new Date().getTime();
 
+	 	while (currentTime + milliseconds >= new Date().getTime()) {
+		}
+	}
 
   String.prototype.indexOfRegex = function(regex){
     var match = this.match(regex);
@@ -220,14 +225,21 @@ let recorderClickListener = function(event){
 
 	  //process elements
     var url = "";
-    for(var idx = localStorage.run_idx; idx < path.length; idx++){
+    for(var idx = parseInt(localStorage.run_idx, 10); idx < path.length; idx++){
 			console.log("loop index :: "+idx);
 			console.log("path idx :: "+JSON.stringify(path[idx]));
-      setTimeout(function () {}, 1000);
-      localStorage.run_idx = idx;
         if(path[idx].url){
           url = path[idx].url
+					localStorage.run_idx = idx + 1;
+
           window.location.href = path[idx].url;
+					//Update the url here.
+					chrome.runtime.sendMessage({
+							msg: "redirect-tab",
+							data: path[idx].url
+					});
+					break;
+					//pauseThread(3000);
 
           //if element is a page then send message to background to navigate page
         }
@@ -384,12 +396,6 @@ chrome.runtime.onMessage.addListener(
       }
       runTest(JSON.parse(localStorage.path));
     }
-		else if (request.msg === "continue_test"){
-			if(request.data){
-				localStorage.path = JSON.stringify(request.data);
-			}
-			runTest(JSON.parse(localStorage.path));
-		}
     else if (request.msg === "open_recorder"){
       open_recorder();
     }
@@ -401,6 +407,7 @@ chrome.runtime.onMessage.addListener(
 
 renderRecorder();
 main();
+console.log("recorder status :: "+localStorage.status);
 if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING" || localStorage.status === "POST_RUN"){
 
   qanairy_ide = document.getElementById("qanairy_ide");
@@ -416,12 +423,8 @@ if(localStorage.status === "recording" || localStorage.status === "editing" || l
     localStorage.removeItem(status);
   }
   else if(localStorage.status === "RUNNING"){
-    chrome.runtime.sendMessage({
-        msg: "continue_test_run",
-        data: localStorage.path
-    },
-    function(response) {
-    });
+		console.log("test is still running : ");
+		runTest(JSON.parse(localStorage.path));
   }
 	else if(localStorage.status === "POST_RUN"){
 		localStorage.status = "";

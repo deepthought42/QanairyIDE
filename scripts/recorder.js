@@ -344,6 +344,7 @@ $jquery("#runTestButton").on("click", function(element){
   //send path to content script to be ran
 
   chrome.runtime.sendMessage({msg: "start_test_run", data: path}, function(response) {
+
   });
 });
 
@@ -509,6 +510,8 @@ chrome.runtime.onMessage.addListener(
         else if (request.msg === "loadTest") {
           redrawPath(JSON.parse(request.data).path);
         }
+        return Promise.resolve("Dummy response to keep the console quiet");
+
       }
 );
 

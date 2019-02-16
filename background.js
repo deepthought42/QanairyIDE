@@ -84,16 +84,6 @@ chrome.runtime.onMessage.addListener(
       }, 1500);
 
     }
-    else if (request.msg === "continue_test_run") {
-      localStorage.path = request.data;
-      window.setTimeout( function(){
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-          chrome.tabs.sendMessage(tabs[0].id, {msg: "coninue_test", data: request.data}, function(response) {
-          });f
-        });
-      }, 1500);
-
-    }
     else if(request.msg === "addToPath" && localStorage.status !== "stopped"){
       var path = JSON.parse(localStorage.getItem("path"));
       if(path == null){
@@ -181,6 +171,13 @@ chrome.runtime.onMessage.addListener(
           subscribe(profile);
         });
     }
+    else if(request.msg === 'redirect-tab'){
+      console.log("redirectiong tab  to url :: "+request.msg.data);
+      chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+
+       chrome.tabs.update(tab[0].id, {url: request.msg.data});
+     });
+    }
     else if(request.msg === 'edit-test'){
         localStorage.status = "editing";
         var test = request.data;
@@ -207,4 +204,6 @@ chrome.runtime.onMessage.addListener(
             data: localStorage.test
         });
     }
+    return Promise.resolve("Dummy response to keep the console quiet");
+
   });
