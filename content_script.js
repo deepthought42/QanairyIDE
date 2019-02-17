@@ -12,7 +12,7 @@ let close_ide = function(){
   qanairy_ide.style.display = "none";
 
   //reset localStorage
-  localStorage.removeItem("path");
+  localStorage.clear();
 }
 
 let logout = function(){
@@ -242,7 +242,7 @@ let recorderClickListener = function(event){
             else if(path[idx].action.name === "sendKeys"){
               xpathResult.value = path[idx].action.value;
             }
-            var new_url = window.location.toString()
+            var new_url = window.location.toString();
             if(new_url !== url){
               localStorage.run_idx = idx + 1;
               break;
@@ -423,7 +423,7 @@ function receiveMessage(event)
     open_recorder();
 		localStorage.test = JSON.stringify(JSON.parse(event.data).test);
 		localStorage.path = JSON.stringify(JSON.parse(event.data).test.path);
-		
+
 		chrome.runtime.sendMessage({
         msg: "subscribe_to_platform",
         data: JSON.parse(event.data).profile

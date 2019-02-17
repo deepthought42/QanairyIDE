@@ -171,7 +171,7 @@ chrome.runtime.onMessage.addListener(
 					message: "A test has been received for editing",
 					iconUrl: "images/qanairy_q_logo_black_48.png",
 					isClickable: true
-				}
+				};
 
 				chrome.notifications.create("edit-test-" + localStorage.test.name, options, function(id) {});
 
