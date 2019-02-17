@@ -29,7 +29,6 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 var subscribe = function(profile){
-  console.log("Sbuscribe received profile :: "+profile);
   var channel = pusher.subscribe(profile.name);
 
   channel.bind("pusher:subscription_succeeded", function() {
@@ -38,8 +37,8 @@ var subscribe = function(profile){
 
   channel.bind("test-created", function(test_msg) {
     var test = JSON.parse(test_msg);
-    console.log("test created received :  "+test_msg);
-
+    test.key = null;
+    localStorage.setItem("test", JSON.stringify(test));
     // Trigger desktop notification
     var options = {
       type: "basic",
@@ -49,9 +48,7 @@ var subscribe = function(profile){
       isClickable: true
     }
 
-    console.log("sending notification for test :: "+test)
     chrome.notifications.create("test-created-" + test.name, options, function(id) {});
-
   });
 }
 
@@ -86,7 +83,6 @@ chrome.runtime.onMessage.addListener(
     else if(request.msg === "addToPath" && localStorage.status !== "stopped"){
       var path = JSON.parse(localStorage.getItem("path"));
       if(path == null){
-        console.log("Path is empty")
         path = [];
       }
       if(path.length === 0 || path[path.length-1].type !== "page"){
@@ -154,14 +150,11 @@ chrome.runtime.onMessage.addListener(
         });
     }
     else if(request.msg === "subscribe_to_platform"){
-      console.log("REQUEST DATA ::   "+request.data);
       localStorage.profile = request.data;
       subscribe(request.data);
     }
     else if(request.msg === 'redirect-tab'){
-      console.log("redirectiong tab  to url :: "+request.msg.data);
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-
        chrome.tabs.update(tabs[0].id, {url: request.msg.data});
      });
     }

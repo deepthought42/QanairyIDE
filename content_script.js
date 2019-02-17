@@ -127,7 +127,6 @@ let findParentZIndex = function(node){
 }
 
 let recorderClickListener = function(event){
-  console.log("selector is enabled :: "+selector_enabled);
   if(selector_enabled){
     event.preventDefault();
     document.removeEventListener("click", recorderClickListener);
@@ -205,22 +204,14 @@ let recorderClickListener = function(event){
    * Runs a test from beginning to end
    */
   let runTest = function(path){
-		console.log("path[0] :: "+path[0]);
-
-		console.log("path[0].url :: "+path[0].url);
     if(path.length && localStorage.run_idx < path.length && !path[0].url){
       alert("Paths are expected to start with a page");
       return;
     }
 
-		console.log("local run idx :: "+ localStorage.run_idx);
-	console.log("path idx :: "+JSON.stringify(path));
-
 	  //process elements
     var url = "";
     for(var idx = parseInt(localStorage.run_idx, 10); idx < path.length; idx++){
-			console.log("loop index :: "+idx);
-			console.log("path idx :: "+JSON.stringify(path[idx]));
         if(path[idx].url){
           url = path[idx].url
 					localStorage.run_idx = idx + 1;
@@ -401,14 +392,12 @@ chrome.runtime.onMessage.addListener(
 
 renderRecorder();
 main();
-console.log("recorder status :: "+localStorage.status);
 if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING" || localStorage.status === "POST_RUN"){
 
   qanairy_ide = document.getElementById("qanairy_ide");
   qanairy_ide.style.display = "block";
 
   if(localStorage.status === "editing"){
-		console.log("editing");
     //send path to recorder
     chrome.runtime.sendMessage({
         msg: "loadTest",
@@ -434,12 +423,7 @@ function receiveMessage(event)
     open_recorder();
 		localStorage.test = JSON.stringify(JSON.parse(event.data).test);
 		localStorage.path = JSON.stringify(JSON.parse(event.data).test.path);
-		console.log("received message profile : " + JSON.stringify(JSON.parse(event.data).profile));
-
-		console.log("received message loading test : " + localStorage.test);
-		//send path to recorder
-
-		console.log("received message loading path : " + localStorage.path);
+		
 		chrome.runtime.sendMessage({
         msg: "subscribe_to_platform",
         data: JSON.parse(event.data).profile
