@@ -153,12 +153,12 @@ chrome.runtime.onMessage.addListener(
       localStorage.profile = request.data;
       subscribe(request.data);
     }
-    else if(request.msg === 'redirect-tab'){
+    else if(request.msg === "redirect-tab"){
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
        chrome.tabs.update(tabs[0].id, {url: request.msg.data});
      });
     }
-    else if(request.msg === 'edit-test'){
+    else if(request.msg === "edit-test"){
         localStorage.status = "editing";
         var test = request.data;
         localStorage.test = JSON.stringify(test);

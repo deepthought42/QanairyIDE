@@ -213,7 +213,7 @@ let recorderClickListener = function(event){
     var url = "";
     for(var idx = parseInt(localStorage.run_idx, 10); idx < path.length; idx++){
         if(path[idx].url){
-          url = path[idx].url
+          url = path[idx].url;
 					localStorage.run_idx = idx + 1;
 
 					if(path[idx].url !== window.location.href){
