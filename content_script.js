@@ -225,7 +225,6 @@ let recorderClickListener = function(event){
 						});
 						break;
 					}
-          //if element is a page then send message to background to navigate page
         }
         else if(path[idx].element){
 					pause(1000);
@@ -393,9 +392,7 @@ chrome.runtime.onMessage.addListener(
 renderRecorder();
 main();
 if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING" || localStorage.status === "POST_RUN"){
-
-  qanairy_ide = document.getElementById("qanairy_ide");
-  qanairy_ide.style.display = "block";
+	document.getElementById("qanairy_ide").style.display = "block";
 
   if(localStorage.status === "editing"){
     //send path to recorder
