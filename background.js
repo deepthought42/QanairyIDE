@@ -29,6 +29,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 var subscribe = function(profile){
+  console.log("Sbuscribe received profile :: "+profile);
   var channel = pusher.subscribe(profile.name);
 
   channel.bind("pusher:subscription_succeeded", function() {
@@ -37,20 +38,19 @@ var subscribe = function(profile){
 
   channel.bind("test-created", function(test_msg) {
     var test = JSON.parse(test_msg);
-    chrome.storage.local.get({
-      notifications: true
-    }, function(event_data) {
-        // Trigger desktop notification
-        var options = {
-          type: "basic",
-          title: "Test Created",
-          message: test.name + " was created successfully",
-          iconUrl: "images/qanairy_q_logo_black_48.png",
-          isClickable: true
-        }
+    console.log("test created received :  "+test_msg);
 
-        chrome.notifications.create("test-created" + JSON.parse(test).key, options, function(id) {});
-    });
+    // Trigger desktop notification
+    var options = {
+      type: "basic",
+      title: "Test Created",
+      message: test.name + " was created successfully",
+      iconUrl: "images/qanairy_q_logo_black_48.png",
+      isClickable: true
+    }
+
+    console.log("sending notification for test :: "+test)
+    chrome.notifications.create("test-created-" + test.name, options, function(id) {});
 
   });
 }
@@ -154,21 +154,9 @@ chrome.runtime.onMessage.addListener(
         });
     }
     else if(request.msg === "subscribe_to_platform"){
-      //send message to open recorder panel
-      chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-        chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {
-        });
-      });
-
-      var authResult = JSON.parse(localStorage.getItem("authResult"));
-      fetch(`https://staging-qanairy.auth0.com/userinfo`, {
-        headers: {
-          "Authorization": "Bearer "+authResult.access_token
-        }
-      }).then(resp => resp.json()).then((profile) => {
-          localStorage.profile = profile;
-          subscribe(profile);
-        });
+      console.log("REQUEST DATA ::   "+request.data);
+      localStorage.profile = request.data;
+      subscribe(request.data);
     }
     else if(request.msg === 'redirect-tab'){
       console.log("redirectiong tab  to url :: "+request.msg.data);
@@ -182,20 +170,17 @@ chrome.runtime.onMessage.addListener(
         var test = request.data;
         localStorage.test = JSON.stringify(test);
 
-        chrome.storage.local.get({
-    			notifications: true
-    		}, function(event_data) {
-    				// Trigger desktop notification
-    				var options = {
-    					type: "basic",
-    					title: "Test Received",
-    					message: "A test has been received for editing",
-    					iconUrl: "images/qanairy_q_logo_black_48.png",
-    					isClickable: true
-    				}
 
-    				chrome.notifications.create("edit-test-" + localStorage.test.name, options, function(id) {});
-    		});
+				// Trigger desktop notification
+				var options = {
+					type: "basic",
+					title: "Test Received",
+					message: "A test has been received for editing",
+					iconUrl: "images/qanairy_q_logo_black_48.png",
+					isClickable: true
+				}
+
+				chrome.notifications.create("edit-test-" + localStorage.test.name, options, function(id) {});
 
         localStorage.path = JSON.stringify(test.path);
         chrome.runtime.sendMessage({

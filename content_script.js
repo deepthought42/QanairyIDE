@@ -434,10 +434,16 @@ function receiveMessage(event)
     open_recorder();
 		localStorage.test = JSON.stringify(JSON.parse(event.data).test);
 		localStorage.path = JSON.stringify(JSON.parse(event.data).test.path);
+		console.log("received message profile : " + JSON.stringify(JSON.parse(event.data).profile));
+
 		console.log("received message loading test : " + localStorage.test);
 		//send path to recorder
 
 		console.log("received message loading path : " + localStorage.path);
+		chrome.runtime.sendMessage({
+        msg: "subscribe_to_platform",
+        data: JSON.parse(event.data).profile
+    });
 
     chrome.runtime.sendMessage({
         msg: "edit-test",
