@@ -30,7 +30,7 @@ git clone https://github.com/deepthought42/QanairyIDE.git
 
 #### Github desktop
 
-Go to File > Clone Repository and click on the URL tab. Enter [https://github.com/deepthought42/QanairyIDE.git]:https://github.com/deepthought42/QanairyIDE.git in the url input box
+Go to File > Clone Repository and click on the URL tab. Enter [https://github.com/deepthought42/QanairyIDE.git](https://github.com/deepthought42/QanairyIDE.git) in the url input box
 
 ### Install Dependencies
 
