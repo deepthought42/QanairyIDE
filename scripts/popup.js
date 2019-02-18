@@ -52,11 +52,17 @@
       if (token && isLoggedIn(token)) {
         renderProfileView(authResult);
 
+        console.log("authenticated");
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+          chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {});
+        });
         //send message to open recorder panel
-        chrome.runtime.sendMessage({msg: "subscribe_to_platform"}, function(response) {
+        chrome.runtime.sendMessage({msg: "subscribe_to_platform", data: token}, function(response) {
             //console.log("received response from request for subscribe_to_platform :: "+response);
           });
+
       } else {
+        console.log("sending authenticate call");
         renderDefaultView();
       }
     }
