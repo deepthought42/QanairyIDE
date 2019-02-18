@@ -129,7 +129,7 @@ let findParentZIndex = function(node){
 let recorderClickListener = function(event){
   if(selector_enabled){
     event.preventDefault();
-    document.removeEventListener("click", recorderClickListener);
+    document.removeEventListener("click", recorderClickListener, true);
     selector_enabled = false;
   }
 
@@ -362,9 +362,9 @@ chrome.runtime.onMessage.addListener(
     else if (request.msg === "stop_recording") {
       localStorage.status = "stopped";
 
-      document.removeEventListener("click", recorderClickListener);
-      document.removeEventListener("keyup", recorderKeyupListener);
-      document.removeEventListener("keydown", recorderKeydownListener);
+      document.removeEventListener("click", recorderClickListener, true);
+      document.removeEventListener("keyup", recorderKeyupListener, true);
+      document.removeEventListener("keydown", recorderKeydownListener, true);
 
       sendResponse({status: "stopping"});
     }
