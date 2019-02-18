@@ -154,8 +154,6 @@ chrome.runtime.onMessage.addListener(
         }
     }
     else if(request.msg === "subscribe_to_platform"){
-      localStorage.profile = request.data;
-      console.log("DATA ::: "+request.data);
       subscribe(jwt_decode(request.data).name);
     }
     else if(request.msg === "redirect-tab"){
