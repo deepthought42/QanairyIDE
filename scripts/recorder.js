@@ -121,8 +121,7 @@ $jquery("#element_selector").on("click", function(){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
     chrome.tabs.sendMessage(tabs[0].id, {msg: "listen_for_element_selector"}, function(response) {
       localStorage.status_before_select = localStorage.status;
-      localStorage.setItem("status",selecting);
-
+      localStorage.setItem("status","selecting");
     });
   });
 

@@ -128,7 +128,9 @@ let findParentZIndex = function(node){
 
 let recorderClickListener = function(event){
   if(selector_enabled){
-    event.preventDefault();
+		console.log("selector enabled when click event fired");
+		event.preventDefault();
+    event.stopPropagation();
     document.removeEventListener("click", recorderClickListener, true);
     selector_enabled = false;
   }
@@ -210,8 +212,16 @@ let recorderClickListener = function(event){
     }
 
 	  //process elements
-    var url = "";
+		if(localStorage.last_url && localStorage.last_url.length){
+			url = localStorage.last_url;
+		}
+		else{
+    	url = window.location.toString();
+			localStorage.setItem("last_url", url);
+		}
+		console.log("CURRENT URL :: "+url);
     for(var idx = parseInt(localStorage.run_idx, 10); idx < path.length; idx++){
+			console.log("INDEX :: "+idx);
         if(path[idx].url){
           url = path[idx].url;
 					localStorage.run_idx = idx + 1;
@@ -244,7 +254,8 @@ let recorderClickListener = function(event){
             var new_url = window.location.toString();
             if(new_url !== url){
               localStorage.run_idx = idx + 1;
-              break;
+							console.log("urls do not match :: "+url + "   ::    " + new_url);
+							break;
             }
           }
         }
