@@ -226,15 +226,16 @@ let recorderClickListener = function(event){
           url = path[idx].url;
 					localStorage.run_idx = idx + 1;
 
-					if(path[idx].url !== window.location.href){
+					if(path[idx].url !== window.location.toString()){
 	          window.location.href = path[idx].url;
 						//Update the url here.
 						chrome.runtime.sendMessage({
 								msg: "redirect-tab",
 								data: path[idx].url
 						});
-						break;
 					}
+					break;
+
         }
         else if(path[idx].element){
 					pause(1000);
@@ -251,13 +252,13 @@ let recorderClickListener = function(event){
             else if(path[idx].action.name === "sendKeys"){
               xpathResult.value = path[idx].action.value;
             }
-            var new_url = window.location.toString();
-            if(new_url !== url){
-              localStorage.run_idx = idx + 1;
-							console.log("urls do not match :: "+url + "   ::    " + new_url);
-							break;
-            }
           }
+					var new_url = window.location.toString();
+					if(new_url !== url){
+						localStorage.run_idx = idx + 1;
+						console.log("urls do not match :: "+url + "   ::    " + new_url);
+						break;
+					}
         }
         else {
           console.log("Unknown path element experienced at index "+idx);
