@@ -241,33 +241,6 @@ $jquery("#savePageButton").on("click", function(){
   $jquery("#pageUrl").val(null);
 });
 
-/*
- * Handles clicks on path elements and routes to the proper form and functionality based on
- * which path element is clicked on.
- */
-$jquery("#test_path_viewer").on("click", ".path-element-data", function(){
-    //send element to path element form
-    var index = $jquery(this).parent().data("index");
-    var element = JSON.parse(localStorage.getItem("path"))[index];
-
-    if(element.element){
-      //send to path element form
-      $jquery("#pageElementXpath").val(element.element.xpath);
-      $jquery("actionName").val(element.action.name);
-      $jquery("#actionValue").val(element.action.value);
-      $jquery("#pageElementIndexInPath").val(index);
-      pageEditPanel.style.display = "none";
-      pageElementEditPanel.style.display = "block";
-    }
-    else if(element.url){
-      //send to path element form
-      $jquery("#pageUrl").val(element.url);
-      pageEditPanel.style.display = "block";
-      pageElementEditPanel.style.display = "none";
-    }
-
-});
-
 //clicking on the edit icon(pencil) loads the path element info into the appropriate
 // edit panel
 $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
