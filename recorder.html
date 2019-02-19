@@ -70,14 +70,20 @@
             </div>
           </div>
         </div>
-        <button id="savePageElementButton" class="col-xs-12"> Add </button>
+        <button id="savePageElementButton" class="col-xs-12">
+          <span id="add-element-btn-txt">Add</span>
+          <span id="save-element-btn-txt">Save</span>
+        </button>
       </div>
       <div id="pageForm" class="col-xs-12">
         <input type="hidden" id="pageIndexInPath"/>
         <div class="col-xs-12">
           <input id="pageUrl" type="text" placeholder="http://www.example.com" class="col-xs-12"/>
         </div>
-        <button id="savePageButton" class="col-xs-12"> Add </button>
+        <button id="savePageButton" class="col-xs-12">
+          <span id="add-page-btn-txt">Add</span>
+          <span id="save-page-btn-txt">Save</span>
+        </button>
       </div>
     </div>
     <div class="row spacer">
@@ -89,6 +95,9 @@
           Saving test <i class="fa fa-spinner fa-spin"></i>
         </span>
       </button>
+      <div id="export-404-error" style="color:red">
+        An error occurred while exporting your test. Please try again.
+      </div>
       <div id="export-error" style="color:red">
         An error occurred while exporting your test. Please try again.
       </div>

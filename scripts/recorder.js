@@ -27,6 +27,8 @@ let close_ide = function(){
 $jquery("#createPageButton").on("click", function(page){
   pageEditPanel.style.display = "block";
   pageElementEditPanel.style.display = "none";
+  $jquery("#add-page-btn-txt").show();
+  $jquery("#save-page-btn-txt").hide();
   $jquery("#pageIndexInPath").val("");
 });
 
@@ -169,6 +171,8 @@ $jquery("#createPageElementButton").on("click", function(){
 
   pageEditPanel.style.display = "none";
   pageElementEditPanel.style.display = "block";
+  $jquery("#add-element-btn-txt").show();
+  $jquery("#save-element-btn-txt").hide();
   $jquery("#pageElementIndexInPath").val("");
 });
 
@@ -292,6 +296,8 @@ $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
       $jquery("#pageElementIndexInPath").val(index);
       pageEditPanel.style.display = "none";
       pageElementEditPanel.style.display = "block";
+      $jquery("#add-element-btn-txt").hide();
+      $jquery("#save-element-btn-txt").show();
     }
     else if(element.url){
       //send to path element form
@@ -302,6 +308,8 @@ $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
 
       pageEditPanel.style.display = "block";
       pageElementEditPanel.style.display = "none";
+      $jquery("#add-page-btn-txt").hide();
+      $jquery("#save-page-btn-txt").show();
     }
 
 });
