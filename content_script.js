@@ -202,68 +202,68 @@ let recorderClickListener = function(event){
     return match ? this.indexOf(match[0]) : -1;
   }
 
+	let executeTestElement = function(path_elem){
+		if(path_elem.url){
+			console.log("redirecting");
+			//if(path[idx].url !== window.location.toString()){
+			window.location.href = path_elem.url;
+			//Update the url here.
+			chrome.runtime.sendMessage({
+					msg: "redirect-tab",
+					data: path_elem.url
+			});
+		}
+		else if(path_elem.element){
+			console.log("operating on element action pair");
+			var xpathResult = document.evaluate(path_elem.element.xpath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
+			//verify that element exists on page
+			console.log("xpath result :: "+xpathResult);
+			console.log("xpath :: "+path_elem.element.xpath);
+			if(xpathResult){
+				console.log("action name :: " + path_elem.action.name);
+				//perform action on element
+				if(path_elem.action.name === "click"){
+					console.log("click on element");
+					xpathResult.click();
+				}
+				else if(path_elem.action.name === "doubleClick"){
+					console.log("Double clicking");
+					xpathResult.doubleClick();
+				}
+				else if(path_elem.action.name === "sendKeys"){
+					console.log("SENDING KEYS");
+					xpathResult.value = path_elem.action.value;
+				}
+			}
+		}
+		else {
+			console.log("Unknown path element experienced at index "+idx);
+		}
+	}
   /*
    * Runs a test from beginning to end
    */
   let runTest = function(path){
-    if(path.length && localStorage.run_idx < path.length && !path[0].url){
+    if(path.length && !path[0].url && localStorage.run_idx < path.length){
       alert("Paths are expected to start with a page");
       return;
     }
 
 	  //process elements
-		if(localStorage.last_url && localStorage.last_url.length){
-			url = localStorage.last_url;
-		}
-		else{
-    	url = window.location.toString();
-			localStorage.setItem("last_url", url);
-		}
-		console.log("CURRENT URL :: "+url);
-    for(var idx = parseInt(localStorage.run_idx, 10); idx < path.length; idx++){
-			console.log("INDEX :: "+idx);
-        if(path[idx].url){
-          url = path[idx].url;
-					localStorage.run_idx = idx + 1;
+		console.log("INDEX :: "+localStorage.run_idx);
+		let test_interval = setInterval(function(){
+			console.log("Path length :: "+path.length);
+			if(parseInt(localStorage.run_idx) >= path.length){
+				clearInterval(test_interval);
+				return;
+			}
+			executeTestElement(path[localStorage.run_idx]);
+			localStorage.run_idx = parseInt(localStorage.run_idx) + 1;
+			console.log("Updated INDEX :: "+localStorage.run_idx);
 
-					if(path[idx].url !== window.location.toString()){
-	          window.location.href = path[idx].url;
-						//Update the url here.
-						chrome.runtime.sendMessage({
-								msg: "redirect-tab",
-								data: path[idx].url
-						});
-					}
-					break;
-
-        }
-        else if(path[idx].element){
-					pause(1000);
-          var xpathResult = document.evaluate(path[idx].element.xpath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
-          //verify that element exists on page
-          if(xpathResult){
-            //perform action on element
-            if(path[idx].action.name === "click"){
-              xpathResult.click();
-            }
-            else if(path[idx].action.name === "doubleClick"){
-              xpathResult.doubleClick();
-            }
-            else if(path[idx].action.name === "sendKeys"){
-              xpathResult.value = path[idx].action.value;
-            }
-          }
-					var new_url = window.location.toString();
-					if(new_url !== url){
-						localStorage.run_idx = idx + 1;
-						console.log("urls do not match :: "+url + "   ::    " + new_url);
-						break;
-					}
-        }
-        else {
-          console.log("Unknown path element experienced at index "+idx);
-        }
-    }
+			console.log("are urls equal  ::   "+ localStorage.last_url + "   :    "+window.location.toString());
+			localStorage.last_url = window.location.toString();
+		}, 2000, path);
 
 		if(localStorage.run_idx >= path.length){
 			localStorage.status = "POST_RUN";
@@ -390,7 +390,9 @@ chrome.runtime.onMessage.addListener(
       if(request.data){
         localStorage.path = JSON.stringify(request.data);
       }
-			setTimeout(runTest(JSON.parse(localStorage.path)), 2000);
+			localStorage.setItem("last_url", window.location.toString());
+
+			runTest(JSON.parse(localStorage.path));
     }
     else if (request.msg === "open_recorder"){
       open_recorder();
@@ -398,6 +400,9 @@ chrome.runtime.onMessage.addListener(
     else if (request.msg === "close_recorder"){
       close_ide();
     }
+		else if (request.msg === "update_path"){
+			localStorage.setItem("path", request.data);
+		}
     return Promise.resolve("Dummy response to keep the console quiet");
 });
 
@@ -416,7 +421,7 @@ if(localStorage.status === "recording" || localStorage.status === "editing" || l
   }
   else if(localStorage.status === "RUNNING"){
 		open_recorder();
-		setTimeout(runTest(JSON.parse(localStorage.path)), 2000);
+		runTest(JSON.parse(localStorage.path));
   }
 	else if(localStorage.status === "POST_RUN"){
 		localStorage.status = "";

@@ -202,6 +202,8 @@ $jquery("#savePageElementButton").on("click", function(){
   }
   redrawPath(path);
   localStorage.setItem("path", JSON.stringify(path));
+  chrome.runtime.sendMessage({msg: "update_path", data: path}, function(response) {});
+
   //reset page element <-> action form fields
    $jquery("#pageElementXpath").val(null);
    $jquery("actionName").val(null);
@@ -234,6 +236,7 @@ $jquery("#savePageButton").on("click", function(){
     $jquery("#test_path_viewer").append( generatePagePathListItem(page, path.length-1 ));
   }
   localStorage.setItem("path", JSON.stringify(path));
+  chrome.runtime.sendMessage({msg: "update_path", data: path}, function(response) {});
 
   redrawPath(path);
   //reset page form fields
