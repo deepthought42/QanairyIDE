@@ -151,6 +151,8 @@ $jquery(document).ready(function(){
 
 $jquery("#createNewTest").on("click", function(){
   localStorage.setItem("path", JSON.stringify([]));
+  localStorage.removeItem("test");
+
   $jquery("#test_path_viewer").html("");
 });
 
