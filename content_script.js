@@ -127,13 +127,6 @@ let findParentZIndex = function(node){
 }
 
 let recorderClickListener = function(event){
-  if(selector_enabled){
-		console.log("selector enabled when click event fired");
-		event.preventDefault();
-    event.stopPropagation();
-    document.removeEventListener("click", recorderClickListener, true);
-    selector_enabled = false;
-  }
 
   var xpath = "";
   var possible_nodes = [];
@@ -168,7 +161,7 @@ let recorderClickListener = function(event){
     }
   }
 
-  if(xpath.length > 0){
+  if(xpath.length > 0 && selector_enabled){
     chrome.runtime.sendMessage({msg: "addToPath",
                                 data: {url: window.location.toString(),
                                        pathElement: {
@@ -190,6 +183,14 @@ let recorderClickListener = function(event){
        }
      );
    }
+
+	 if(selector_enabled){
+	 		console.log("selector enabled when click event fired");
+	 		event.preventDefault();
+	     event.stopPropagation();
+	     document.removeEventListener("click", recorderClickListener, true);
+	     selector_enabled = false;
+	   }
 }
 
     //build list of elements where the x,y coords and height,width encompass the event x,y coords

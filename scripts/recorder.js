@@ -197,13 +197,13 @@ $jquery("#savePageElementButton").on("click", function(){
   }
 
   var path = JSON.parse(localStorage.path);
+  console.log("path length :: "+path.length);
   var index = $jquery("#pageElementIndexInPath").val();
   if(index && index.length > 0){
     path[ index ] = element_action;
   }
   else {
     path.push(element_action);
-    $jquery("#test_path_viewer").append( generatePageElementPathListItem(element_action, path.length-1 ));
   }
   redrawPath(path);
   localStorage.setItem("path", JSON.stringify(path));
@@ -238,7 +238,6 @@ $jquery("#savePageButton").on("click", function(){
   }
   else {
     path.push(page);
-    $jquery("#test_path_viewer").append( generatePagePathListItem(page, path.length-1 ));
   }
   localStorage.setItem("path", JSON.stringify(path));
   chrome.runtime.sendMessage({msg: "update_path", data: path}, function(response) {});
