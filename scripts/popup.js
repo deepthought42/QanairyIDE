@@ -52,7 +52,6 @@
       if (token && isLoggedIn(token)) {
         renderProfileView(authResult);
 
-        console.log("authenticated");
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
           chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {});
         });
@@ -62,7 +61,6 @@
           });
 
       } else {
-        console.log("sending authenticate call");
         renderDefaultView();
       }
     }
