@@ -161,7 +161,6 @@ let recorderClickListener = function(event){
     }
   }
 
-	console.log("record click listener");
 	if(selector_enabled){
 		event.preventDefault();
 		event.stopPropagation();
