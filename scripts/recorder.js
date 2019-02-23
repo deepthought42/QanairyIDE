@@ -7,6 +7,9 @@ $jquery("#export_test_btn_text").show();
 $jquery("#export_test_btn_waiting_txt").hide();
 $jquery("#export_test_success_text").hide();
 $jquery("#test_saved_successfully_msg").hide();
+$jquery("#save-element-btn-txt").hide();
+$jquery("#save-page-btn-txt").hide();
+
 
 let startRecording = document.getElementById("startRecording");
 let stopRecording = document.getElementById("stopRecording");
@@ -482,10 +485,10 @@ chrome.runtime.onMessage.addListener(
               }
               return;
             }
-              path.push(request.data.pathElement);
-              last_node = request.data.pathElement;
-              localStorage.setItem("path", JSON.stringify(path));
-              redrawPath(path);
+            path.push(request.data.pathElement);
+            last_node = request.data.pathElement;
+            localStorage.setItem("path", JSON.stringify(path));
+            redrawPath(path);
           }
         }
         else if (request.msg === "loadTest") {

@@ -161,7 +161,7 @@ let recorderClickListener = function(event){
     }
   }
 
-  if(xpath.length > 0 && selector_enabled){
+  if(xpath.length > 0 && !selector_enabled){
     chrome.runtime.sendMessage({msg: "addToPath",
                                 data: {url: window.location.toString(),
                                        pathElement: {
@@ -185,11 +185,11 @@ let recorderClickListener = function(event){
    }
 
 	 if(selector_enabled){
-	 		event.preventDefault();
-	     event.stopPropagation();
-	     document.removeEventListener("click", recorderClickListener, true);
-	     selector_enabled = false;
-	   }
+	 	 event.preventDefault();
+     event.stopPropagation();
+     document.removeEventListener("click", recorderClickListener, true);
+     selector_enabled = false;
+   }
 }
 
     //build list of elements where the x,y coords and height,width encompass the event x,y coords
