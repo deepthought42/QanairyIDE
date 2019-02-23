@@ -3,11 +3,12 @@ localStorage.status = "stopped";
 
 
 // Enable Pusher logging - don't include this in production
-Pusher.log = function(message) {
+/*Pusher.log = function(message) {
   if (window.console && window.console.log) {
     window.console.log(message);
   }
 };
+*/
 
 let pusher = new Pusher("77fec1184d841b55919e", {
   cluster: "us2",
@@ -29,7 +30,6 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 var subscribe = function(channel_name){
-  console.log("subscribing to channel name : "+channel_name);
   var channel = pusher.subscribe(channel_name);
 
   channel.bind("pusher:subscription_succeeded", function() {
@@ -37,7 +37,6 @@ var subscribe = function(channel_name){
   });
 
   channel.bind("test-created", function(test_msg) {
-    console.log("test created event ");
     var test = JSON.parse(test_msg);
     test.key = "";
     localStorage.setItem("test", JSON.stringify(test));
@@ -197,8 +196,6 @@ chrome.runtime.onMessage.addListener(
         iconUrl: "images/qanairy_q_logo_black_48.png",
         isClickable: true
       }
-
-      console.log("sending test saved successfully");
 
       chrome.notifications.create("test-saved-successfully", options, function(id) {
       });
