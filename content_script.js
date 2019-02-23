@@ -237,7 +237,6 @@ let recorderClickListener = function(event){
    * Runs a test from beginning to end
    */
   let runTest = function(path){
-		console.log("Path :: "+path[0]);
     if(path.length && !path[0].url && localStorage.run_idx < path.length){
       alert("Paths are expected to start with a page");
       return;
@@ -252,7 +251,7 @@ let recorderClickListener = function(event){
 			executeTestElement(path[localStorage.run_idx]);
 			localStorage.run_idx = parseInt(localStorage.run_idx) + 1;
 			localStorage.last_url = window.location.toString();
-		}, 2000, path);
+		}, 1000, path);
 
 		if(localStorage.run_idx >= path.length){
 			localStorage.status = "POST_RUN";

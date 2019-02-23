@@ -445,7 +445,6 @@ $jquery("#exportTest").on("click", function(element){
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if(request.msg === "setElementXpath"){
-          console.log("setting xpath :: "+request.data);
           $jquery("#pageElementXpath").val(request.data);
           selector_status = "disabled";
         }
@@ -493,7 +492,7 @@ chrome.runtime.onMessage.addListener(
           redrawPath(JSON.parse(request.data).path);
         }
         else if (request.msg === "show-test-saved-successfully-msg"){
-          $jquery("#test_saved_successfully_msg").html("'" + request.data + "' was saved successfully on the Qanairy platform");
+          $jquery("#test_saved_successfully_msg").html("'" + request.data + "' was created successfully");
           $jquery("#test_saved_successfully_msg").show(0).delay(10000).hide(0);
         }
         return Promise.resolve("Dummy response to keep the console quiet");
