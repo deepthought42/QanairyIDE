@@ -197,7 +197,6 @@ $jquery("#savePageElementButton").on("click", function(){
   }
 
   var path = JSON.parse(localStorage.path);
-  console.log("path length :: "+path.length);
   var index = $jquery("#pageElementIndexInPath").val();
   if(index && index.length > 0){
     path[ index ] = element_action;
@@ -415,7 +414,6 @@ $jquery("#exportTest").on("click", function(element){
 
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
-        console.log("response :: "+JSON.stringify(response));
         if(response.status === 0){
           $jquery("#export-404-error").show(0).delay(10000).hide(0);
         }else{
@@ -494,7 +492,6 @@ chrome.runtime.onMessage.addListener(
           redrawPath(JSON.parse(request.data).path);
         }
         else if (request.msg === "show-test-saved-successfully-msg"){
-          console.log("showing successfully save msg");
           $jquery("#test_saved_successfully_msg").html("'" + request.data + "' was saved successfully on the Qanairy platform");
           $jquery("#test_saved_successfully_msg").show(0).delay(10000).hide(0);
         }

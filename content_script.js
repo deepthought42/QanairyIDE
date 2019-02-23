@@ -185,7 +185,6 @@ let recorderClickListener = function(event){
    }
 
 	 if(selector_enabled){
-	 		console.log("selector enabled when click event fired");
 	 		event.preventDefault();
 	     event.stopPropagation();
 	     document.removeEventListener("click", recorderClickListener, true);
@@ -204,8 +203,7 @@ let recorderClickListener = function(event){
   }
 
 	let executeTestElement = function(path_elem){
-		if(path_elem.url){
-			console.log("redirecting");
+		if(path_elem !== undefined && path_elem.url){
 			//if(path[idx].url !== window.location.toString()){
 			window.location.href = path_elem.url;
 			//Update the url here.
@@ -214,55 +212,44 @@ let recorderClickListener = function(event){
 					data: path_elem.url
 			});
 		}
-		else if(path_elem.element){
-			console.log("operating on element action pair");
+		else if(path_elem  !== undefined && path_elem.element){
 			var xpathResult = document.evaluate(path_elem.element.xpath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
 			//verify that element exists on page
-			console.log("xpath result :: "+xpathResult);
-			console.log("xpath :: "+path_elem.element.xpath);
 			if(xpathResult){
-				console.log("action name :: " + path_elem.action.name);
 				//perform action on element
 				if(path_elem.action.name === "click"){
-					console.log("click on element");
 					xpathResult.click();
 				}
 				else if(path_elem.action.name === "doubleClick"){
-					console.log("Double clicking");
 					xpathResult.doubleClick();
 				}
 				else if(path_elem.action.name === "sendKeys"){
-					console.log("SENDING KEYS");
 					xpathResult.value = path_elem.action.value;
 				}
 			}
 		}
 		else {
-			console.log("Unknown path element experienced at index "+idx);
+			//console.log("Unknown path element experienced");
 		}
 	}
   /*
    * Runs a test from beginning to end
    */
   let runTest = function(path){
+		console.log("Path :: "+path[0]);
     if(path.length && !path[0].url && localStorage.run_idx < path.length){
       alert("Paths are expected to start with a page");
       return;
     }
 
 	  //process elements
-		console.log("INDEX :: "+localStorage.run_idx);
 		let test_interval = setInterval(function(){
-			console.log("Path length :: "+path.length);
 			if(parseInt(localStorage.run_idx) >= path.length){
 				clearInterval(test_interval);
 				return;
 			}
 			executeTestElement(path[localStorage.run_idx]);
 			localStorage.run_idx = parseInt(localStorage.run_idx) + 1;
-			console.log("Updated INDEX :: "+localStorage.run_idx);
-
-			console.log("are urls equal  ::   "+ localStorage.last_url + "   :    "+window.location.toString());
 			localStorage.last_url = window.location.toString();
 		}, 2000, path);
 
