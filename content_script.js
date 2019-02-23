@@ -161,34 +161,35 @@ let recorderClickListener = function(event){
     }
   }
 
-  if(xpath.length > 0 && !selector_enabled){
-    chrome.runtime.sendMessage({msg: "addToPath",
-                                data: {url: window.location.toString(),
-                                       pathElement: {
-                                         element: {
-                                           type: "pageElement",
-                                           target: event.relatedTarget,
-                                           xpath: xpath
-                                         },
-                                         action: {
-                                           type: "action",
-                                           name: "click",
-                                           value: ""
-                                         }
-                                       }
-                                     }
-                                   },
-       function(response) {
-         //console.log("response ::  " +JSON.stringify(response));
-       }
-     );
-   }
-
-	 if(selector_enabled){
-	 	 event.preventDefault();
-     event.stopPropagation();
-     document.removeEventListener("click", recorderClickListener, true);
-     selector_enabled = false;
+	console.log("record click listener");
+	if(selector_enabled){
+		event.preventDefault();
+		event.stopPropagation();
+		document.removeEventListener("click", recorderClickListener, true);
+		chrome.runtime.sendMessage({msg: "setElementXpath", data: xpath});
+		selector_enabled = false;
+	}
+	else if(xpath.length > 0){
+	    chrome.runtime.sendMessage({msg: "addToPath",
+	                                data: {url: window.location.toString(),
+	                                       pathElement: {
+	                                         element: {
+	                                           type: "pageElement",
+	                                           target: event.relatedTarget,
+	                                           xpath: xpath
+	                                         },
+	                                         action: {
+	                                           type: "action",
+	                                           name: "click",
+	                                           value: ""
+	                                         }
+	                                       }
+	                                     }
+	                                   },
+	       function(response) {
+	         //console.log("response ::  " +JSON.stringify(response));
+	       }
+	     );
    }
 }
 

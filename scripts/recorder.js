@@ -444,52 +444,50 @@ $jquery("#exportTest").on("click", function(element){
 //receive path element
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if (request.msg === "addToPath") {
+        if(request.msg === "setElementXpath"){
+          console.log("setting xpath :: "+request.data);
+          $jquery("#pageElementXpath").val(request.data);
+          selector_status = "disabled";
+        }
+        else if (request.msg === "addToPath") {
           //if selector button set selector status to active then retrieve xpath and set it to element xpath field value
-          if(selector_status === "active"){
-            selector_status = "disabled";
-            //fire event to stop listening for url change events and action events
-            if(localStorage.status === "selecting" && localStorage.status_before_select === "recording"){
-              chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-                chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
-                  localStorage.removeItem("status_before_select");
-                  //console.log("starting record status :: "+response);
-                });
+          if(selector_status === "active" && localStorage.status_before_select === "recording"){
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+              chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
+                localStorage.removeItem("status_before_select");
+                //console.log("starting record status :: "+response);
               });
-            }
-            $jquery("#pageElementXpath").val(request.data.pathElement.element.xpath);
-            //set item xpath in element xpath field
+            });
           }
-          else {
-            var path = JSON.parse(localStorage.getItem("path"));
 
-            if(path === undefined || path === null){
-              path = new Array();
-              localStorage.setItem("path", JSON.stringify(path));
-            }
+          var path = JSON.parse(localStorage.getItem("path"));
 
-            if(path.length === 0){
-              //push page into path
-              path.push({url : request.data.url});
-              $jquery("#test_path_viewer").append( generatePagePathListItem(request.data, path.length-1 ));
-            }
-
-            //check if last element is equal to this element
-            if(path[path.length-1].element && path[path.length-1].element.xpath === request.data.pathElement.element.xpath && path[path.length-1].action.name === request.data.pathElement.action.name){
-              //check if last element actin pair was a typing action
-              if(path[path.length-1].action.name === "sendKeys" && request.data.pathElement.action.name === "sendKeys"){
-                path[path.length-1].action.value = request.data.pathElement.action.value;
-                localStorage.setItem("path", JSON.stringify(path));
-
-                redrawPath(path);
-              }
-              return;
-            }
-            path.push(request.data.pathElement);
-            last_node = request.data.pathElement;
+          if(path === undefined || path === null){
+            path = new Array();
             localStorage.setItem("path", JSON.stringify(path));
-            redrawPath(path);
           }
+
+          if(path.length === 0){
+            //push page into path
+            path.push({url : request.data.url});
+            $jquery("#test_path_viewer").append( generatePagePathListItem(request.data, path.length-1 ));
+          }
+
+          //check if last element is equal to this element
+          if(path[path.length-1].element && path[path.length-1].element.xpath === request.data.pathElement.element.xpath && path[path.length-1].action.name === request.data.pathElement.action.name){
+            //check if last element actin pair was a typing action
+            if(path[path.length-1].action.name === "sendKeys" && request.data.pathElement.action.name === "sendKeys"){
+              path[path.length-1].action.value = request.data.pathElement.action.value;
+              localStorage.setItem("path", JSON.stringify(path));
+
+              redrawPath(path);
+            }
+            return;
+          }
+          path.push(request.data.pathElement);
+          last_node = request.data.pathElement;
+          localStorage.setItem("path", JSON.stringify(path));
+          redrawPath(path);
         }
         else if (request.msg === "loadTest") {
           redrawPath(JSON.parse(request.data).path);
