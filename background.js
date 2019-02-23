@@ -29,6 +29,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 var subscribe = function(channel_name){
+  console.log("subscribing to channel name : "+channel_name);
   var channel = pusher.subscribe(channel_name);
 
   channel.bind("pusher:subscription_succeeded", function() {
@@ -36,8 +37,9 @@ var subscribe = function(channel_name){
   });
 
   channel.bind("test-created", function(test_msg) {
+    console.log("test created event ");
     var test = JSON.parse(test_msg);
-    test.key = null;
+    test.key = "";
     localStorage.setItem("test", JSON.stringify(test));
     // Trigger desktop notification
     var options = {
@@ -49,6 +51,8 @@ var subscribe = function(channel_name){
     }
 
     chrome.notifications.create("test-created-" + test.name, options, function(id) {});
+
+    chrome.runtime.sendMessage({msg: "show-test-saved-successfully-msg", data: test.name}, function(){});
   });
 }
 
@@ -183,6 +187,21 @@ chrome.runtime.onMessage.addListener(
             msg: "loadTest",
             data: localStorage.test
         });
+    }
+    else if(request.msg === "show-test-saved-msg"){
+      // Trigger desktop notification that test was saved successfully
+      var options = {
+        type: "basic",
+        title: "Your test is being processed",
+        message: "Qanairy is building your test. We'll let you know when it's ready.",
+        iconUrl: "images/qanairy_q_logo_black_48.png",
+        isClickable: true
+      }
+
+      console.log("sending test saved successfully");
+
+      chrome.notifications.create("test-saved-successfully", options, function(id) {
+      });
     }
     return Promise.resolve("Dummy response to keep the console quiet");
 

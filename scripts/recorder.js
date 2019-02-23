@@ -5,6 +5,8 @@ $jquery("#export-error").hide();
 $jquery("#export-404-error").hide(0);
 $jquery("#export_test_btn_text").show();
 $jquery("#export_test_btn_waiting_txt").hide();
+$jquery("#export_test_success_text").hide();
+$jquery("#test_saved_successfully_msg").hide();
 
 let startRecording = document.getElementById("startRecording");
 let stopRecording = document.getElementById("stopRecording");
@@ -404,17 +406,9 @@ $jquery("#exportTest").on("click", function(element){
         $jquery("#exportTest").prop("disabled",false);
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
+        $jquery("#export_test_success_text").show(0).delay(10000).hide(0);
 
-        // Trigger desktop notification that test was saved successfully
-        var options = {
-          type: "basic",
-          title: "Your test is being processed",
-          message: "Qanairy is building your test. We'll let you know when it's ready.",
-          iconUrl: "images/qanairy_q_logo_black_48.png",
-          isClickable: true
-        }
-
-        chrome.notifications.create("test-saved-successfully", options, function(id) {});
+        chrome.runtime.sendMessage({msg: "show-test-saved-msg"}, function(response) {});
       },
 
       error: function(response) {
@@ -424,9 +418,9 @@ $jquery("#exportTest").on("click", function(element){
         $jquery("#export_test_btn_waiting_txt").hide();
         console.log("response :: "+JSON.stringify(response));
         if(response.status === 0){
-          $jquery("#export-404-error").show(0).delay(15000).hide(0);
+          $jquery("#export-404-error").show(0).delay(10000).hide(0);
         }else{
-          $jquery("#export-error").show(0).delay(15000).hide(0);
+          $jquery("#export-error").show(0).delay(10000).hide(0);
         }
 
         // Here's where you handle an error response.
@@ -499,6 +493,11 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request.msg === "loadTest") {
           redrawPath(JSON.parse(request.data).path);
+        }
+        else if (request.msg === "show-test-saved-successfully-msg"){
+          console.log("showing successfully save msg");
+          $jquery("#test_saved_successfully_msg").html("'" + request.data + "' was saved successfully on the Qanairy platform");
+          $jquery("#test_saved_successfully_msg").show(0).delay(10000).hide(0);
         }
         return Promise.resolve("Dummy response to keep the console quiet");
 

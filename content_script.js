@@ -337,7 +337,7 @@ var open_recorder = function(){
 var renderRecorder = function(){
    var iframe = document.createElement("iframe");
    iframe.id="qanairy_ide_frame";
-   iframe.style.cssText = "position:absolute;width:300px;height:650px;z-index:998";
+   iframe.style.cssText = "position:absolute;width:300px;height:550px;z-index:998";
    iframe.src = chrome.extension.getURL("/recorder.html");
 
    var header_inner_html = "<span id='ide_close_icon' onclick=\"document.getElementById('qanairy_ide').style.display='none';localStorage.removeItem('path');\" style='display:block;cursor:pointer;z-index:999;position:absolute;top:0px; left:280px;height:20px;width:20px;margin:0px;padding:0px;color:#FFFFFF'><b>x</b></span>";
@@ -352,7 +352,7 @@ var renderRecorder = function(){
    body.appendChild(iframe);
 
    var parent = document.createElement("div");
-   parent.style.cssText = "position:absolute;width:300px;height:700px;z-index:10000;left:20px;top:20px;padding:0px";
+   parent.style.cssText = "position:absolute;width:300px;height:600px;z-index:10000;left:20px;top:20px;padding:0px";
    parent.id="qanairy_ide";
    parent.style.display = "none";
    parent.appendChild(header);
@@ -410,7 +410,6 @@ renderRecorder();
 main();
 if(localStorage.status === "recording" || localStorage.status === "editing" || localStorage.status === "RUNNING" || localStorage.status === "POST_RUN"){
 	document.getElementById("qanairy_ide").style.display = "block";
-
   if(localStorage.status === "editing"){
     //send path to recorder
     chrome.runtime.sendMessage({
