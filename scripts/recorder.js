@@ -261,7 +261,7 @@ $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
     if(element.element){
       //send to path element form
       $jquery("#pageElementXpath").val(element.element.xpath);
-      $jquery("#pageElementXpath").addClass("highlighted-background").delay(10000).queue(function(next){
+      $jquery("#pageElementXpath").addClass("highlighted-background").delay(20000).queue(function(next){
           $jquery(this).removeClass("highlighted-background");
       });
 
@@ -284,7 +284,7 @@ $jquery("#test_path_viewer").on("click", ".edit-icon", function(e){
     else if(element.url){
       //send to path element form
       $jquery("#pageUrl").val(element.url);
-      $jquery("#pageUrl").addClass("highlighted-background").delay(10000).queue(function(next){
+      $jquery("#pageUrl").addClass("highlighted-background").delay(20000).queue(function(next){
           $jquery(this).removeClass("highlighted-background");
       });
 
@@ -364,6 +364,9 @@ $jquery("#exportTest").on("click", function(element){
     }
 
     var test_name = prompt("Please name your test");
+    if(test_name === null){
+      return;
+    }
     var start_url = "";
 
     for(var idx=0; idx < path.length; idx++){
@@ -407,7 +410,7 @@ $jquery("#exportTest").on("click", function(element){
         $jquery("#exportTest").prop("disabled",false);
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
-        $jquery("#export_test_success_text").show(0).delay(10000).hide(0);
+        $jquery("#export_test_success_text").show(0).delay(20000).hide(0);
 
         chrome.runtime.sendMessage({msg: "show-test-saved-msg"}, function(response) {});
       },
@@ -418,9 +421,9 @@ $jquery("#exportTest").on("click", function(element){
         $jquery("#export_test_btn_text").show();
         $jquery("#export_test_btn_waiting_txt").hide();
         if(response.status === 0){
-          $jquery("#export-404-error").show(0).delay(10000).hide(0);
+          $jquery("#export-404-error").show(0).delay(20000).hide(0);
         }else{
-          $jquery("#export-error").show(0).delay(10000).hide(0);
+          $jquery("#export-error").show(0).delay(20000).hide(0);
         }
 
         // Here's where you handle an error response.
@@ -493,7 +496,7 @@ chrome.runtime.onMessage.addListener(
         }
         else if (request.msg === "show-test-saved-successfully-msg"){
           $jquery("#test_saved_successfully_msg").html("'" + request.data + "' was created successfully");
-          $jquery("#test_saved_successfully_msg").show(0).delay(10000).hide(0);
+          $jquery("#test_saved_successfully_msg").show(0).delay(20000).hide(0);
         }
         return Promise.resolve("Dummy response to keep the console quiet");
 

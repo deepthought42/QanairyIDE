@@ -237,7 +237,7 @@ let recorderClickListener = function(event){
    */
   let runTest = function(path){
     if(path.length && !path[0].url && localStorage.run_idx < path.length){
-      alert("Paths are expected to start with a page");
+      alert("Paths must start with a page");
       return;
     }
 

@@ -173,8 +173,8 @@ chrome.runtime.onMessage.addListener(
 				// Trigger desktop notification
 				var options = {
 					type: "basic",
-					title: "Test Received",
-					message: "A test has been received for editing",
+					title: "Test Opened",
+					message: "This test can now be edited",
 					iconUrl: "images/qanairy_q_logo_black_48.png",
 					isClickable: true
 				};
