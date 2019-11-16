@@ -10,7 +10,6 @@ $jquery("#test_saved_successfully_msg").hide();
 $jquery("#save-element-btn-txt").hide();
 $jquery("#save-page-btn-txt").hide();
 
-
 let startRecording = document.getElementById("startRecording");
 let stopRecording = document.getElementById("stopRecording");
 let pageEditPanel = document.getElementById("pageForm");
@@ -54,9 +53,8 @@ let generatePagePathListItem = function(page, index){
       <i class="fas fa-times icon delete-icon fa-2x" ></i>
     </div>
   </div>`;
-     //  To do something
 
-   return element;
+  return element;
 }
 
 let generatePageElementPathListItem = function(path_element, index){
@@ -81,9 +79,7 @@ let generatePageElementPathListItem = function(path_element, index){
         <i class="fas fa-times fa-lg icon delete-icon fa-2x"></i>
       </div>
     </div>`;
-     //  To do something
-
-     return element;
+    return element;
 }
 
 /*
@@ -132,10 +128,6 @@ $jquery("#element_selector").on("click", function(){
       localStorage.setItem("status","selecting");
     });
   });
-
-  //activate listener for click events similar to recording, but return element and xpath here
-
-  //if recording was running at start of session then resume recording
 });
 
 $jquery(document).ready(function(){
@@ -496,7 +488,6 @@ chrome.runtime.onMessage.addListener(
           $jquery("#test_saved_successfully_msg").show(0).delay(20000).hide(0);
         }
         return Promise.resolve("Dummy response to keep the console quiet");
-
       }
 );
 
