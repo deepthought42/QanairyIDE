@@ -15,6 +15,11 @@ let pusher = new Pusher("77fec1184d841b55919e", {
   logToConsole: false
 });
 
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, function(){
+  });
+});
+
 /*
  *
  */
