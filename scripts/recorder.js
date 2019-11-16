@@ -331,7 +331,7 @@ $jquery("#runTestButton").on("click", function(element){
   var path = JSON.parse(localStorage.getItem("path"));
   //send path to content script to be ran
 
-  chrome.runtime.sendMessage({msg: "start_test_run", data: path}, function(response) {
+  chrome.runtime.sendMessage({type: "start_test_run", data: path}, function(response) {
 
   });
 });

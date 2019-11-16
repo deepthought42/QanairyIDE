@@ -44,7 +44,6 @@ var subscribe = function(channel_name){
     }
 
     chrome.notifications.create("test-created-" + test.name, options, function(id) {});
-
     chrome.runtime.sendMessage({msg: "show-test-saved-successfully-msg", data: test.name}, function(){});
   });
 }
@@ -65,7 +64,7 @@ chrome.runtime.onMessage.addListener(function (event) {
     sendResponse({status: "starting"});
   }
   else if (event.type === "start_test_run") {
-    var path = request.data;
+    var path = event.data;
     //get first element from path. First element is expected to be a page, if it isn't then throw an error
 
     window.setTimeout( function(){
@@ -92,16 +91,16 @@ chrome.runtime.onMessage.addListener(function (event) {
       });
     }
 
-    path.push(request.data.element);
+    path.push(event.data.element);
     chrome.runtime.sendMessage({
         msg: "appendPathElement",
-        data: request.data.element
+        data: event.data.element
 
     });
-    path.push(request.data.action);
+    path.push(event.data.action);
     chrome.runtime.sendMessage({
         msg: "appendPathElement",
-        data: request.data.action
+        data: event.data.action
     });
   }
   else if (event.type === 'authenticate') {
@@ -141,17 +140,17 @@ chrome.runtime.onMessage.addListener(function (event) {
         });
       });
   }
-  else if(request.msg === "subscribe_to_platform"){
-    subscribe(jwt_decode(request.data).name);
+  else if(event.msg === "subscribe_to_platform"){
+    subscribe(jwt_decode(event.data).name);
   }
-  else if(request.msg === "redirect-tab"){
+  else if(event.msg === "redirect-tab"){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-     chrome.tabs.update(tabs[0].id, {url: request.msg.data});
+     chrome.tabs.update(tabs[0].id, {url: event.msg.data});
    });
   }
-  else if(request.msg === "edit-test"){
+  else if(event.msg === "edit-test"){
       localStorage.status = "editing";
-      var test = request.data;
+      var test = event.data;
       localStorage.test = JSON.stringify(test);
 
 
@@ -172,7 +171,7 @@ chrome.runtime.onMessage.addListener(function (event) {
           data: localStorage.test
       });
   }
-  else if(request.msg === "show-test-saved-msg"){
+  else if(event.msg === "show-test-saved-msg"){
     // Trigger desktop notification that test was saved successfully
     var options = {
       type: "basic",
