@@ -16,8 +16,6 @@ let pusher = new Pusher("77fec1184d841b55919e", {
 });
 
 chrome.runtime.onInstalled.addListener(function() {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function(){
-  });
 });
 
 /*
@@ -46,7 +44,7 @@ var subscribe = function(channel_name){
     chrome.notifications.create("test-created-" + test.name, options, function(id) {});
     chrome.runtime.sendMessage({msg: "show-test-saved-successfully-msg", data: test.name}, function(){});
   });
-}
+};
 
 chrome.runtime.onMessage.addListener(function (event) {
   if (event.type === "start_recording"){
