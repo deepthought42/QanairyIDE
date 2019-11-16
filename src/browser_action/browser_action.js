@@ -1,3 +1,7 @@
+// Minimal jQuery
+const $$ = document.querySelectorAll.bind(document);
+const $  = document.querySelector.bind(document);
+
 function isLoggedIn(token) {
   // The user is logged in if their token isn't expired
   return jwt_decode(token).exp > Date.now() / 1000;
@@ -39,11 +43,6 @@ function showCloseRecorder() {
     chrome.tabs.sendMessage(tabs[0].id, {action: "open_recorder"}, function(response) {});
   });
 }
-
-// Minimal jQuery
-const $$ = document.querySelectorAll.bind(document);
-const $  = document.querySelector.bind(document);
-
 
 function renderProfileView(authResult) {
   $('.default').classList.add('hidden');
