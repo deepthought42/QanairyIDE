@@ -22,6 +22,24 @@ function logout() {
   main();
 }
 
+function showOpenRecorder() {
+  $('#open-recorder').classList.remove('hidden');
+  $('#close-recorder').classList.add('hidden');
+
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {action: "close_recorder"}, function(response) {});
+  });
+}
+
+function showCloseRecorder() {
+  $('#open-recorder').classList.add('hidden');
+  $('#close-recorder').classList.remove('hidden');
+
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+    chrome.tabs.sendMessage(tabs[0].id, {action: "open_recorder"}, function(response) {});
+  });
+}
+
 // Minimal jQuery
 const $$ = document.querySelectorAll.bind(document);
 const $  = document.querySelector.bind(document);
@@ -29,13 +47,12 @@ const $  = document.querySelector.bind(document);
 
 function renderProfileView(authResult) {
   $('.default').classList.add('hidden');
-  $('.loading').classList.remove('hidden');
   fetch(`https://${env.AUTH0_DOMAIN}/userinfo`, {
     headers: {
       'Authorization': `Bearer ${authResult.access_token}`
     }
   }).then(resp => resp.json()).then((profile) => {
-    ['picture', 'name', 'nickname'].forEach((key) => {
+    ['name', 'nickname'].forEach((key) => {
 
        const element = $('.' +  key);
        if( element.nodeName === 'DIV' ) {
@@ -45,9 +62,12 @@ function renderProfileView(authResult) {
 
        element.textContent = profile[key];
     });
-    $('.loading').classList.add('hidden');
     $('.profile').classList.remove('hidden');
     $('.logout-button').addEventListener('click', logout);
+    $('#open-recorder').addEventListener('click', showCloseRecorder);
+    $('#close-recorder').addEventListener('click', showOpenRecorder);
+
+    showOpenRecorder();
   }).catch(logout);
 }
 
@@ -55,11 +75,9 @@ function renderProfileView(authResult) {
 function renderDefaultView() {
   $('.default').classList.remove('hidden');
   $('.profile').classList.add('hidden');
-  $('.loading').classList.add('hidden');
 
   $('.login-button').addEventListener('click', () => {
     $('.default').classList.add('hidden');
-    $('.loading').classList.remove('hidden');
     chrome.runtime.sendMessage({
       type: "authenticate"
     });

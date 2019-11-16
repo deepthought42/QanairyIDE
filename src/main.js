@@ -136,4 +136,48 @@ chrome.runtime.onMessage.addListener(function (event) {
         });
       });
   }
+  else if(request.msg === "subscribe_to_platform"){
+    subscribe(jwt_decode(request.data).name);
+  }
+  else if(request.msg === "redirect-tab"){
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+     chrome.tabs.update(tabs[0].id, {url: request.msg.data});
+   });
+  }
+  else if(request.msg === "edit-test"){
+      localStorage.status = "editing";
+      var test = request.data;
+      localStorage.test = JSON.stringify(test);
+
+
+      // Trigger desktop notification
+      var options = {
+        type: "basic",
+        title: "Test Opened",
+        message: "This test can now be edited",
+        iconUrl: "images/qanairy_q_logo_black_48.png",
+        isClickable: true
+      };
+
+      chrome.notifications.create("edit-test-" + localStorage.test.name, options, function(id) {});
+
+      localStorage.path = JSON.stringify(test.path);
+      chrome.runtime.sendMessage({
+          msg: "loadTest",
+          data: localStorage.test
+      });
+  }
+  else if(request.msg === "show-test-saved-msg"){
+    // Trigger desktop notification that test was saved successfully
+    var options = {
+      type: "basic",
+      title: "Your test is being processed",
+      message: "Qanairy is building your test. We'll let you know when it's ready.",
+      iconUrl: "images/qanairy_q_logo_black_48.png",
+      isClickable: true
+    }
+
+    chrome.notifications.create("test-saved-successfully", options, function(id) {
+    });
+  }
 });
