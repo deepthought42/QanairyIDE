@@ -330,9 +330,7 @@ stopRecording.onclick = function(element){
 $jquery("#runTestButton").on("click", function(element){
   var path = JSON.parse(localStorage.getItem("path"));
   //send path to content script to be ran
-
   chrome.runtime.sendMessage({type: "start_test_run", data: path}, function(response) {
-
   });
 });
 
@@ -457,7 +455,6 @@ chrome.runtime.onMessage.addListener(
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
               chrome.tabs.sendMessage(tabs[0].id, {msg: "start_recording"}, function(response) {
                 localStorage.removeItem("status_before_select");
-                //console.log("starting record status :: "+response);
               });
             });
           }
