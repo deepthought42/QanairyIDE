@@ -8,9 +8,7 @@ let selector_enabled = false;
 
 let close_recorder = function(){
   //hide parent element
-  qanairy_ide = document.getElementById("qanairy_ide");
-  qanairy_ide.style.display = "none";
-
+  document.getElementById("qanairy_ide").style.display = "none";
   //reset localStorage
   localStorage.clear();
 }
@@ -198,10 +196,7 @@ let recorderClickListener = function(event){
    }
 }
 
-    //build list of elements where the x,y coords and height,width encompass the event x,y coords
-
-
-  //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
+  //build list of elements where the x,y coords and height,width encompass the event x,y coords
   String.prototype.indexOfRegex = function(regex){
     var match = this.match(regex);
     return match ? this.indexOf(match[0]) : -1;
@@ -246,7 +241,7 @@ let recorderClickListener = function(event){
       return;
     }
 
-	  //process elements
+    //process elements
 		let test_interval = setInterval(function(){
 			if(parseInt(localStorage.run_idx) >= path.length){
 				clearInterval(test_interval);
@@ -261,12 +256,12 @@ let recorderClickListener = function(event){
 			localStorage.status = "POST_RUN";
 		}
   }
-  /**
-   *
-   * Make plugin frame draggable by using the header to drag frame around
-   *
-   */
 
+/**
+ *
+ * Make plugin frame draggable by using the header to drag frame around
+ *
+ */
 let main = function(){
    // Make the DIV element draggable:
   function dragElement(elmnt) {
@@ -349,7 +344,7 @@ var renderRecorder = function(){
    parent.appendChild(header);
    parent.appendChild(body);
    document.body.appendChild(parent);
-}
+};
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
