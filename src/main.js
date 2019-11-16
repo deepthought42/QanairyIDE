@@ -100,7 +100,7 @@ chrome.runtime.onMessage.addListener(function (event) {
         data: event.data.action
     });
   }
-  else if (event.type === 'authenticate') {
+  else if (event.type === "authenticate") {
     let options = {
       responseType: "token id_token",
       scope: "openid profile offline_access",
@@ -112,10 +112,10 @@ chrome.runtime.onMessage.addListener(function (event) {
       .then(function (authResult) {
         localStorage.authResult = JSON.stringify(authResult);
         chrome.notifications.create({
-          type: 'basic',
-          iconUrl: 'images/qanairy_q_logo_white.png',
-          title: 'Login Successful',
-          message: 'You can record tests now'
+          type: "basic",
+          iconUrl: "images/qanairy_q_logo_white.png",
+          title: "Login Successful",
+          message: "You can record tests now"
         });
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
           chrome.tabs.sendMessage(tabs[0].id, {action: "open_dialog_box", msg: "open_recorder"}, function(response) {});
@@ -123,10 +123,10 @@ chrome.runtime.onMessage.addListener(function (event) {
 
       }).catch(function (err) {
         chrome.notifications.create({
-          type: 'basic',
-          title: 'Login Failed',
+          type: "basic",
+          title: "Login Failed",
           message: err.message,
-          iconUrl: 'images/qanairy_q_logo_white.png'
+          iconUrl: "images/qanairy_q_logo_white.png"
         });
       });
   }
@@ -144,7 +144,7 @@ chrome.runtime.onMessage.addListener(function (event) {
       localStorage.test = JSON.stringify(test);
 
       // Trigger desktop notification
-      var options = {
+      let options = {
         type: "basic",
         title: "Test Opened",
         message: "This test can now be edited",
@@ -162,13 +162,13 @@ chrome.runtime.onMessage.addListener(function (event) {
   }
   else if(event.msg === "show-test-saved-msg"){
     // Trigger desktop notification that test was saved successfully
-    var options = {
+    let options = {
       type: "basic",
       title: "Your test is being processed",
       message: "Qanairy is building your test. We'll let you know when it's ready.",
       iconUrl: "images/qanairy_q_logo_black_48.png",
       isClickable: true
-    }
+    };
 
     chrome.notifications.create("test-saved-successfully", options, function(id) {
     });
