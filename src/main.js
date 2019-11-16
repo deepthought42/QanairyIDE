@@ -35,7 +35,7 @@ var subscribe = function(channel_name){
     test.key = "";
     localStorage.setItem("test", JSON.stringify(test));
     // Trigger desktop notification
-    var options = {
+    let options = {
       type: "basic",
       title: "Test Created",
       message: test.name + " was created successfully",
