@@ -6,7 +6,7 @@ let last_node = null;
 let selector_enabled = false;
 
 
-let close_ide = function(){
+let close_recorder = function(){
   //hide parent element
   qanairy_ide = document.getElementById("qanairy_ide");
   qanairy_ide.style.display = "none";
@@ -17,7 +17,7 @@ let close_ide = function(){
 
 let logout = function(){
   localStorage.removeItem("authResult");
-  close_ide;
+  close_recorder;
 }
 
 let pause = function(milliseconds) {
@@ -27,26 +27,29 @@ let pause = function(milliseconds) {
 
 let recorderKeyupListener = function(event){
 
-  chrome.runtime.sendMessage({msg: "addToPath",
-                              data: {url: window.location.toString(),
-                                     pathElement: {
-                                       element: {
-                                         type: "pageElement",
-                                         target: event.relatedTarget,
-                                         xpath: last_xpath
-                                       },
-                                       action: {
-                                         type: "action",
-                                         name: "sendKeys",
-                                         value: last_node.value
-                                       }
-                                     }
-                                   }
-                                 },
-     function(response) {
-       //console.log("response ::  " +JSON.stringify(response));
-     }
-   );
+  chrome.runtime.sendMessage(
+    {
+      msg: "addToPath",
+      data: {
+        url: window.location.toString(),
+        pathElement: {
+          element: {
+            type: "pageElement",
+            target: event.relatedTarget,
+            xpath: last_xpath
+          },
+          action: {
+            type: "action",
+            name: "sendKeys",
+            value: last_node.value
+          }
+        }
+      }
+    },
+    function(response) {
+      //console.log("response ::  " +JSON.stringify(response));
+    }
+  );
 }
 
 let recorderKeydownListener = function(event){
@@ -169,7 +172,7 @@ let recorderClickListener = function(event){
 		selector_enabled = false;
 	}
 	else if(xpath.length > 0){
-	    chrome.runtime.sendMessage(
+    chrome.runtime.sendMessage(
         {
           msg: "addToPath",
           data: {
@@ -384,11 +387,11 @@ chrome.runtime.onMessage.addListener(
 
 			runTest(JSON.parse(localStorage.path));
     }
-    else if (request.msg === "open_recorder"){
+    else if (request.action === "open_recorder"){
       open_recorder();
     }
-    else if (request.msg === "close_recorder"){
-      close_ide();
+    else if (request.action === "close_recorder"){
+      close_recorder();
     }
 		else if (request.msg === "update_path"){
 			localStorage.setItem("path", request.data);
