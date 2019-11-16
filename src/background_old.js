@@ -1,5 +1,5 @@
-let path = [];
-localStorage.status = "stopped";
+//let path = [];
+//localStorage.status = "stopped";
 
 
 // Enable Pusher logging - don't include this in production
@@ -9,7 +9,7 @@ localStorage.status = "stopped";
   }
 };
 */
-
+/*
 let pusher = new Pusher("77fec1184d841b55919e", {
   cluster: "us2",
   encrypted: true,
@@ -29,6 +29,7 @@ chrome.runtime.onInstalled.addListener(function() {
   });
 });
 
+/*
 var subscribe = function(channel_name){
   var channel = pusher.subscribe(channel_name);
 
@@ -54,7 +55,7 @@ var subscribe = function(channel_name){
     chrome.runtime.sendMessage({msg: "show-test-saved-successfully-msg", data: test.name}, function(){});
   });
 }
-
+*/
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.msg === "start_recording"){

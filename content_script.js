@@ -345,6 +345,7 @@ var renderRecorder = function(){
    parent.appendChild(header);
    parent.appendChild(body);
    document.body.appendChild(parent);
+
 }
 
 chrome.runtime.onMessage.addListener(

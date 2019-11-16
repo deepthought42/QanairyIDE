@@ -1,7 +1,6 @@
 {
-  "name": "Qanairy Recorder",
-    "version": "0.2",
-    "manifest_version": 2,
+    "name": "Qanairy IDE",
+    "version": "0.0.1",
     "description": "Allows recording custom tests for the Qanairy.com platform",
     "homepage_url": "https://qanairy.com/",
     "permissions": [
@@ -10,24 +9,28 @@
       "webNavigation",
       "tabs",
       "activeTab",
+      "webRequest",
       "webRequestBlocking",
       "identity",
       "notifications",
       "https://*.auth0.com/*",
-      "https://*/*"
-    ],
-    "browser_action": {
-        "default_title": "Qanairy Recorder",
-        "default_popup": "src/browser_action/browser_action.html"
-    },
+      "https://*/*"],
     "background": {
       "scripts": [
         "./env.js",
-        "node_modules/auth0-chrome/dist/auth0chrome.min.js",
+        "scripts/auth0chrome.min.js",
         "scripts/pusher.min.js",
-        "src/main.js"
-      ],
-      "persistent": false
+        "src/main.js"],
+      "persistent": true
+    },
+    "page_action": {
+      "default_popup": "src/auth/popup.html",
+      "default_icon": {
+        "16": "images/qanairy_q_logo_black_16.png",
+        "32": "images/qanairy_q_logo_black_32.png",
+        "48": "images/qanairy_q_logo_black_48.png",
+        "128": "images/qanairy_q_logo_black_128.png"
+      }
     },
     "content_scripts": [
         {
@@ -44,5 +47,6 @@
       "48": "images/qanairy_q_logo_black_48.png",
       "128": "images/qanairy_q_logo_black_128.png"
     },
-    "content_security_policy": "script-src 'self' https://cdn.auth0.com/client/mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6.js; object-src 'self'"
+    "content_security_policy": "script-src 'self' https://cdn.auth0.com/client/mMomHg1ZhzZkM4Tsz2NGkdJH3eeJqIq6.js; object-src 'self'",
+    "manifest_version": 2
 }
