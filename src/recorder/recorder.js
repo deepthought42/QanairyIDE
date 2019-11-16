@@ -437,7 +437,7 @@ $jquery("#exportTest").on("click", function(element){
           message: "Unable to save test. Please try again.",
           iconUrl: "images/qanairy_q_logo_black_48.png",
           isClickable: true
-        }
+        };
 
         chrome.notifications.create("test-save-failed", options, function(id) {});
       }
@@ -484,7 +484,7 @@ chrome.runtime.onMessage.addListener(
 
               redrawPath(path);
             }
-            return;
+            return Promise.resolve("Path update complete!");
           }
           path.push(request.data.pathElement);
           last_node = request.data.pathElement;

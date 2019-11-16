@@ -130,7 +130,7 @@ let recorderClickListener = function(event){
 
   var xpath = "";
   var possible_nodes = [];
-  var top_z_index = -10000000;
+  var top_z_index = -10000;
   //get all elements on page
   document.querySelectorAll("body *").forEach(function(node){
     if(node.id !== "qanairy_ide_frame" && node.id !== "qanairy_ide_header" && node.id !== "qanairy_ide_body" && node.id !== "qanairy_ide"){
@@ -169,34 +169,36 @@ let recorderClickListener = function(event){
 		selector_enabled = false;
 	}
 	else if(xpath.length > 0){
-	    chrome.runtime.sendMessage({msg: "addToPath",
-	                                data: {url: window.location.toString(),
-	                                       pathElement: {
-	                                         element: {
-	                                           type: "pageElement",
-	                                           target: event.relatedTarget,
-	                                           xpath: xpath
-	                                         },
-	                                         action: {
-	                                           type: "action",
-	                                           name: "click",
-	                                           value: ""
-	                                         }
-	                                       }
-	                                     }
-	                                   },
-	       function(response) {
-	         //console.log("response ::  " +JSON.stringify(response));
-	       }
-	     );
+	    chrome.runtime.sendMessage(
+        {
+          msg: "addToPath",
+          data: {
+            url: window.location.toString(),
+            pathElement: {
+              element: {
+                type: "pageElement",
+                target: event.relatedTarget,
+                xpath: xpath
+              },
+              action: {
+                type: "action",
+                name: "click",
+                value: ""
+             }
+           }
+         }
+       },
+       function(response) {
+         //console.log("response ::  " +JSON.stringify(response));
+       }
+     );
    }
 }
 
     //build list of elements where the x,y coords and height,width encompass the event x,y coords
 
 
-    //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
-
+  //iframe.contentWindow.postMessage({element: {type: "element", xpath: xpath}, action: {type: "action", name: "click", value:""}}, "http://localhost:3000");
   String.prototype.indexOfRegex = function(regex){
     var match = this.match(regex);
     return match ? this.indexOf(match[0]) : -1;
@@ -212,7 +214,7 @@ let recorderClickListener = function(event){
 					data: path_elem.url
 			});
 		}
-		else if(path_elem  !== undefined && path_elem.element){
+		else if(path_elem && path_elem.element){
 			var xpathResult = document.evaluate(path_elem.element.xpath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
 			//verify that element exists on page
 			if(xpathResult){
@@ -248,7 +250,7 @@ let recorderClickListener = function(event){
 				return;
 			}
 			executeTestElement(path[localStorage.run_idx]);
-			localStorage.run_idx = parseInt(localStorage.run_idx) + 1;
+			localStorage.run_idx = parseInt(localStorage.run_idx, 10) + 1;
 			localStorage.last_url = window.location.toString();
 		}, 1000, path);
 
