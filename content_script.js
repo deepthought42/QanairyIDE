@@ -313,7 +313,6 @@ let main = function(){
 
   // Make the DIV element draggable:
   dragElement(document.getElementById("qanairy_ide"));
-
 };
 
 var open_recorder = function(){
@@ -350,7 +349,6 @@ var renderRecorder = function(){
    parent.appendChild(header);
    parent.appendChild(body);
    document.body.appendChild(parent);
-
 }
 
 chrome.runtime.onMessage.addListener(
@@ -455,35 +453,3 @@ function receiveMessage(event)
 }
 
 window.addEventListener("message", receiveMessage, false);
-
-  /**
-	 * creates a unique xpath based on a given hash of xpaths
-	 *
-	 * @param driver
-	 * @param xpathHash
-	 *
-	 * @return
-	 */
-   /*
-let uniqifyXpath = function(WebElement elem, Map<String, Integer> xpathHash, String xpath, WebDriver driver){
-		try {
-			List<WebElement> elements = driver.findElements(By.xpath(xpath));
-
-			if(elements.size()>1){
-				int count = 1;
-				for(WebElement element : elements){
-					if(element.getTagName().equals(elem.getTagName())
-							&& element.getText().equals(elem.getText())){
-						return "("+xpath+")[" + count + "]";
-					}
-					count++;
-				}
-			}
-
-		}catch(InvalidSelectorException e){
-			log.error(e.getMessage());
-		}
-
-		return xpath;
-	}
-*/
