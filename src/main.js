@@ -53,7 +53,7 @@ chrome.runtime.onMessage.addListener(function (event) {
     localStorage.status = "recording";
     chrome.webNavigation.onCompleted.addListener(
       function(details){
-        var temp_path = JSON.parse(localStorage.getItem("path"));
+        let temp_path = JSON.parse(localStorage.getItem("path"));
         if(!temp_path){
           path = [];
         }
@@ -64,22 +64,19 @@ chrome.runtime.onMessage.addListener(function (event) {
     sendResponse({status: "starting"});
   }
   else if (event.type === "start_test_run") {
-    var temp_path = event.data;
     //get first element from path. First element is expected to be a page, if it isn't then throw an error
 
     window.setTimeout( function(){
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-        chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: temp_path}, function(response) {
+        chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: event.data}, function(response) {
         });
       });
     }, 500);
 
   }
   else if(event.type === "addToPath" && localStorage.status !== "stopped"){
-    var temp_path = JSON.parse(localStorage.getItem("path"));
-    if(temp_path == null){
-      temp_path = [];
-    }
+    let temp_path = JSON.parse(localStorage.getItem("path")) || [];
+
     if(temp_path.length === 0 || temp_path[temp_path.length-1].type !== "page"){
       temp_path.push({type: "page", url: sender.tab.url});
       chrome.runtime.sendMessage({
