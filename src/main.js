@@ -53,35 +53,35 @@ chrome.runtime.onMessage.addListener(function (event) {
     localStorage.status = "recording";
     chrome.webNavigation.onCompleted.addListener(
       function(details){
-        var path = JSON.parse(localStorage.getItem("path"));
-        if(!path){
+        var temp_path = JSON.parse(localStorage.getItem("path"));
+        if(!temp_path){
           path = [];
         }
-        path.push({type: "page", url: details.url});
-        localStorage.setItem("path", path);
+        temp_path.push({type: "page", url: details.url});
+        localStorage.setItem("path", temp_path);
       }
     );
     sendResponse({status: "starting"});
   }
   else if (event.type === "start_test_run") {
-    var path = event.data;
+    var temp_path = event.data;
     //get first element from path. First element is expected to be a page, if it isn't then throw an error
 
     window.setTimeout( function(){
       chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-        chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: path}, function(response) {
+        chrome.tabs.sendMessage(tabs[0].id, {msg: "run_test", data: temp_path}, function(response) {
         });
       });
     }, 500);
 
   }
   else if(event.type === "addToPath" && localStorage.status !== "stopped"){
-    var path = JSON.parse(localStorage.getItem("path"));
-    if(path == null){
-      path = [];
+    var temp_path = JSON.parse(localStorage.getItem("path"));
+    if(temp_path == null){
+      temp_path = [];
     }
-    if(path.length === 0 || path[path.length-1].type !== "page"){
-      path.push({type: "page", url: sender.tab.url});
+    if(temp_path.length === 0 || temp_path[temp_path.length-1].type !== "page"){
+      temp_path.push({type: "page", url: sender.tab.url});
       chrome.runtime.sendMessage({
           msg: "appendPathElement",
           data: {
@@ -91,26 +91,19 @@ chrome.runtime.onMessage.addListener(function (event) {
       });
     }
 
-    path.push(event.data.element);
+    temp_path.push(event.data.element);
     chrome.runtime.sendMessage({
         msg: "appendPathElement",
         data: event.data.element
 
     });
-    path.push(event.data.action);
+    temp_path.push(event.data.action);
     chrome.runtime.sendMessage({
         msg: "appendPathElement",
         data: event.data.action
     });
   }
   else if (event.type === 'authenticate') {
-
-    // scope
-    //  - openid if you want an id_token returned
-    //  - offline_access if you want a refresh_token returned
-    //  - profile if you want an additional claims like name, nickname, picture and updated_at.
-    // device
-    //  - required if requesting the offline_access scope.
     let options = {
       responseType: "token id_token",
       scope: "openid profile offline_access",
@@ -152,7 +145,6 @@ chrome.runtime.onMessage.addListener(function (event) {
       localStorage.status = "editing";
       var test = event.data;
       localStorage.test = JSON.stringify(test);
-
 
       // Trigger desktop notification
       var options = {
