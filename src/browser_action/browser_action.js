@@ -52,16 +52,6 @@ function renderProfileView(authResult) {
       'Authorization': `Bearer ${authResult.access_token}`
     }
   }).then(resp => resp.json()).then((profile) => {
-    ['name', 'nickname'].forEach((key) => {
-
-       const element = $('.' +  key);
-       if( element.nodeName === 'DIV' ) {
-         element.style.backgroundImage = 'url(' + profile[key] + ')';
-         return;
-       }
-
-       element.textContent = profile[key];
-    });
     $('.profile').classList.remove('hidden');
     $('.logout-button').addEventListener('click', logout);
     $('#open-recorder').addEventListener('click', showCloseRecorder);
