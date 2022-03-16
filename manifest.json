@@ -1,9 +1,9 @@
 {
-  "name": "Qanairy Recorder",
+  "name": "Look-see",
     "version": "0.2",
     "manifest_version": 2,
-    "description": "Allows recording custom tests for the Qanairy.com platform",
-    "homepage_url": "https://qanairy.com/",
+    "description": "Look-see helps you find and fix accessibility issues in your browser",
+    "homepage_url": "https://look-see.com/",
     "permissions": [
       "declarativeContent",
       "storage",
@@ -17,7 +17,7 @@
       "https://*/*"
     ],
     "browser_action": {
-        "default_title": "Qanairy Recorder",
+        "default_title": "Look-see",
         "default_popup": "src/browser_action/browser_action.html"
     },
     "background": {

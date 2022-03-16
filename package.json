@@ -1,7 +1,7 @@
 {
-  "name": "qanairy-ide",
+  "name": "Look-see",
   "version": "0.1.0",
-  "description": "Qanairy IDE allows you to record tests easily",
+  "description": "Look-see helps you find and fix accessibility issues",
   "main": "background.js",
   "dependencies": {
     "auth0-chrome": "^0.1.0",
@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/deepthought42/QanairyIDE.git"
   },
-  "author": "Qanairy Inc",
+  "author": "Look-see",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/deepthought42/QanairyIDE/issues"
